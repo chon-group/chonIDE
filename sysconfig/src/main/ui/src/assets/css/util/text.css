@@ -1,0 +1,27 @@
+.is-aside {
+    color: var(--pallete-text-aside);
+}
+
+.is-small {
+    font-size: var(--text-size-little);
+}
+
+.is-big {
+    font-size: var(--text-size-headline);
+}
+
+.is-huge {
+    font-size: var(--text-size-title);
+}
+
+.is-bold{
+    font-weight: 1000;
+}
+
+.is-light{
+    font-weight: 100;
+}
+
+.is-centralized{
+    text-align: center;
+}

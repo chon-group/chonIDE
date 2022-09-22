@@ -1,0 +1,6 @@
+@import "./base-container";
+
+.page {
+    background: var(--pallete-color-black-1);
+    min-height: 100vh;
+}

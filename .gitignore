@@ -1,0 +1,13 @@
+# Library
+node_modules
+
+# Ide files and folders
+*.iml
+.settings
+.classpath
+.project
+.idea
+
+# Build folders
+/build/
+target

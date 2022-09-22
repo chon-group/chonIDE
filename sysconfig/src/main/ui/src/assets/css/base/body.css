@@ -1,0 +1,30 @@
+body {
+    font-family: "Nunito Sans";
+    font-size: var(--text-size-little);
+    color: var(--pallete-text-main);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--pallete-text-main);
+    -webkit-box-shadow: 0 0 0px 9999999px var(--pallete-color-black-1) inset !important;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: var(--pallete-color-black-1);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--pallete-color-black-3);
+}
