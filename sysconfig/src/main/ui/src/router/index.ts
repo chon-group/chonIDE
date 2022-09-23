@@ -3,6 +3,7 @@ import Login from "@/views/Login.vue";
 import Connect from "@/views/Connect.vue";
 import Manager from "@/views/Manager.vue";
 import Domain from "@/views/Domain.vue";
+import Coder from "@/views/Coder.vue";
 
 
 const routes: Array<RouteRecordRaw> = [
@@ -25,6 +26,11 @@ const routes: Array<RouteRecordRaw> = [
         path: '/domain',
         name: 'Domain',
         component: Domain
+    },
+    {
+        path: '/coder',
+        name: 'Coder',
+        component: Coder
     }
 ]
 

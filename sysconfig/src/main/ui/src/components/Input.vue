@@ -1,5 +1,5 @@
 <template>
-  <div class="u-row u-gap-3 input u-cover" :class="[readonly ===
+  <div class="u-row u-gap-3 input" :class="[readonly ===
     'true' ?
     'ready-only' : '', type === 'file' ? 'is-file' : '']">
     <input v-if="type !== 'file'" :readonly="readonly" :value="modelValue" @input="$emit('update:modelValue',

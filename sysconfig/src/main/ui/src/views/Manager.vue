@@ -1,20 +1,8 @@
 <template>
   <div class="manager u-column u-gap-2">
-    <Popup title="Resultado" v-if="boardResponse != null" type="now">
-      <template v-slot:content>
-        <div class="manager__compiled-response is-small">
-          {{ boardResponse }}
-        </div>
-      </template>
-    </Popup>
     <header class="manager__header u-row u-align-i-center u-justify-i-between">
       <div class="u-row u-gap-2 u-align-i-center">
-        <h1 class="manager__header__title u-column u-align-i-center u-gap-2">
-          <span class="u-row u-gap-3 u-align-i-center">
-            <a href="http://chonos.sf.net/" target="_blank" class="manager__header__title__chonos is-bold">chonos</a>
-            <span class="is-aside is-light">sysconfig</span>
-          </span>
-        </h1>
+        <Logo name="sysconfig"/>
         <div class="u-row u-gap-3">
           <router-link to="/domain">
             <Button skin="navigation" icon="domain.svg">
@@ -30,7 +18,6 @@
               </template>
             </Button>
           </router-link>
-
           <a :href="'http://'+this.currentDomain+':3271'" target="_blank">
             <Button skin="navigation">
               <template v-slot:content>
@@ -112,27 +99,12 @@
                   Deploy
                 </template>
               </Button>
-              <Button icon="upload.svg" class="" :class="'board-'+index"
-                      @click="boardPopUpIsOpen = true" :is-loading="isCompiling">
+              <Button icon="upload.svg" class="" @click="code(board)">
                 <template v-slot:content>
-                  Compilar
+                  Firmware
                 </template>
               </Button>
             </div>
-            <Popup title="Compilar firmware" :for="'board-'+index">
-              <template v-slot:content>
-                <div class="u-row u-gap-2">
-                  <Input type="file" ref="board-file-input" accept=".ino"/>
-                </div>
-              </template>
-              <template v-slot:action>
-                <Button @click="compile(index, board.fqbn)" icon="upload.svg">
-                  <template v-slot:content>
-                    Compilar
-                  </template>
-                </Button>
-              </template>
-            </Popup>
           </div>
         </div>
       </div>
@@ -180,14 +152,15 @@ import PageUtils from "@/assets/js/util/PageUtils";
 import axios from "axios";
 import router from "@/router";
 import {MessageType} from "@/assets/js/model/Enums"
+import Logo from "@/components/Logo";
 
 
 export default {
   name: "Manager",
-  components: {Input, Popup, Loading, Button},
+  components: {Logo, Input, Popup, Loading, Button},
   data() {
     return {
-      boards: [],
+      boards: [{}],
       libraries: [],
       boardPopUpIsOpen: false,
       isSearchingBoards: true,
@@ -197,7 +170,6 @@ export default {
       isImportingMas: false,
       isStartingMas: false,
       isStopingMas: false,
-      boardResponse: null,
       currentDomain: ''
     }
   },
@@ -326,40 +298,9 @@ export default {
         this.isImportingMas = false;
       });
     },
-    deploy(boardPort, boardName) {
-      this.isDeploying = true;
-      axios.post("/sysconfig/sketch/deploy", {}, {
-        params: {boardName: boardName, serialPort: boardPort}
-      }).then((response) => {
-        this.isDeploying = false;
-        this.boardResponse = response.data;
-        this.$root.message({content: "Arquivo carregado com sucesso!", type: MessageType.SUCCESS});
-      });
-    },
-    compile(boardIndex, boardName) {
-      let firmwareFileInput = this.$refs['board-file-input'][boardIndex].$refs.input;
-
-      if (firmwareFileInput.value.length === 0 || firmwareFileInput.files.length === 0) {
-        this.$root.message({content: "Você precisa selecionar um arquivo para compilar", type: MessageType.ERROR});
-        return;
-      }
-
-      let formData = new FormData();
-      formData.append("file", firmwareFileInput.files[0]);
-      formData.append("boardName", boardName);
-
-      this.isCompiling = true;
-      axios.post("/sysconfig/sketch/compile", formData, {
-        headers:
-            {"Content-Type": "multipart/form-data"}
-      }).then((response) => {
-        if (response === null) {
-          this.$root.message({content: "Não foi possível compilar o arquivo", type: MessageType.ERROR});
-          return;
-        }
-        this.isCompiling = false;
-        this.boardResponse = response.data;
-        this.$root.message({content: "Arquivo compilado com sucesso", type: MessageType.SUCCESS});
+    code(board) {
+      axios.post("/sysconfig/sketch/board", board).then(() => {
+        router.push("/coder");
       });
     },
     refreshBoards() {
@@ -474,16 +415,6 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-}
-
-.manager__header__title {
-  font-size: 2.5em;
-  line-height: 1;
-  cursor: default;
-}
-
-.manager__header__title__chonos {
-  color: var(--pallete-text-main);
 }
 
 </style>

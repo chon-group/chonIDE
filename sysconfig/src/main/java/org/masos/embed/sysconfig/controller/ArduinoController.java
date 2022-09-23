@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -39,7 +40,23 @@ public class ArduinoController {
         return true;
     }
 
-    @PostMapping("/sketch/compile")
+    @PostMapping("/sketch/compile/code")
+    public String compileSketch(@RequestParam String code, @RequestParam String boardName) throws Exception {
+        if (SessionManager.getUser() == null) {
+            return null;
+        }
+
+        File sketchFile = new File("/tmp/sketch_file.ino");
+        if (!sketchFile.exists()) {
+            sketchFile.createNewFile();
+        }
+        Files.copy(new ByteArrayInputStream(code.getBytes()), sketchFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+        return SSHConnection.getDefault(SessionManager.getUser()).execute(
+                FirmwareScriptManager.mountArduinoCompileSketchScript(sketchFile.getAbsolutePath(), boardName));
+    }
+
+    @PostMapping("/sketch/compile/file")
     public String compileSketch(@RequestParam MultipartFile file, @RequestParam String boardName) throws Exception {
         if (SessionManager.getUser() == null) {
             return null;

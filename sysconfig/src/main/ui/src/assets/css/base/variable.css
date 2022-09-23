@@ -31,10 +31,12 @@
     --action-ratio-1: 40px;
 
     --shadow-item-1: 0 2px 1px rgba(0, 0, 0, 0.15);
+    --shadow-item-2: 0 2px 1px rgba(0, 0, 0, 1);
 
     --container-width-1: 800px;
     --container-width-2: 600px;
 
+    --text-size-normal: 1em;
     --text-size-little: 0.9em;
     --text-size-headline: 1.25em;
     --text-size-title: 1.6em;

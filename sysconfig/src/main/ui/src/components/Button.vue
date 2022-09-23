@@ -92,7 +92,7 @@ export default {
 }
 
 .button.is-transparent {
-  background-color: var(--pallete-color-black-2);
+  background-color: transparent;
   color: var(--pallete-text-main);
   height: var(--action-ratio-1);
   padding: var(--action-padding-1);

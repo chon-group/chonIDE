@@ -2,6 +2,10 @@
     color: var(--pallete-text-aside);
 }
 
+.is-normal{
+    font-size: var(--text-size-normal);
+}
+
 .is-small {
     font-size: var(--text-size-little);
 }
