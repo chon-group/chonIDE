@@ -18,7 +18,7 @@ public class GetLibraries extends HttpServlet {
         User user = (User) req.getSession().getAttribute("user");
         if (user != null) {
             Response.build(resp).json().ok(
-                    SSHConnection.getDefault(user).execute(FirmwareScriptManager.ARDUINO_LIST_BOARDS));
+                    SSHConnection.getDefault(user).execute(FirmwareScriptManager.ARDUINO_LIST_LIBRARIES));
         }
     }
 }

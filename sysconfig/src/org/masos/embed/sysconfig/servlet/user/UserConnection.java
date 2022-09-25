@@ -8,6 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @WebServlet("/users")
 public class UserConnection extends HttpServlet {
@@ -41,9 +42,9 @@ public class UserConnection extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
-        User user = (User) req.getSession().getAttribute("user");
-        if (user != null) {
-            req.getSession().invalidate();
+        HttpSession session = req.getSession();
+        if (session != null) {
+            session.invalidate();
         }
     }
 }
