@@ -17,10 +17,7 @@ public class DomainController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         User user = (User) req.getSession().getAttribute("user");
         if (user != null) {
-            Response.build(resp).json().ok(
-                    "{ \"domain\":\"robozinho.bot.chon.group\"," + "  \"ddns_user\":\"ddns_user\","
-                            + "  \"ddns_token\":\"ddns_token\"," + "  \"localAddress\":\"192.168.168.1 192.168.15.9 "
-                            + "2804:7f5:d180:95e1:1435:77bd:36f8:e767\"," + "  \"registredAddress\":\"192.168.15.9\"}");
+            Response.build(resp).json().ok(SSHConnection.getDefault(user).execute(ConnectionScriptManager.DDNS_STATUS));
         }
     }
 
