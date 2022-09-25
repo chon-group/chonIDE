@@ -197,14 +197,14 @@ export default {
   methods: {
     turnOff() {
       this.$root.message({content: "Desligando sistema", type: MessageType.WARNING});
-      axios.post("/sysconfig/system/poweroff");
+      axios.put("/sysconfig/system/poweroff");
       setTimeout(() => {
         router.push("/");
       }, 2000);
     },
     reset() {
       this.$root.message({content: "Reiniciando sistema", type: MessageType.WARNING});
-      axios.post("/sysconfig/system/reboot");
+      axios.put("/sysconfig/system/reboot");
       setTimeout(() => {
         router.push("/");
       }, 2000);
