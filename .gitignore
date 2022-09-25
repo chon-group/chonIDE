@@ -1,5 +1,6 @@
 # Library
 node_modules
+/lib
 
 # Ide files and folders
 *.iml
@@ -11,4 +12,4 @@ node_modules
 # Build folders
 /build/
 target
-./out
+/out
