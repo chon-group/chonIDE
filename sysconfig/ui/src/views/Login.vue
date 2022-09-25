@@ -1,5 +1,5 @@
 <template>
-  <div class="login u-column u-justify-i-center u-gap-1">
+  <div class="login u-column u-align-i-center u-justify-i-center u-gap-1">
     <Response ref="response"/>
     <h1 class="logo u-column u-align-i-center u-gap-2">
       <span class="logo__systemname u-row u-gap-3 u-align-i-center">
@@ -7,15 +7,21 @@
         <span class="is-aside is-light">sysconfig</span>
       </span>
     </h1>
-    <div>
+    <div class="u-column u-gap-2 u-align-i-center">
       <div class="c-base-container login__form u-column u-gap-3">
         <input type="text" name="user" placeholder="Usuário" class="login__input" v-model="username"
                autocomplete="off"/>
         <Trace/>
         <input type="password" name="password" placeholder="Senha" class="login__input" v-model="password"
                autocomplete="off"/>
+        <Trace v-if="!useLocalHost"/>
+        <input type="text" v-model="currentHost" v-if="!useLocalHost" placeholder="Hostname" class="login__input"/>
       </div>
       <RoundedButton @click="submit" :is-loading="loading"/>
+    </div>
+    <div class="u-row u-gap-3 u-align-i-center u-justify-i-center">
+      <span class="is-aside">Usar host local</span>
+      <input type="checkbox" class="login__check-box" v-model="useLocalHost">
     </div>
 
     <Popup :title="'Conectando à rede'" type="now" v-if="this.awaitConnection == 'true'" :can-close="false">
@@ -59,7 +65,9 @@ export default {
       keyPressListener: null,
       awaitConnection: 'false',
       awaitConnectionCounter: 5,
-      currentDomain: ''
+      currentDomain: '',
+      useLocalHost: true,
+      currentHost: ''
     }
   },
   setup() {
@@ -101,7 +109,7 @@ export default {
       this.loading = true;
       axios.post("/sysconfig/users",
           {},
-          {params: {username: this.username, password: this.password}}
+          {params: {username: this.username, password: this.password, host: this.currentHost}}
       ).then((response) => {
         if (response.data === true) {
           PageUtils.isFirstAccess().then((response) => {
@@ -159,6 +167,11 @@ export default {
 
 .login__input:hover {
   background-color: var(--pallete-color-black-3);
+}
+
+.login__check-box {
+  cursor: pointer;
+  accent-color: var(--pallete-text-aside);
 }
 
 .login__new-link {

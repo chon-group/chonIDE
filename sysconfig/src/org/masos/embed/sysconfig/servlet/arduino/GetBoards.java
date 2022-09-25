@@ -1,9 +1,8 @@
 package org.masos.embed.sysconfig.servlet.arduino;
 
-import org.masos.embed.sysconfig.model.SSHConnection;
-import org.masos.embed.sysconfig.model.User;
-import org.masos.embed.sysconfig.script.FirmwareScriptManager;
 import org.masos.embed.sysconfig.model.Response;
+import org.masos.embed.sysconfig.model.executor.Executor;
+import org.masos.embed.sysconfig.script.FirmwareScriptManager;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -16,10 +15,10 @@ public class GetBoards extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        User user = (User) req.getSession().getAttribute("user");
-        if (user != null) {
-            Response.build(resp).json().ok(
-                    SSHConnection.getDefault(user).execute(FirmwareScriptManager.ARDUINO_LIST_BOARDS));
+        Executor executor = (Executor) req.getSession().getAttribute("executor");
+        if (executor != null) {
+            String boards = executor.execute(FirmwareScriptManager.ARDUINO_LIST_BOARDS);
+            Response.build(resp).json().ok(boards);
         }
     }
 }

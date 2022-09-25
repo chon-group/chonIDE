@@ -1,10 +1,8 @@
 package org.masos.embed.sysconfig.servlet.mas;
 
-
-import org.masos.embed.sysconfig.model.SSHConnection;
-import org.masos.embed.sysconfig.model.User;
-import org.masos.embed.sysconfig.script.ReasoningScriptManager;
 import org.masos.embed.sysconfig.model.Response;
+import org.masos.embed.sysconfig.model.executor.Executor;
+import org.masos.embed.sysconfig.script.ReasoningScriptManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -24,16 +22,16 @@ public class ImportMas extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        User user = (User) req.getSession().getAttribute("user");
-        if (user != null) {
+        Executor executor = (Executor) req.getSession().getAttribute("executor");
+        if (executor != null) {
             Part file = req.getPart("file");
             File masFile = new File("/tmp/mas_" + file.getSubmittedFileName());
             if (!masFile.exists()) {
                 masFile.createNewFile();
             }
             Files.copy(file.getInputStream(), masFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            Response.build(resp).json().ok(SSHConnection.getDefault(user)
-                    .execute(ReasoningScriptManager.mountEmbeddedMASImportScript(masFile.getAbsolutePath())));
+            Response.build(resp).json().ok(
+                    executor.execute(ReasoningScriptManager.mountEmbeddedMASImportScript(masFile.getAbsolutePath())));
         }
     }
 

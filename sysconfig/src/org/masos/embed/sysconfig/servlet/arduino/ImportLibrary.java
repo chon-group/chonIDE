@@ -1,9 +1,7 @@
 package org.masos.embed.sysconfig.servlet.arduino;
 
-
 import org.masos.embed.sysconfig.model.Response;
-import org.masos.embed.sysconfig.model.SSHConnection;
-import org.masos.embed.sysconfig.model.User;
+import org.masos.embed.sysconfig.model.executor.Executor;
 import org.masos.embed.sysconfig.script.FirmwareScriptManager;
 
 import javax.servlet.ServletException;
@@ -24,8 +22,8 @@ public class ImportLibrary extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        User user = (User) req.getSession().getAttribute("user");
-        if (user != null) {
+        Executor executor = (Executor) req.getSession().getAttribute("executor");
+        if (executor != null) {
             Part file = req.getPart("file");
 
             File libraryFile = new File("/tmp/lib_" + file.getSubmittedFileName());
@@ -34,7 +32,7 @@ public class ImportLibrary extends HttpServlet {
             }
             Files.copy(file.getInputStream(), libraryFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-            String response = SSHConnection.getDefault(user).execute(
+            String response = executor.execute(
                     FirmwareScriptManager.mountArduinoImportLibScript(libraryFile.getAbsolutePath()));
 
             if (response.contains("cannot find or open") || response.contains(

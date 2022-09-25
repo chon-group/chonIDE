@@ -2,8 +2,7 @@ package org.masos.embed.sysconfig.servlet.network;
 
 import com.google.gson.*;
 import org.masos.embed.sysconfig.model.Response;
-import org.masos.embed.sysconfig.model.SSHConnection;
-import org.masos.embed.sysconfig.model.User;
+import org.masos.embed.sysconfig.model.executor.Executor;
 import org.masos.embed.sysconfig.model.response.NetworkResponse;
 import org.masos.embed.sysconfig.script.ConnectionScriptManager;
 
@@ -20,12 +19,10 @@ public class GetNetworks extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        User user = (User) req.getSession().getAttribute("user");
-        if (user != null) {
-            SSHConnection sshConnection = SSHConnection.getDefault(user);
-
-            String allNetworksResponse = sshConnection.execute(ConnectionScriptManager.WIFI_SCAN_LIST);
-            String knownNetworksResponse = sshConnection.execute(ConnectionScriptManager.WIFI_WELL_KNOWN_LIST);
+        Executor executor = (Executor) req.getSession().getAttribute("executor");
+        if (executor != null) {
+            String allNetworksResponse = executor.execute(ConnectionScriptManager.WIFI_SCAN_LIST);
+            String knownNetworksResponse = executor.execute(ConnectionScriptManager.WIFI_WELL_KNOWN_LIST);
 
             JsonArray allNetworks;
             JsonArray allKnownNetworks;

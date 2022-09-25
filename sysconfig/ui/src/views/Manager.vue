@@ -160,7 +160,7 @@ export default {
   components: {Logo, Input, Popup, Loading, Button},
   data() {
     return {
-      boards: [{}],
+      boards: [],
       libraries: [],
       boardPopUpIsOpen: false,
       isSearchingBoards: true,
@@ -306,7 +306,12 @@ export default {
     },
     getBoards() {
       axios.get("/sysconfig/boards").then((response) => {
-        this.boards = response.data;
+        console.log(this.response.data);
+        if(response.data == null){
+          this.boards = [];
+        } else {
+          this.boards = response.data;
+        }
         this.isSearchingBoards = false;
       }).catch(() => {
         this.isSearchingBoards = false;

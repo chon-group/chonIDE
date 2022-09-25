@@ -3,7 +3,7 @@ package org.masos.embed.sysconfig.model.dto;
 /**
  * Classe DTO de rede.
  */
-public class NetworkWrapper {
+public class NetworkDTO {
 
     /** Nome da rede. */
     private String essid;
@@ -14,7 +14,7 @@ public class NetworkWrapper {
     /**
      * Construtor.
      */
-    public NetworkWrapper() {
+    public NetworkDTO() {
     }
 
     /**
@@ -23,7 +23,7 @@ public class NetworkWrapper {
      * @param essid    {@link #essid}
      * @param password {@link #password}
      */
-    public NetworkWrapper(String essid, String password) {
+    public NetworkDTO(String essid, String password) {
         this.essid = essid;
         this.password = password;
     }

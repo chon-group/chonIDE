@@ -1,7 +1,6 @@
 package org.masos.embed.sysconfig.servlet.system;
 
-import org.masos.embed.sysconfig.model.SSHConnection;
-import org.masos.embed.sysconfig.model.User;
+import org.masos.embed.sysconfig.model.executor.Executor;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,10 +12,10 @@ public class SystemReboot extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
-        User user = (User) req.getSession().getAttribute("user");
-        if (user != null) {
+        Executor executor = (Executor) req.getSession().getAttribute("executor");
+        if (executor != null) {
             req.getSession().invalidate();
-            SSHConnection.getDefault(user).execute("reboot");
+            executor.execute("reboot");
         }
     }
 }

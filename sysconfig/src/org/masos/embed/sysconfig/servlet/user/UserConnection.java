@@ -1,8 +1,10 @@
 package org.masos.embed.sysconfig.servlet.user;
 
 import org.masos.embed.sysconfig.model.Response;
-import org.masos.embed.sysconfig.model.SSHConnection;
 import org.masos.embed.sysconfig.model.User;
+import org.masos.embed.sysconfig.model.executor.Executor;
+import org.masos.embed.sysconfig.model.executor.RuntimeExecutor;
+import org.masos.embed.sysconfig.model.executor.SSHExecutor;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,8 +17,8 @@ public class UserConnection extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        User user = (User) req.getSession().getAttribute("user");
-        if (user != null) {
+        Executor executor = (Executor) req.getSession().getAttribute("executor");
+        if (executor != null) {
             Response.build(resp).json().ok(true);
         }
         Response.build(resp).json().ok(false);
@@ -26,17 +28,33 @@ public class UserConnection extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
+        String host = req.getParameter("host");
+
+        if (host == null || host.isEmpty()) {
+            host = "localhost";
+        }
+
         User user = new User(username, password);
 
         if (user.getUsername() == null || user.getUsername().isEmpty() || user.getPassword() == null
                 || user.getPassword().isEmpty()) {
             Response.build(resp).json().ok(false);
         }
-        SSHConnection sshConnection = SSHConnection.getDefault(user);
-        if (sshConnection.test()) {
-            req.getSession().setAttribute("user", user);
-            Response.build(resp).json().ok(true);
+
+        SSHExecutor sshExecutor = SSHExecutor.get(user, host);
+        if (sshExecutor.test()) {
+            Executor executor;
+            if (!host.equals("localhost")) {
+                executor = sshExecutor;
+            } else {
+                executor = new RuntimeExecutor();
+            }
+            if (executor != null) {
+                req.getSession().setAttribute("executor", executor);
+                Response.build(resp).json().ok(true);
+            }
         }
+
         Response.build(resp).json().ok(false);
     }
 

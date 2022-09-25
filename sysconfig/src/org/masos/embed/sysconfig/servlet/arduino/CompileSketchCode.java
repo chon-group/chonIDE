@@ -1,10 +1,8 @@
 package org.masos.embed.sysconfig.servlet.arduino;
 
-
-import org.masos.embed.sysconfig.model.SSHConnection;
-import org.masos.embed.sysconfig.model.User;
-import org.masos.embed.sysconfig.script.FirmwareScriptManager;
 import org.masos.embed.sysconfig.model.Response;
+import org.masos.embed.sysconfig.model.executor.Executor;
+import org.masos.embed.sysconfig.script.FirmwareScriptManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,9 +21,9 @@ public class CompileSketchCode extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        User user = (User) req.getSession().getAttribute("user");
+        Executor executor = (Executor) req.getSession().getAttribute("executor");
 
-        if (user != null) {
+        if (executor != null) {
             String boardName = req.getParameter("boardName");
             String code = req.getParameter("code");
 
@@ -36,7 +34,7 @@ public class CompileSketchCode extends HttpServlet {
             Files.copy(new ByteArrayInputStream(code.getBytes(StandardCharsets.UTF_8)), sketchFile.toPath(),
                     StandardCopyOption.REPLACE_EXISTING);
 
-            Response.build(resp).text().ok(SSHConnection.getDefault(user).execute(
+            Response.build(resp).text().ok(executor.execute(
                     FirmwareScriptManager.mountArduinoCompileSketchScript(sketchFile.getAbsolutePath(), boardName)));
         }
     }
