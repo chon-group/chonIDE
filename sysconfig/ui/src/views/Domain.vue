@@ -77,12 +77,12 @@ export default {
   methods: {
     submit() {
       if (this.domain === '' || this.domain.length === 0) {
-        this.$root.message({content: "O nome não pode ser vazio", type: MessageType.ERROR});
+        this.$emit("message",{content: "O nome não pode ser vazio", type: MessageType.ERROR});
         return;
       }
       this.loading = true;
       axios.post("/sysconfig/domains", {}, {params: {domain: this.domain}}).then(() => {
-        this.$root.message({content: "O nome do seu bot foi salvo com sucesso", type: MessageType.SUCCESS});
+        this.$emit("message",{content: "O nome do seu bot foi salvo com sucesso", type: MessageType.SUCCESS});
         router.push("/connect");
       });
     }

@@ -141,12 +141,12 @@ export default {
       this.isCompiling = true;
       axios.post("/sysconfig/sketchs/compile/code", formData).then((response) => {
         if (response === null) {
-          this.$root.message({content: "Não foi possível compilar o arquivo", type: MessageType.ERROR});
+          this.$emit("message",{content: "Não foi possível compilar o arquivo", type: MessageType.ERROR});
           return;
         }
         this.isCompiling = false;
         this.boardResponse = response.data;
-        this.$root.message({content: "Arquivo compilado com sucesso", type: MessageType.SUCCESS});
+        this.$emit("message",{content: "Arquivo compilado com sucesso", type: MessageType.SUCCESS});
       });
     },
     deploy() {
@@ -156,7 +156,7 @@ export default {
       }).then((response) => {
         this.isDeploying = false;
         this.boardResponse = response.data;
-        this.$root.message({content: "Arquivo carregado com sucesso!", type: MessageType.SUCCESS});
+        this.$emit("message",{content: "Arquivo carregado com sucesso!", type: MessageType.SUCCESS});
       });
     },
   }

@@ -196,14 +196,14 @@ export default {
   },
   methods: {
     turnOff() {
-      this.$root.message({content: "Desligando sistema", type: MessageType.WARNING});
+      this.$emit("message", {content: "Desligando sistema", type: MessageType.WARNING});
       axios.put("/sysconfig/system/poweroff");
       setTimeout(() => {
         router.push("/");
       }, 2000);
     },
     reset() {
-      this.$root.message({content: "Reiniciando sistema", type: MessageType.WARNING});
+      this.$emit("message", {content: "Reiniciando sistema", type: MessageType.WARNING});
       axios.put("/sysconfig/system/reboot");
       setTimeout(() => {
         router.push("/");
@@ -217,7 +217,7 @@ export default {
       let uploadLibraryInput = this.$refs['upload-library-input'].$refs.input;
 
       if (uploadLibraryInput.value.length === 0 || uploadLibraryInput.files.length === 0) {
-        this.$root.message({content: "Você precisa selecionar um arquivo para importar", type: MessageType.ERROR});
+        this.$emit("message", {content: "Você precisa selecionar um arquivo para importar", type: MessageType.ERROR});
         return;
       }
 
@@ -232,7 +232,7 @@ export default {
         }
       }).then((response) => {
         if (response.data === false) {
-          this.$root.message({
+          this.$emit("message", {
             content: "Não foi possível importar essa biblioteca. Confira seu formato e validade",
             type: MessageType.ERROR
           });
@@ -245,12 +245,13 @@ export default {
       this.isStartingMas = true;
       axios.put("/sysconfig/mas/start").then((response) => {
         if (response.data != null || response.data.length != 0) {
-          this.$root.message({
+          this.$emit("message",)
+          this.$emit("message", {
             content: response.data.message,
             type: MessageType.SUCCESS
           });
         } else {
-          this.$root.message({
+          this.$emit("message", {
             content: "SMA já foi iniciado",
             type: MessageType.WARNING
           });
@@ -264,9 +265,9 @@ export default {
       this.isStopingMas = true;
       axios.put("/sysconfig/mas/stop").then((response) => {
         if (response.data != null || response.data.length != 0) {
-          this.$root.message({content: response.data, type: MessageType.SUCCESS});
+          this.$emit("message", {content: response.data, type: MessageType.SUCCESS});
         } else {
-          this.$root.message({content: "SMA já está parado", type: MessageType.WARNING});
+          this.$emit("message", {content: "SMA já está parado", type: MessageType.WARNING});
         }
         this.isStopingMas = false;
       }).catch(() => {
@@ -277,7 +278,7 @@ export default {
       let masFileInput = this.$refs['mas-file-input'].$refs.input;
 
       if (masFileInput.value.length === 0 || masFileInput.files.length === 0) {
-        this.$root.message({content: "Você precisa selecionar um arquivo para importar", type: MessageType.ERROR});
+        this.$emit("message", {content: "Você precisa selecionar um arquivo para importar", type: MessageType.ERROR});
         return;
       }
 
@@ -307,7 +308,7 @@ export default {
     getBoards() {
       axios.get("/sysconfig/boards").then((response) => {
         console.log(this.response.data);
-        if(response.data == null){
+        if (response.data == null) {
           this.boards = [];
         } else {
           this.boards = response.data;

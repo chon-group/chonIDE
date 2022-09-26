@@ -8,7 +8,7 @@ import Coder from "@/views/Coder.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
-        path: '/',
+        path: '/login',
         name: 'Login',
         component: Login
     },

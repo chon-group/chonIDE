@@ -26,16 +26,11 @@ public class SSHExecutor implements Executor {
     /** Porta para conexão SSH. */
     private int port;
 
-    public SSHExecutor(String username, String password, String hostname, int port) {
+    public SSHExecutor(String username, String password, String hostname) {
         this.username = username;
         this.password = password;
         this.hostname = hostname;
-        this.port = port;
-
-    }
-
-    public static SSHExecutor get(User user, String host) {
-        return new SSHExecutor(user.getUsername(), user.getPassword(), host, DEFAULT_PORT);
+        this.port = DEFAULT_PORT;
     }
 
     /**

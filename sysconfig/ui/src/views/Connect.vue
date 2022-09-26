@@ -174,7 +174,7 @@ export default {
       let password = this.$refs['customized-network-password-input'].$refs.input.value;
 
       if (password.length < 8) {
-        this.$root.message({
+        this.$emit("message",{
           content: "A senha da rede precisa ser igual ou mais que 8 caracteres", type:
           MessageType.ERROR
         });

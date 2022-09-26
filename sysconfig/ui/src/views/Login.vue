@@ -72,6 +72,7 @@ export default {
   },
   setup() {
     PageUtils.setTitle("Entrar");
+    this.$emit("message", {content: "oi", type: MessageType.ERROR})
   },
   beforeUnmount() {
     document.removeEventListener("keypress", this.keyPressListener);
@@ -102,7 +103,7 @@ export default {
   methods: {
     submit() {
       if (this.username.length === 0 || this.password.length === 0) {
-        this.$root.message({content: "O usuário e/ou a senha não podem ser vazios", type: MessageType.ERROR});
+        this.$emit("message", {content: "O usuário e/ou a senha não podem ser vazios", type: MessageType.ERROR});
         return;
       }
 
@@ -121,7 +122,7 @@ export default {
           });
         } else {
           this.loading = false;
-          this.$root.message({content: "Não foi possível conectar ao sistema", type: MessageType.ERROR});
+          this.$emit("message", {content: "Não foi possível conectar ao sistema", type: MessageType.ERROR});
         }
       }).catch(() => {
         this.loading = false;
@@ -132,7 +133,6 @@ export default {
 </script>
 
 <style scoped>
-
 .login {
   height: 100%;
 }

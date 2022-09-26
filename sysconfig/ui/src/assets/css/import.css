@@ -1,3 +1,8 @@
 @import "base/import.css";
 @import "component/import.css";
 @import "util/import.css";
+
+@font-face {
+    src: url("../fonts/nunito-sans/NunitoSans-Regular.ttf");
+    font-family: 'Nunito Sans';
+}

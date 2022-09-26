@@ -25,7 +25,8 @@ public class DomainController extends HttpServlet {
         Executor executor = (Executor) req.getSession().getAttribute("executor");
         if (executor != null) {
             String domain = req.getParameter("domain");
-            executor.execute(ConnectionScriptManager.mountDDNSConfScript(domain));
+            String domainCommand = ConnectionScriptManager.mountDDNSConfScript(domain);
+            executor.execute(domainCommand);
         }
     }
 }

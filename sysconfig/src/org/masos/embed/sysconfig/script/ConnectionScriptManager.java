@@ -9,7 +9,7 @@ public class ConnectionScriptManager {
     private static final String DDNS_MANAGER_COMMAND = "chonosDDNSManager ";
 
     /** Script para configurar o domínio DDNS de acesso ao sistema. */
-    private static final String DDNS_CONF = DDNS_MANAGER_COMMAND + "-o conf -d %s -u %s -t %s";
+    private static final String DDNS_CONF = DDNS_MANAGER_COMMAND + "-o conf -d %s -u \"%s\" -t \"%s\"";
 
     /** Script para status do domínio atual. */
     public static final String DDNS_STATUS = DDNS_MANAGER_COMMAND + "--status";

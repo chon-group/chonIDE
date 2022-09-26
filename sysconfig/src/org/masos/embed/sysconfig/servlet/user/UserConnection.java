@@ -15,6 +15,8 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/users")
 public class UserConnection extends HttpServlet {
 
+    private static final String DEFAULT_HOST = "locahost";
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         Executor executor = (Executor) req.getSession().getAttribute("executor");
@@ -31,7 +33,7 @@ public class UserConnection extends HttpServlet {
         String host = req.getParameter("host");
 
         if (host == null || host.isEmpty()) {
-            host = "localhost";
+            host = DEFAULT_HOST;
         }
 
         User user = new User(username, password);
@@ -41,18 +43,16 @@ public class UserConnection extends HttpServlet {
             Response.build(resp).json().ok(false);
         }
 
-        SSHExecutor sshExecutor = SSHExecutor.get(user, host);
+        SSHExecutor sshExecutor = new SSHExecutor(user.getUsername(), user.getPassword(), host);
         if (sshExecutor.test()) {
             Executor executor;
-            if (!host.equals("localhost")) {
-                executor = sshExecutor;
-            } else {
+            if (host.equals(DEFAULT_HOST)) {
                 executor = new RuntimeExecutor();
+            } else {
+                executor = sshExecutor;
             }
-            if (executor != null) {
-                req.getSession().setAttribute("executor", executor);
-                Response.build(resp).json().ok(true);
-            }
+            req.getSession().setAttribute("executor", executor);
+            Response.build(resp).json().ok(true);
         }
 
         Response.build(resp).json().ok(false);
