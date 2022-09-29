@@ -11,7 +11,7 @@ import java.util.Properties;
 public class SSHConnection {
 
     /** Host default para conexão SSH. */
-    private static final String DEFAULT_HOST = "localhost";
+    private static final String DEFAULT_HOST = "rpi06.bot.chon.group";
 
     /** Porta default para conexão SSH. */
     private static final int DEFAULT_PORT = 22;
