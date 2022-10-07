@@ -1,6 +1,6 @@
 <template>
   <button type="button" class="button" :class="[skinClasses, 'u-row u-align-i-center u-justify-i-center']">
-    <div v-if="skin == null" class="button-background"></div>
+    <div v-if="transparent != null" class="button-background"></div>
     <Loading v-if="isLoading" ratio="16" border-width="3px" aside-color="rgba(255,255,255,0.2)"
              main-color="white"/>
     <img v-else-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)" class="button__icon">
@@ -17,31 +17,45 @@ export default {
   name: 'Button',
   components: {Loading},
   props: {
-    skin: String,
+    transparent: String,
+    underlined: String,
+    navigation: String,
     icon: String,
     iconRatio: String,
     color: String,
-    border: String,
-    isLoading: Boolean
+    rounded: String,
+    noBorder: String,
+    isLoading: Boolean,
+    adjust: String,
+    sidePadding: String
   },
   data() {
     return {
       iconRatioStyle: this.iconRatio != null ? this.iconRatio + "px" : "15px",
       skinClasses: this.mountSkinClasses(),
-      colorStyle: this.color == null ? "var(--pallete-color-main-1)" : this.color
+      colorStyle: this.color == null ? "var(--pallete-color-main-1)" : this.color,
+      sidePaddingStyle: this.sidePadding == null ? 'initial' : this.sidePadding + 'px'
     }
   },
   methods: {
     mountSkinClasses() {
       let classes;
-      if (this.skin === "transparent") {
+      if (this.transparent != null) {
         classes = "is-transparent"
-      } else if (this.skin === "underlined") {
+      } else if (this.underlined != null) {
         classes = "is-underlined";
-      } else if (this.skin === "navigation") {
+      } else if (this.navigation != null) {
         classes = "is-navigation";
       } else {
         classes = "is-filled";
+      }
+
+      if (this.adjust != null) {
+        classes += " is-adjust";
+      }
+
+      if (this.sidePadding != null) {
+        classes += " side-padding";
       }
 
       if (this.icon != null) {
@@ -52,8 +66,10 @@ export default {
         }
       }
 
-      if (this.border === 'rounded') {
+      if (this.border != null) {
         classes += " is-rounded";
+      } else if (this.noBorder != null) {
+        classes += " has-not-border"
       }
 
       return classes;
@@ -71,6 +87,12 @@ export default {
   width: fit-content;
   position: relative;
   overflow: hidden;
+  background-color: v-bind(colorStyle);
+  white-space: nowrap;
+}
+
+.button.has-not-border {
+  border-radius: 0;
 }
 
 .button__icon {
@@ -80,7 +102,6 @@ export default {
 
 .button.is-filled {
   color: var(--pallete-text-main);
-  background-color: v-bind(colorStyle);
   height: var(--action-ratio-1);
   padding: var(--action-padding-1);
 }
@@ -139,6 +160,15 @@ export default {
   padding: 0;
   height: var(--action-ratio-1);
   width: var(--action-ratio-1);
+}
+
+.button.is-adjust {
+  height: 100%;
+}
+
+.button.side-padding {
+  padding-left: v-bind(sidePaddingStyle);
+  padding-right: v-bind(sidePaddingStyle);
 }
 
 </style>

@@ -5,21 +5,21 @@
         <Logo name="sysconfig"/>
         <div class="u-row u-gap-3">
           <router-link to="/domain">
-            <Button skin="navigation" icon="domain.svg">
+            <Button navigation icon="domain.svg">
               <template v-slot:content>
                 Nome do bot
               </template>
             </Button>
           </router-link>
           <router-link to="/connect">
-            <Button skin="navigation" icon="wifi-quality-4.svg" icon-ratio="16">
+            <Button navigation icon="wifi-quality-4.svg" icon-ratio="16">
               <template v-slot:content>
                 Redes
               </template>
             </Button>
           </router-link>
           <a :href="'http://'+this.currentDomain+':3271'" target="_blank">
-            <Button skin="navigation">
+            <Button navigation>
               <template v-slot:content>
                 Logs do SMA
               </template>
@@ -29,12 +29,12 @@
       </div>
       <div class="u-row u-gap-2">
         <div class="u-row u-gap-3">
-          <Button skin="transparent" icon="start.svg" :is-loading="isStartingMas" @click="startMas">
+          <Button transparent icon="start.svg" :is-loading="isStartingMas" @click="startMas">
             <template v-slot:content>
               Iniciar SMA
             </template>
           </Button>
-          <Button skin="transparent" icon="stop.svg" icon-ratio="14" :is-loading="isStopingMas" @click="stopMas">
+          <Button transparent icon="stop.svg" icon-ratio="14" :is-loading="isStopingMas" @click="stopMas">
             <template v-slot:content>
               Parar SMA
             </template>
@@ -60,9 +60,9 @@
           </Popup>
         </div>
         <div class="u-row u-gap-3">
-          <Button icon="turn-off.svg" skin="transparent" border="rounded" @click="turnOff" icon-ratio="16"/>
-          <Button icon="reset.svg" skin="transparent" border="rounded" @click="reset" icon-ratio="16"/>
-          <Button icon="logout.svg" skin="transparent" border="rounded" @click="logout" icon-ratio="16"/>
+          <Button icon="turn-off.svg" transparent rounded @click="turnOff" icon-ratio="16"/>
+          <Button icon="reset.svg" transparent rounded @click="reset" icon-ratio="16"/>
+          <Button icon="logout.svg" transparent rounded @click="logout" icon-ratio="16"/>
         </div>
       </div>
     </header>
@@ -70,7 +70,7 @@
       <div class="manager__boards u-column u-gap-2">
         <div class="u-row u-align-i-center u-justify-i-between">
           <h2 class="is-huge">Placas</h2>
-          <Button icon="refresh.svg" skin="transparent" border="rounded" @click="refreshBoards"/>
+          <Button icon="refresh.svg" transparent rounded @click="refreshBoards"/>
         </div>
         <Loading v-if="isSearchingBoards" :class="'manager__loading'"/>
         <div v-else class="manager__boards__list">
@@ -113,8 +113,8 @@
         <div class="u-row u-align-i-center u-justify-i-between">
           <h2 class="is-huge">Bibliotecas</h2>
           <div class="u-row u-gap-3">
-            <Button icon="upload.svg" skin="transparent" border="rounded" class="upload-library"/>
-            <Button icon="refresh.svg" skin="transparent" border="rounded" @click="refreshLibraries"/>
+            <Button icon="upload.svg" transparent rounded class="upload-library"/>
+            <Button icon="refresh.svg" transparent rounded @click="refreshLibraries"/>
             <Popup title="Importar biblioteca" for="upload-library" ref="pop-up-import-library">
               <template v-slot:content>
                 <div class="u-row u-gap-2">

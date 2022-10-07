@@ -39,12 +39,12 @@
           </div>
         </template>
       </Popup>
-      <Button class="network-manual" skin="transparent">
+      <Button class="network-manual" transparent>
         <template v-slot:content>
           Conectar manualmente
         </template>
       </Button>
-      <Button class="network-customized" skin="transparent">
+      <Button class="network-customized" transparent>
         <template v-slot:content>
           Criar rede própria (AP)
         </template>
@@ -110,7 +110,7 @@
       </div>
     </div>
     <router-link to="/manager" v-if="!isFirstAccess">
-      <Button skin="navigation">
+      <Button navigation>
         <template v-slot:content>
           Voltar para gerenciador
         </template>

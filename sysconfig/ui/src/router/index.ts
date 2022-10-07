@@ -28,7 +28,7 @@ const routes: Array<RouteRecordRaw> = [
         component: Domain
     },
     {
-        path: '/coder',
+        path: '/coder.html',
         name: 'Coder',
         component: Coder
     }

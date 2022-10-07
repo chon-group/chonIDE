@@ -1,7 +1,8 @@
 :root {
-    --pallete-color-black-1: rgb(28, 34, 39);
+    --pallete-color-black-1: rgb(26, 32, 37);
     --pallete-color-black-2: rgb(35, 40, 47);
     --pallete-color-black-3: rgb(47, 54, 63);
+    --pallete-color-black-4: rgb(60, 67, 75);
 
     --pallete-color-main-1: rgb(22, 36, 159);
     --pallete-color-main-2: rgb(35, 52, 187);
@@ -29,6 +30,7 @@
 
     --action-padding-1: 0px 16px;
     --action-ratio-1: 40px;
+    --action-ratio-2: 30px;
 
     --shadow-item-1: 0 2px 1px rgba(0, 0, 0, 0.15);
     --shadow-item-2: 0 2px 1px rgba(0, 0, 0, 1);

@@ -7,7 +7,7 @@
            :type="type"
            :name="name"
            :placeholder="placeholder"
-           class="u-cover" ref="input" autocomplete="off">
+           class="u-width-cover" ref="input" autocomplete="off">
     <label v-else class="input__file-label u-total-center">
       <input type="file" :name="name" @change="mountFileName($event)" ref="input" :accept="accept">
       <span class="input__file-label__fileName">{{ fileName }}</span>

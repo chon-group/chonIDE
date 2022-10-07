@@ -26,7 +26,7 @@
       </Button>
     </div>
     <router-link to="/manager" v-if="!isFirstAccess">
-      <Button skin="navigation">
+      <Button navigation>
         <template v-slot:content>
           Voltar para gerenciador
         </template>

@@ -20,7 +20,7 @@
     gap: var(--ratio-3);
 }
 
-.u-gap-4{
+.u-gap-4 {
     gap: var(--ratio-4);
 }
 
@@ -65,11 +65,22 @@
     align-self: start;
 }
 
-.u-align-i-stretch{
+.u-align-i-stretch {
     align-content: stretch;
 }
 
-.u-cover {
+.u-justify-s-end {
+    justify-self: start;
+}
+
+.u-width-cover {
     width: 100% !important;
 }
 
+.u-height-cover {
+    height: 100% !important;
+}
+
+.u-width-fit {
+    width: fit-content !important;
+}
