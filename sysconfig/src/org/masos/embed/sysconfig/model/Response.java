@@ -1,5 +1,6 @@
 package org.masos.embed.sysconfig.model;
 
+import org.masos.embed.sysconfig.model.dto.DTO;
 import org.masos.embed.sysconfig.model.http.Encoding;
 import org.masos.embed.sysconfig.model.http.HttpContent;
 import org.masos.embed.sysconfig.model.http.HttpStatus;
@@ -45,9 +46,14 @@ public class Response {
         return this;
     }
 
-    public void ok(Object response) {
+    public void ok(DTO response) {
+        this.send(response.toJson(), HttpStatus.OK.getCode());
+    }
+
+    public void ok(String response) {
         this.send(response, HttpStatus.OK.getCode());
     }
+
 
     public void badRequest() {
         this.response.setStatus(HttpStatus.BAD_REQUEST.getCode());
@@ -61,7 +67,7 @@ public class Response {
         this.response.setStatus(HttpStatus.NOT_FOUND.getCode());
     }
 
-    public void send(Object response, int status) {
+    public void send(String response, int status) {
         if (this.response.getCharacterEncoding() == null) {
             this.response.setCharacterEncoding(Encoding.UTF_8.getType());
         }
