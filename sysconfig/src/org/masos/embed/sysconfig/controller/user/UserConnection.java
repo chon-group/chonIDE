@@ -40,7 +40,7 @@ public class UserConnection extends HttpServlet {
         }
 
         SSHExecutor sshExecutor = new SSHExecutor(username, password, host);
-        if (sshExecutor.init()) {
+        if (sshExecutor.test()) {
             Executor executor;
             if (host.equals(DEFAULT_HOST)) {
                 executor = new RuntimeExecutor();

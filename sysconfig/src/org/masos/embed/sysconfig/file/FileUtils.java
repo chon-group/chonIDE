@@ -1,7 +1,6 @@
 package org.masos.embed.sysconfig.file;
 
 import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 import org.masos.embed.sysconfig.file.exception.*;
 
 import java.io.*;
@@ -127,8 +126,9 @@ public class FileUtils {
         try {
             ZipFile zipFile = new ZipFile(folder.getAbsoluteFile() + COMPACTED_FILE_EXTENSION);
             zipFile.addFolder(folder);
+            zipFile.close();
             return zipFile.getFile();
-        } catch (ZipException e) {
+        } catch (IOException e) {
             throw new ErrorZippingFileException(folder.getName(), e);
         }
     }
@@ -182,12 +182,10 @@ public class FileUtils {
 
     public static boolean deleteFile(File file) {
         if (file.isDirectory()) {
-            deleteFolder(file);
+            return deleteFolder(file);
         } else {
-            file.delete();
+            return file.delete();
         }
-
-        return !file.exists();
     }
 
     public static File getFirstFolderInside(File folder) {

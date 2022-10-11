@@ -19,6 +19,7 @@ public class DomainController extends HttpServlet {
             String domain = (String) req.getSession().getAttribute("domain");
             if (domain == null) {
                 domain = executor.execute(ConnectionScriptManager.DDNS_STATUS);
+                req.getSession().setAttribute("domain", domain);
             }
             Response.build(resp).json().ok(domain);
         }

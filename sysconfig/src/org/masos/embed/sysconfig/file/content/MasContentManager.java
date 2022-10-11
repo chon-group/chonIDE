@@ -1,5 +1,7 @@
 package org.masos.embed.sysconfig.file.content;
 
+import org.masos.embed.sysconfig.file.FileConstants;
+import org.masos.embed.sysconfig.file.FileUtils;
 import org.masos.embed.sysconfig.file.exception.ErrorCreatingFileException;
 import org.masos.embed.sysconfig.file.exception.ErrorCreatingFolderException;
 import org.masos.embed.sysconfig.file.exception.ErrorWritingFileContentException;
@@ -8,8 +10,6 @@ import org.masos.embed.sysconfig.file.model.AgentArchClass;
 import org.masos.embed.sysconfig.file.model.Mas;
 import org.masos.embed.sysconfig.model.executor.Executor;
 import org.masos.embed.sysconfig.model.executor.SSHExecutor;
-import org.masos.embed.sysconfig.file.FileConstants;
-import org.masos.embed.sysconfig.file.FileUtils;
 
 import java.io.File;
 import java.util.Arrays;
@@ -27,7 +27,7 @@ public class MasContentManager {
 
     private static final String MAS_DIRECTORY_PATH = FileConstants.TMP_PATH + MAS_DIRECTORY_NAME;
 
-    public static final String MAS_FILE_NAME = MAS_DIRECTORY_PATH + FileUtils.COMPACTED_FILE_EXTENSION;
+    public static final String MAS_BUILD_FILE = MAS_DIRECTORY_PATH + FileUtils.COMPACTED_FILE_EXTENSION;
 
     public static void buildMas(Mas mas, Executor executor) {
         File masDirectory = new File(MAS_DIRECTORY_PATH);

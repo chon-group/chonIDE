@@ -1,10 +1,10 @@
 package org.masos.embed.sysconfig.file.content;
 
+import org.masos.embed.sysconfig.file.FileConstants;
+import org.masos.embed.sysconfig.file.FileUtils;
 import org.masos.embed.sysconfig.file.model.Firmware;
 import org.masos.embed.sysconfig.model.executor.Executor;
 import org.masos.embed.sysconfig.model.executor.SSHExecutor;
-import org.masos.embed.sysconfig.file.FileConstants;
-import org.masos.embed.sysconfig.file.FileUtils;
 
 import javax.servlet.http.Part;
 import java.io.ByteArrayInputStream;
@@ -53,6 +53,11 @@ public class FirmwareContentManager {
     public static boolean isValidSubmittedLibrary(Part submittedLibrary) {
         return submittedLibrary.getSize() > 0 && submittedLibrary.getSubmittedFileName().endsWith(
                 FileUtils.COMPACTED_FILE_EXTENSION);
+    }
+
+    public static boolean wasImported(String importResponse) {
+        return !importResponse.contains("cannot find or open") && !importResponse.contains(
+                "End-of-central-directory signature not found") && importResponse.contains("inflating:");
     }
 
 }

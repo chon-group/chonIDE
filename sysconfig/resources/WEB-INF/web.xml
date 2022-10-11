@@ -8,6 +8,6 @@
     </session-config>
     <error-page>
         <error-code>404</error-code>
-        <location>/login</location>
+        <location>/notfound</location>
     </error-page>
 </web-app>

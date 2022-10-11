@@ -73,7 +73,7 @@ export default {
 }
 
 .pop-up {
-  min-width: var(--container-width-2);
+  width: var(--container-width-2);
   z-index: 10;
 }
 

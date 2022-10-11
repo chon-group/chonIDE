@@ -15,7 +15,7 @@ public class FirmwareScriptManager {
     public static final String ARDUINO_LIST_LIBRARIES = FIRMWARE_MANAGER_COMMAND + "--listLibraries";
 
     /** Script para importação biblioteca para as placas do sistema. */
-    private static final String ARDUINO_IMPORT_LIBRARY = FIRMWARE_MANAGER_COMMAND + "-i %s";
+    private static final String ARDUINO_IMPORT_LIBRARY = FIRMWARE_MANAGER_COMMAND + "-i '%s'";
 
     /** Script para compilar um sketch para uma placa. */
     private static final String ARDUINO_COMPILE_SKETCH = FIRMWARE_MANAGER_COMMAND + "-s tempSketchSysConf -f %s -b %s";

@@ -1,5 +1,6 @@
 <template>
-  <button type="button" class="button" :class="[skinClasses, 'u-row u-align-i-center u-justify-i-center']">
+  <a :href="link != null ? link : ''" :target="link != null ? '_blank' : ''" class="button" :class="[skinClasses,
+  'u-row u-align-i-center u-justify-i-center']" @click="link == null ? $event.preventDefault() : null">
     <div v-if="transparent != null" class="button-background"></div>
     <Loading v-if="isLoading" ratio="14" border-width="1" aside-color="rgba(255,255,255,0.2)"
              main-color="white"/>
@@ -7,7 +8,7 @@
     <span v-if="$slots.content != null">
       <slot name="content"></slot>
     </span>
-  </button>
+  </a>
 </template>
 
 <script>
@@ -27,7 +28,8 @@ export default {
     noBorder: String,
     isLoading: Boolean,
     adjust: String,
-    sidePadding: String
+    sidePadding: String,
+    link: String
   },
   data() {
     return {

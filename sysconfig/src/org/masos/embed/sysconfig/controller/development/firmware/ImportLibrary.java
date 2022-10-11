@@ -19,6 +19,11 @@ import java.io.IOException;
 @MultipartConfig
 public class ImportLibrary extends HttpServlet {
 
+    private static final String FAILED_IMPORT_MESSAGE
+            = "Não foi possível importar, confira se o arquivo está vazio ou é válido";
+
+    private static final String SUCCESS_IMPORT_MESSAGE = "Biblioteca importada dom sucesso";
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Executor executor = (Executor) req.getSession().getAttribute("executor");
@@ -27,23 +32,19 @@ public class ImportLibrary extends HttpServlet {
 
             Response response = Response.build(resp).text();
             if (!FirmwareContentManager.isValidSubmittedLibrary(submittedLibrary)) {
-                response.send("Não foi possível importar a biblioteca, confira a validade da mesma",
-                        HttpStatus.BAD_REQUEST.getCode());
+                response.send(FAILED_IMPORT_MESSAGE, HttpStatus.BAD_REQUEST.getCode());
                 return;
             }
 
             String libraryPath = FirmwareContentManager.buildLibrary(submittedLibrary, executor);
-
             String importResponse = executor.execute(FirmwareScriptManager.mountArduinoImportLibScript(libraryPath));
 
-            if (importResponse.contains("cannot find or open") || importResponse.contains(
-                    "End-of-central-directory signature not found")) {
-                response.send("Não foi possível importar a biblioteca, confira a validade da mesma",
-                        HttpStatus.BAD_REQUEST.getCode());
+            if (!FirmwareContentManager.wasImported(importResponse)) {
+                response.send(FAILED_IMPORT_MESSAGE, HttpStatus.BAD_REQUEST.getCode());
                 return;
             }
 
-            response.ok("Biblioteca importada dom sucesso");
+            response.ok(SUCCESS_IMPORT_MESSAGE);
         }
     }
 }

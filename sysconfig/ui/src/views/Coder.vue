@@ -7,11 +7,6 @@
         </div>
       </template>
     </Popup>
-    <Popup title="Monitor de logs" for="sma-logs-button" v-if="domain != null">
-      <template v-slot:content>
-        <iframe :src="'http://' + domain.domain + ':3271'" class="coder__log-monitor"></iframe>
-      </template>
-    </Popup>
 
     <div class="coder__header u-row u-justify-i-between u-align-i-center">
       <h2 class="coder__header__logo u-row">
@@ -19,7 +14,7 @@
       </h2>
       <div class="u-row u-height-cover">
         <Button transparent no-border adjust side-padding="10" icon-ratio="12" @click="showLogMonitor = true"
-                v-if="domain != null" class="sma-logs-button">
+                v-if="domain != null" class="sma-logs-button" :link="'http://' + domain.domain + ':3271'">
           <template v-slot:content>
             Logs do SMA
           </template>
@@ -126,7 +121,7 @@
           <div class="u-total-center u-height-cover u-width-cover" v-if="loadingLibraries">
             <Loading border-width="2" main-color="var(--pallete-text-main)" ratio="25"/>
           </div>
-          <div class="coder__explorer__item second-level u-row u-align-i-center" v-for="(library, index) in libraries"
+          <div class="coder__explorer__item first-level u-row u-align-i-center" v-for="(library, index) in libraries"
                :key="index">
             <span>{{ library.name }}</span>
           </div>
@@ -194,7 +189,6 @@
 
 <script>
 import PageUtils from "@/assets/js/util/PageUtils";
-import router from "@/router";
 import Button from "@/components/Button";
 import axios from "axios";
 import {MessageType} from "@/assets/js/model/Enums";
@@ -376,7 +370,8 @@ export default {
     stopMas() {
       this.stopingMas = true;
       axios.put("/sysconfig/mas/stop").then((response) => {
-        if (response.data.length !== 0) {
+        console.log(response);
+        if (response.data === '') {
           this.$emit("message", {content: response.data, type: MessageType.SUCCESS});
         } else {
           this.$emit("message", {content: "SMA já foi parado", type: MessageType.WARNING});
@@ -438,6 +433,10 @@ export default {
     importLibrary(event) {
       let files = event.target.files;
       if (files.length === 0) {
+        return;
+      }
+      if (files[0].name.includes(" ")) {
+        this.$emit("message", {content: "O nome do arquivo não pode ter espaço", type: MessageType.ERROR});
         return;
       }
 

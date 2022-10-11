@@ -5,8 +5,6 @@ import org.masos.embed.sysconfig.file.FileUtils;
 import org.masos.embed.sysconfig.file.exception.ErrorSettingResourceInRemoteException;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -75,9 +73,9 @@ public class SSHExecutor extends Executor {
      *
      * @return {@code True} se foi possível estabelecer e {@code false} se não.
      */
-    public boolean init() {
+    public boolean test() {
         Session session = this.connectSession();
-        if (session.isConnected()) {
+        if (session != null) {
             session.disconnect();
             return true;
         } else {
@@ -93,7 +91,7 @@ public class SSHExecutor extends Executor {
             String absoluteResourcePath = resource.getAbsolutePath();
             String remoteResourcePath = getRemoteResourcePath(absoluteResourcePath);
             if (FileUtils.isFile(absoluteResourcePath)) {
-                sftp.put(new FileInputStream(resource), remoteResourcePath, ChannelSftp.OVERWRITE);
+                sftp.put(resource.getAbsolutePath(), remoteResourcePath, ChannelSftp.OVERWRITE);
             } else {
                 List<String> folders = Arrays.stream(remoteResourcePath.split(FILE_REMOTE_SEPARATOR)).filter(
                         folder -> !folder.isEmpty()).collect(Collectors.toList());
@@ -109,8 +107,6 @@ public class SSHExecutor extends Executor {
             }
             sftp.disconnect();
         } catch (JSchException | SftpException e) {
-            throw new ErrorSettingResourceInRemoteException(resource.getName(), e);
-        } catch (FileNotFoundException e) {
             throw new ErrorSettingResourceInRemoteException(resource.getName(), e);
         } finally {
             session.disconnect();
