@@ -73,7 +73,7 @@ export default {
 }
 
 .pop-up {
-  width: var(--container-width-2);
+  min-width: var(--container-width-2);
   z-index: 10;
 }
 
@@ -88,7 +88,7 @@ export default {
   background: url("@/assets/media/icon/close-action.svg") center no-repeat;
   background-size: 40%;
   cursor: pointer;
-  border-radius: var(--border-radius-item);
+  border-radius: var(--border-radius-total);
 }
 
 .pop-up__close-action:hover {

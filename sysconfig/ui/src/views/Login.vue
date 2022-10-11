@@ -27,7 +27,11 @@
     <Popup :title="'Conectando à rede'" type="now" v-if="this.awaitConnection == 'true'" :can-close="false">
       <template v-slot:content>
         <div class="u-column u-gap-2 u-align-i-center" v-if="awaitConnectionCounter != 0">
-          <span>Por favor, aguarde... {{ awaitConnectionCounter }}</span>
+          <span>
+            Por favor, aguarde...
+            <span v-if="currentDomain != null"></span>
+            {{ awaitConnectionCounter }}
+          </span>
           <Loading/>
         </div>
         <div v-else class="u-column u-gap-3 u-align-i-center is-big">
@@ -65,14 +69,13 @@ export default {
       keyPressListener: null,
       awaitConnection: 'false',
       awaitConnectionCounter: 5,
-      currentDomain: '',
+      currentDomain: null,
       useLocalHost: true,
       currentHost: ''
     }
   },
   setup() {
     PageUtils.setTitle("Entrar");
-    this.$emit("message", {content: "oi", type: MessageType.ERROR})
   },
   beforeUnmount() {
     document.removeEventListener("keypress", this.keyPressListener);

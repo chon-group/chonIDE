@@ -1,79 +1,75 @@
 package org.masos.embed.sysconfig.model;
 
-import java.io.Serializable;
+public class ArduinoBoard {
 
-public class ArduinoBoard implements Serializable{
+    private String board;
 
-	private static final long serialVersionUID = 1L;
-	
-	private String name;
-	
-	private String port;
-	
-	private String board;
-	
-	private String sourceCode;
+    private String fqbn;
 
-	private String boardConfig;
+    private String core;
 
-	public ArduinoBoard() {
-		super();
-	}
-	
-	public ArduinoBoard(String name, String port, String board) {
-		super();
-		this.name = name;
-		this.port = port;
-		this.board = board;
-	}
+    private String port;
 
-	public ArduinoBoard(String name, String port, String board, String sourceCode, String boardConfig) {
-		super();
-		this.name = name;
-		this.port = port;
-		this.board = board;
-		this.sourceCode = sourceCode;
-		this.boardConfig = boardConfig;
-	}
-	
-	public String getName() {
-		return name;
-	}
+    public ArduinoBoard(String board, String fqbn, String core, String port) {
+        this.board = board;
+        this.fqbn = fqbn;
+        this.core = core;
+        this.port = port;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * @return {@link #board}
+     */
+    public String getBoard() {
+        return this.board;
+    }
 
-	public String getPort() {
-		return port;
-	}
+    /**
+     * @param board {@link #board}
+     */
+    public void setBoard(String board) {
+        this.board = board;
+    }
 
-	public void setPort(String port) {
-		this.port = port;
-	}
+    /**
+     * @return {@link #fqbn}
+     */
+    public String getFqbn() {
+        return this.fqbn;
+    }
 
-	public String getBoard() {
-		return board;
-	}
+    /**
+     * @param fqbn {@link #fqbn}
+     */
+    public void setFqbn(String fqbn) {
+        this.fqbn = fqbn;
+    }
 
-	public void setBoard(String board) {
-		this.board = board;
-	}
+    /**
+     * @return {@link #core}
+     */
+    public String getCore() {
+        return this.core;
+    }
 
-	public String getSourceCode() {
-		return sourceCode;
-	}
+    /**
+     * @param core {@link #core}
+     */
+    public void setCore(String core) {
+        this.core = core;
+    }
 
-	public void setSourceCode(String sourceCode) {
-		this.sourceCode = sourceCode;
-	}
+    /**
+     * @return {@link #port}
+     */
+    public String getPort() {
+        return this.port;
+    }
 
-	public String getBoardConfig() {
-		return boardConfig;
-	}
-
-	public void setBoardConfig(String boardConfig) {
-		this.boardConfig = boardConfig;
-	}
-
+    /**
+     * @param port {@link #port}
+     */
+    public void setPort(String port) {
+        this.port = port;
+    }
 }

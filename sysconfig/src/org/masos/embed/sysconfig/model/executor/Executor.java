@@ -1,6 +1,6 @@
 package org.masos.embed.sysconfig.model.executor;
 
-public interface Executor {
+public abstract class Executor {
 
     /**
      * Executa um comando no sistema.
@@ -8,6 +8,6 @@ public interface Executor {
      * @param command Comando a ser executado.
      * @return Resposta do comando executado.
      */
-    String execute(String command);
+    public abstract String execute(String command);
 
 }

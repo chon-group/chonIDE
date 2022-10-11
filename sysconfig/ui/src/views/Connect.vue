@@ -154,11 +154,6 @@ export default {
     this.getNetworks();
   },
   setup() {
-    PageUtils.isLogged().then((response) => {
-      if (response === false) {
-        router.push("/");
-      }
-    });
     PageUtils.setTitle("Conectar");
   },
   methods: {
@@ -189,7 +184,7 @@ export default {
         this.isConnecting = false;
         this.$refs['customized-network-pop-up'].close();
         localStorage.setItem("connecting", "true");
-        router.push("/");
+        router.push("/login");
       });
     },
     connectNetwork(networkIndex) {
@@ -204,7 +199,7 @@ export default {
         this.isConnecting = false;
         this.$refs['network'][networkIndex].close();
         localStorage.setItem("connecting", "true");
-        router.push("/");
+        router.push("/login");
       });
     },
     connectManualNetwork() {
@@ -219,7 +214,7 @@ export default {
         this.isConnecting = false;
         this.$refs['manual-network-pop-up'].close();
         localStorage.setItem("connecting", "true");
-        router.push("/");
+        router.push("/login");
       });
     }
   }

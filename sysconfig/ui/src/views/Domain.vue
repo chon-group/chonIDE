@@ -62,11 +62,6 @@ export default {
     }
   },
   setup() {
-    PageUtils.isLogged().then((response) => {
-      if (response.data == false) {
-        router.push("/");
-      }
-    });
     PageUtils.setTitle("Nome do bot");
   },
   mounted() {

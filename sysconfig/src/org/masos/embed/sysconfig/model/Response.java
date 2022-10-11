@@ -1,6 +1,7 @@
 package org.masos.embed.sysconfig.model;
 
-import org.masos.embed.sysconfig.model.dto.DTO;
+import org.masos.embed.sysconfig.controller.JsonManager;
+import org.masos.embed.sysconfig.model.annotation.ResponseObject;
 import org.masos.embed.sysconfig.model.http.Encoding;
 import org.masos.embed.sysconfig.model.http.HttpContent;
 import org.masos.embed.sysconfig.model.http.HttpStatus;
@@ -8,6 +9,8 @@ import org.masos.embed.sysconfig.model.http.HttpStatus;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.List;
 
 public class Response {
 
@@ -31,8 +34,8 @@ public class Response {
         return this;
     }
 
-    public Response status(int status) {
-        this.response.setStatus(status);
+    public Response status(HttpStatus status) {
+        this.response.setStatus(status.getCode());
         return this;
     }
 
@@ -46,14 +49,24 @@ public class Response {
         return this;
     }
 
-    public void ok(DTO response) {
-        this.send(response.toJson(), HttpStatus.OK.getCode());
+    public Response allowAnyOrigin() {
+        this.response.addHeader("Access-Control-Allow-Origin", "*");
+        return this;
     }
 
-    public void ok(String response) {
+    public void ok(Object response) {
+        if (response instanceof List) {
+            Object firstObject = ((Collection) response).toArray()[0];
+            if (firstObject.getClass().getAnnotation(ResponseObject.class) != null) {
+                this.send(JsonManager.get().toJson(response), HttpStatus.OK.getCode());
+                return;
+            }
+        } else if (response.getClass().getAnnotation(ResponseObject.class) != null) {
+            this.send(JsonManager.get().toJson(response), HttpStatus.OK.getCode());
+            return;
+        }
         this.send(response, HttpStatus.OK.getCode());
     }
-
 
     public void badRequest() {
         this.response.setStatus(HttpStatus.BAD_REQUEST.getCode());
@@ -67,14 +80,14 @@ public class Response {
         this.response.setStatus(HttpStatus.NOT_FOUND.getCode());
     }
 
-    public void send(String response, int status) {
+    public void send(Object response, int status) {
         if (this.response.getCharacterEncoding() == null) {
             this.response.setCharacterEncoding(Encoding.UTF_8.getType());
         }
         this.response.setStatus(status);
         try {
             PrintWriter writer = this.response.getWriter();
-            writer.println(response);
+            writer.println(response.toString());
             writer.flush();
             writer.close();
         } catch (IOException e) {

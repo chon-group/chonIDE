@@ -1,7 +1,7 @@
 <template>
   <button type="button" class="button" :class="[skinClasses, 'u-row u-align-i-center u-justify-i-center']">
     <div v-if="transparent != null" class="button-background"></div>
-    <Loading v-if="isLoading" ratio="16" border-width="3px" aside-color="rgba(255,255,255,0.2)"
+    <Loading v-if="isLoading" ratio="14" border-width="1" aside-color="rgba(255,255,255,0.2)"
              main-color="white"/>
     <img v-else-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)" class="button__icon">
     <span v-if="$slots.content != null">

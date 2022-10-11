@@ -39,15 +39,15 @@
               Parar SMA
             </template>
           </Button>
-          <Button icon="upload.svg" class="import-mas" :is-loading="isImportingMas">
+          <Button icon="upload.svg" class="import-projectController" :is-loading="isImportingMas">
             <template v-slot:content>
               Importar SMA
             </template>
           </Button>
-          <Popup title="Importar SMA" for="import-mas" ref="pop-up-import-mas">
+          <Popup title="Importar SMA" for="import-projectController" ref="pop-up-import-projectController">
             <template v-slot:content>
               <div class="u-row u-gap-2">
-                <Input type="file" ref="mas-file-input"/>
+                <Input type="file" ref="projectController-file-input"/>
               </div>
             </template>
             <template v-slot:action>
@@ -174,11 +174,6 @@ export default {
     }
   },
   setup() {
-    PageUtils.isLogged().then((response) => {
-      if (response.data == false) {
-        router.push("/");
-      }
-    });
     PageUtils.setTitle("Gerenciador");
   },
   mounted() {
@@ -243,7 +238,7 @@ export default {
     },
     startMas() {
       this.isStartingMas = true;
-      axios.put("/sysconfig/mas/start").then((response) => {
+      axios.put("/sysconfig/projectController/start").then((response) => {
         if (response.data != null || response.data.length != 0) {
           this.$emit("message",)
           this.$emit("message", {
@@ -263,7 +258,7 @@ export default {
     },
     stopMas() {
       this.isStopingMas = true;
-      axios.put("/sysconfig/mas/stop").then((response) => {
+      axios.put("/sysconfig/projectController/stop").then((response) => {
         if (response.data != null || response.data.length != 0) {
           this.$emit("message", {content: response.data, type: MessageType.SUCCESS});
         } else {
@@ -275,7 +270,7 @@ export default {
       });
     },
     importMas() {
-      let masFileInput = this.$refs['mas-file-input'].$refs.input;
+      let masFileInput = this.$refs['projectController-file-input'].$refs.input;
 
       if (masFileInput.value.length === 0 || masFileInput.files.length === 0) {
         this.$emit("message", {content: "Você precisa selecionar um arquivo para importar", type: MessageType.ERROR});
@@ -285,9 +280,9 @@ export default {
       let formData = new FormData();
       formData.append("file", masFileInput.files[0]);
 
-      this.$refs['pop-up-import-mas'].close();
+      this.$refs['pop-up-import-projectController'].close();
       this.isImportingMas = true;
-      axios.post("/sysconfig/mas/import", formData, {
+      axios.post("/sysconfig/projectController/import", formData, {
         headers: {
           "Content-Type": "multipart/form-data"
         }

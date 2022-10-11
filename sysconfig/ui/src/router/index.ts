@@ -28,7 +28,7 @@ const routes: Array<RouteRecordRaw> = [
         component: Domain
     },
     {
-        path: '/coder.html',
+        path: '/coder',
         name: 'Coder',
         component: Coder
     }
@@ -37,6 +37,6 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
     history: createWebHistory(process.env.BASE_URL),
     routes
-})
+});
 
 export default router

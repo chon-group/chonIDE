@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
-public class RuntimeExecutor implements Executor {
+public class RuntimeExecutor extends Executor {
 
     @Override
     public String execute(String command) {
@@ -20,4 +20,5 @@ public class RuntimeExecutor implements Executor {
         }
         return null;
     }
+
 }

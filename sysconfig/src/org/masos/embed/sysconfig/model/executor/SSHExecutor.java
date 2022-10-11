@@ -1,15 +1,23 @@
 package org.masos.embed.sysconfig.model.executor;
 
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Session;
-import org.masos.embed.sysconfig.model.User;
+import com.jcraft.jsch.*;
+import org.masos.embed.sysconfig.file.FileUtils;
+import org.masos.embed.sysconfig.file.exception.ErrorSettingResourceInRemoteException;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
-public class SSHExecutor implements Executor {
+public class SSHExecutor extends Executor {
+
+    private static final String FILE_REMOTE_SEPARATOR = "/";
+
+    private static final String WINDOWS_PARTITION_SEPARATOR = ":";
 
     /** Porta default para conexão SSH. */
     private static final int DEFAULT_PORT = 22;
@@ -33,6 +41,15 @@ public class SSHExecutor implements Executor {
         this.port = DEFAULT_PORT;
     }
 
+    private static String getRemoteResourcePath(String resourcePath) {
+        String path = resourcePath.replace(File.separator, FILE_REMOTE_SEPARATOR).substring(
+                resourcePath.indexOf(WINDOWS_PARTITION_SEPARATOR) + 1);
+        if (!String.valueOf(path.charAt(0)).equals(FILE_REMOTE_SEPARATOR)) {
+            path = FILE_REMOTE_SEPARATOR + path;
+        }
+        return path;
+    }
+
     /**
      * Estabelece uma sessão SSH para transmissão de dados.
      *
@@ -54,31 +71,60 @@ public class SSHExecutor implements Executor {
     }
 
     /**
-     * Testa a conexão SSH.
+     * Inicia a conexão SSH.
      *
      * @return {@code True} se foi possível estabelecer e {@code false} se não.
      */
-    public boolean test() {
+    public boolean init() {
         Session session = this.connectSession();
-        if (session != null) {
+        if (session.isConnected()) {
             session.disconnect();
             return true;
+        } else {
+            return false;
         }
-        return false;
+    }
+
+    public void setResourceInRemote(File resource) {
+        Session session = this.connectSession();
+        try {
+            ChannelSftp sftp = (ChannelSftp) session.openChannel("sftp");
+            sftp.connect();
+            String absoluteResourcePath = resource.getAbsolutePath();
+            String remoteResourcePath = getRemoteResourcePath(absoluteResourcePath);
+            if (FileUtils.isFile(absoluteResourcePath)) {
+                sftp.put(new FileInputStream(resource), remoteResourcePath, ChannelSftp.OVERWRITE);
+            } else {
+                List<String> folders = Arrays.stream(remoteResourcePath.split(FILE_REMOTE_SEPARATOR)).filter(
+                        folder -> !folder.isEmpty()).collect(Collectors.toList());
+                String resultPath = FILE_REMOTE_SEPARATOR;
+                for (int i = 0; i < folders.size(); i++) {
+                    resultPath += folders.get(i) + FILE_REMOTE_SEPARATOR;
+                    try {
+                        sftp.cd(resultPath);
+                    } catch (SftpException e) {
+                        sftp.mkdir(resultPath);
+                    }
+                }
+            }
+            sftp.disconnect();
+        } catch (JSchException | SftpException e) {
+            throw new ErrorSettingResourceInRemoteException(resource.getName(), e);
+        } catch (FileNotFoundException e) {
+            throw new ErrorSettingResourceInRemoteException(resource.getName(), e);
+        } finally {
+            session.disconnect();
+        }
     }
 
     @Override
     public String execute(String command) {
         Session session = this.connectSession();
-        if (session == null) {
-            return null;
-        }
-
         try {
-            Channel channel = session.openChannel("exec");
-            ((ChannelExec) channel).setCommand(command);
+            ChannelExec channel = (ChannelExec) session.openChannel("exec");
+            channel.setCommand(command);
             channel.setInputStream(null);
-            ((ChannelExec) channel).setErrStream(System.err);
+            channel.setErrStream(System.err);
 
             InputStream in = channel.getInputStream();
             channel.connect();
@@ -102,13 +148,12 @@ public class SSHExecutor implements Executor {
             }
 
             channel.disconnect();
-            return output.replace("\n", "");
+            return output.replace(FileUtils.NEW_LINE, "");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             session.disconnect();
         }
-
         return null;
     }
 }

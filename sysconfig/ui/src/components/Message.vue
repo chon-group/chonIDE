@@ -43,8 +43,7 @@ export default {
   filter: drop-shadow(var(--shadow-item-1));
   font-weight: 600;
   white-space: nowrap;
-  height: var(--action-ratio-1);
-  padding: var(--action-padding-1);
+  padding: var(--ratio-3) var(--ratio-3);
   position: relative;
 }
 

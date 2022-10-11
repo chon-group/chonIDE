@@ -1,10 +1,15 @@
 <template>
   <div class="coder u-column">
-    <Popup title="Resultado" v-if="boardResponse != null" type="now">
+    <Popup :title="'Compilado para ' + currentBoard.board" v-if="boardResponse != null" type="now">
       <template v-slot:content>
-        <div class="manager__compiled-response is-small">
+        <div class="coder__compiled-response is-small">
           {{ boardResponse }}
         </div>
+      </template>
+    </Popup>
+    <Popup title="Monitor de logs" for="sma-logs-button" v-if="domain != null">
+      <template v-slot:content>
+        <iframe :src="'http://' + domain.domain + ':3271'" class="coder__log-monitor"></iframe>
       </template>
     </Popup>
 
@@ -13,14 +18,28 @@
         chonIDE
       </h2>
       <div class="u-row u-height-cover">
-        <Button icon="start.svg" transparent no-border adjust side-padding="10" icon-ratio="12">
+        <Button transparent no-border adjust side-padding="10" icon-ratio="12" @click="showLogMonitor = true"
+                v-if="domain != null" class="sma-logs-button">
+          <template v-slot:content>
+            Logs do SMA
+          </template>
+        </Button>
+        <Button icon="start.svg" transparent no-border adjust side-padding="10" icon-ratio="12" @click="startMas"
+                :is-loading="startingMas">
           <template v-slot:content>
             Iniciar SMA
           </template>
         </Button>
-        <Button icon="stop.svg" transparent no-border adjust side-padding="10" icon-ratio="12">
+        <Button icon="stop.svg" transparent no-border adjust side-padding="10" icon-ratio="12" @click="stopMas"
+                :is-loading="stopingMas">
           <template v-slot:content>
             Parar SMA
+          </template>
+        </Button>
+        <Button icon="upload.svg" transparent no-border adjust side-padding="10" @click="importMas" icon-ratio="12"
+                :is-loading="importingMas">
+          <template v-slot:content>
+            Importar SMA
           </template>
         </Button>
       </div>
@@ -28,8 +47,20 @@
 
     <div class="u-row">
       <div class="coder__explorer u-column">
-        <input type="text" class="coder__explorer__project-name" v-model="masName"
-               placeholder="Nome do projeto" ref="masName">
+        <div class="coder__header-bar coder__explorer__project-name u-row">
+          <input type="text" v-model="projectName"
+                 placeholder="Nome do projeto" ref="masName">
+          <div class="coder__project-status is-aside">
+            <div v-if="savingProject" class="u-row u-gap-3">
+              <Loading border-width="1" ratio="14" main-color="var(--pallete-text-main)"/>
+              Salvando projeto
+            </div>
+            <div v-else class="u-row u-gap-3">
+              <img src="@/assets/media/icon/check.svg" style="width: 13px">
+              Projeto salvo
+            </div>
+          </div>
+        </div>
         <div class="coder__explorer__main">
           <span class="coder__explorer__item first-level u-row u-align-i-center" @click="masOpen = !masOpen">
             <img src="@/assets/media/icon/toggle.svg" class="coder__explorer__item__toggle"
@@ -43,21 +74,21 @@
                   'open' : ''">
                 <span>Agentes</span>
               </div>
-              <button class="coder__explorer__action coder__explorer__item__add" @click="addAgentFile"></button>
+              <button class="coder__action is-add" @click="addAgentFile"></button>
             </div>
-            <div v-for="(agent,index) in agentFiles" :key="index"
+            <div v-for="(agent,index) in agents" :key="index"
                  class="coder__explorer__item third-level u-row u-align-i-center u-gap-3" v-show="agentsOpen">
               <div class="u-height-cover u-width-cover u-row u-align-i-center u-gap-3" @click="showAgentFile(index)">
                 <span class="coder__explorer__item__icon">Ag</span>
-                <select class="coder__explorer__item__agent-type coder__explorer__action">
-                  <option v-for="(type, index) in agentTypes" :key="index" value="type"
-                          :selected="agent.type === type ? true : false">
+                <select class="is-agent-type coder__action" v-model="agent.archClass">
+                  <option v-for="(type, index) in agentTypes" :key="index" :value="type"
+                          :selected="agent.archClass === type">
                     {{ type }}
                   </option>
                 </select>
                 <span class="coder__explorer__item__name">{{ agent.name }}</span>
               </div>
-              <button class="coder__explorer__action coder__explorer__item__remove"
+              <button class="coder__action is-remove"
                       @click="removeAgentFile(index)" v-if="index !== 0">
               </button>
             </div>
@@ -67,33 +98,37 @@
           'open' : ''">
                 <span>Firmwares</span>
               </div>
-              <button class="coder__explorer__action coder__explorer__item__add" @click="addFirmwareFile"></button>
+              <button class="coder__action is-add" @click="addFirmwareFile"></button>
             </div>
-            <div v-for="(firmware,index) in firmwareFiles" :key="index"
+            <div v-for="(firmware,index) in firmwares" :key="index"
                  class="coder__explorer__item third-level u-row u-align-i-center u-gap-3" v-show="firmwaresOpen">
               <div class="u-height-cover u-width-cover u-row u-align-i-center u-gap-3" @click="showFirmwareFile(index)">
                 <span class="coder__explorer__item__icon">C++</span>
                 <span class="coder__explorer__item__name">{{ firmware.name }}</span>
               </div>
-              <button class="coder__explorer__action coder__explorer__item__remove"
+              <button class="coder__action is-remove"
                       @click="removeFirmwareFile(index)" v-if="index !== 0"></button>
             </div>
           </div>
         </div>
         <div class="coder__explorer__libraries">
-          <div class="coder__explorer__item first-level u-row u-align-i-center">
-            <span class="u-height-cover u-width-cover u-row u-align-i-center" @click="librariesOpen =
-              !librariesOpen">
-              <img src="@/assets/media/icon/toggle.svg" class="coder__explorer__item__toggle"
-                   :class="librariesOpen ? 'open' : ''">
-              <span>Bibliotecas</span>
+          <div class="coder__header-bar u-row u-justify-i-between">
+            <span class="coder__header-bar__title">
+              Bibliotecas
             </span>
-            <div class="u-row u-width-fit">
-              <input type="file" style="display: none" id="add-library" @change="addLibrary($event)">
-              <label type="file" class="coder__explorer__action coder__explorer__item__add"
+            <div class="u-row u-width-fit u-height-cover">
+              <input type="file" style="display: none" id="add-library" @change="importLibrary($event)" accept=".zip">
+              <label type="file" class="coder__action is-add"
                      for="add-library"></label>
-              <span class="coder__explorer__action coder__explorer__item__refresh"></span>
+              <div class="coder__action is-refresh" @click="loadLibraries(true)"></div>
             </div>
+          </div>
+          <div class="u-total-center u-height-cover u-width-cover" v-if="loadingLibraries">
+            <Loading border-width="2" main-color="var(--pallete-text-main)" ratio="25"/>
+          </div>
+          <div class="coder__explorer__item second-level u-row u-align-i-center" v-for="(library, index) in libraries"
+               :key="index">
+            <span>{{ library.name }}</span>
           </div>
         </div>
       </div>
@@ -103,14 +138,14 @@
                  placeholder="Nome do arquivo"
                  v-model="currentFile.name"/>
           <div class="u-row">
-            <Button v-if="currentFile.fileType === 2" icon="upload.svg" transparent adjust icon-ratio="12"
-                    no-border side-padding="10" no-pointer>
+            <Button v-if="firmwareFileIsOpen" icon="upload.svg" transparent adjust icon-ratio="12"
+                    no-border side-padding="10" no-pointer @click="compileSketch" :is-loading="compilingSketch">
               <template v-slot:content>
                 Compilar
               </template>
             </Button>
-            <Button v-if="currentFile.fileType === 2" icon="white-circle.svg" transparent adjust icon-ratio="12"
-                    no-border side-padding="10" no-pointer>
+            <Button v-if="firmwareFileIsOpen" icon="white-circle.svg" transparent adjust icon-ratio="12"
+                    no-border side-padding="10" no-pointer @click="deploySketch" :is-loading="deployingSketch">
               <template v-slot:content>
                 Deploy
               </template>
@@ -121,7 +156,34 @@
           <div class="coder__writer__lines u-column" ref="coderLines">
             <div v-for="index in lineQuantity" :key="index" class="coder__writer__line">{{ index }}</div>
           </div>
-          <textarea class="coder__writer__text" ref="coder" v-model="currentFile.code" spellcheck="false"></textarea>
+          <textarea class="coder__writer__text" ref="coder" v-model="currentFile.sourceCode"
+                    spellcheck="false"></textarea>
+        </div>
+      </div>
+      <div class="coder__boards u-column" v-if="firmwareFileIsOpen">
+        <div class="coder__header-bar u-row u-justify-i-between">
+          <span class="coder__header-bar__title">Placas disponíveis</span>
+          <div class="coder__action is-refresh" @click="loadBoards(true)" style="background-size: 45%"></div>
+        </div>
+        <div class="u-total-center u-height-cover u-width-cover" v-if="loadingBoards">
+          <Loading border-width="2" main-color="var(--pallete-text-main)" ratio="25"/>
+        </div>
+        <div class="u-total-center u-height-cover u-width-cover" v-else-if="boards.length === 0 && !loadingBoards">
+          <span class="is-aside">Não foram encontradas placas disponíveis</span>
+        </div>
+        <div class="coder__board u-column u-justify-i-between"
+             v-else
+             v-for="(board, index) in boards" :key="index"
+             @click="currentBoard = board"
+        >
+          <div class="u-row u-justify-i-between">
+            <span class="u-column">
+              <span>{{ board.board }}</span>
+              <span class="is-aside">{{ board.fqbn }}</span>
+            </span>
+            <div class="coder__board__select" :class="board === currentBoard ? 'is-selected' : ''"></div>
+          </div>
+          <span class="is-aside">{{ board.port }}</span>
         </div>
       </div>
     </div>
@@ -134,65 +196,98 @@
 import PageUtils from "@/assets/js/util/PageUtils";
 import router from "@/router";
 import Button from "@/components/Button";
+import axios from "axios";
+import {MessageType} from "@/assets/js/model/Enums";
+import Loading from "@/components/Loading";
+import Popup from "@/components/Popup";
 
 const LINE_BREAK_CHAR = "\n", TAB_CHAR = "\t", POS_CHAR = "$";
 const CODER_DIFF_HEIGHT = 18;
-const AGENT_TYPE_ARGO = "Argo", AGENT_TYPE_JASON = "Jason", AGENT_TYPE_COMMUNICATOR = "Comunicador";
+const AGENT_TYPE_ARGO = "Argo", AGENT_TYPE_JASON = "Jason", AGENT_TYPE_COMMUNICATOR = "Communicator";
 const AGENT_DEFAULT_FILE_NAME = "Agente", FIRMWARE_DEFAULT_FILE_NAME = "sketch";
-const FILE_TYPE_AGENT = 1, FILE_TYPE_FIRMWARE = 2;
 
 export default {
   name: "Coder",
-  components: {Button},
+  components: {Loading, Button, Popup},
   data() {
     return {
-      masName: "Projeto SMA",
-      currentFile: {name: "", code: "", fileType: FILE_TYPE_AGENT},
-      agentFiles: [],
-      firmwareFiles: [],
+      projectName: "",
+      currentFile: {},
+      currentBoard: null,
+      firmwareFileIsOpen: false,
+      domain: null,
+      agents: [],
+      firmwares: [],
+      boards: [],
+      libraries: [],
       masOpen: true,
       agentsOpen: true,
       firmwaresOpen: true,
-      librariesOpen: true,
       agentTypes: [AGENT_TYPE_ARGO, AGENT_TYPE_JASON, AGENT_TYPE_COMMUNICATOR],
-      boardResponse: null
+      boardResponse: null,
+      savingProject: false,
+      importingMas: false,
+      startingMas: false,
+      stopingMas: false,
+      compilingSketch: false,
+      deployingSketch: false,
+      loadingBoards: false,
+      loadingLibraries: false,
+      showLogMonitor: false
+    }
+  },
+  watch: {
+    agents: {
+      handler() {
+        this.saveProject();
+      },
+      deep: true
+    },
+    firmwares: {
+      handler() {
+        this.saveProject();
+      },
+      deep: true
+    },
+    projectName(newValue) {
+      this.projectName = newValue.replace("-", "").replace(" ", "");
+      this.saveProject();
     }
   },
   computed: {
     lineQuantity() {
-      if (this.currentFile.code === '') {
+      try {
+        if (this.currentFile.sourceCode === '') {
+          return 1;
+        }
+        return this.currentFile.sourceCode.split(LINE_BREAK_CHAR).length;
+      } catch (error) {
         return 1;
       }
-      return this.currentFile.code.split(LINE_BREAK_CHAR).length;
     }
   },
   setup() {
-    PageUtils.isLogged().then((response) => {
-      if (response.data == false) {
-        router.push("/");
-      }
-    });
     PageUtils.setTitle("Criando SMA");
   },
   mounted() {
-    this.agentFiles = [
-      {
-        name: "Agente 1",
-        type: AGENT_TYPE_JASON,
-        code: "",
-        fileType: FILE_TYPE_AGENT
-      }
-    ];
-    this.firmwareFiles = [
-      {
-        name: "sketch 1",
-        code: "",
-        fileType: FILE_TYPE_FIRMWARE
-      }
-    ];
+    axios.get("/sysconfig/projects").then((response) => {
+      this.agents = response.data.agents;
+      this.firmwares = response.data.firmwares;
+      this.projectName = response.data.name;
+      this.currentFile = this.agents[0];
+    });
 
-    // Carregando conteúdos dinâmicos.
-    this.currentFile = this.agentFiles[0];
+    axios.get("/sysconfig/domains").then((response) => {
+      this.domain = response.data;
+    });
+
+    this.loadBoards(false).then(() => {
+      if (this.boards.length !== 0) {
+        this.currentBoard = this.boards[0];
+      }
+    });
+
+    this.loadLibraries(false);
 
     // Implementação do codador.
     this.$refs.coder.addEventListener("keydown", (event) => {
@@ -217,18 +312,187 @@ export default {
     });
   },
   methods: {
+    projectIsInvalid() {
+      if (this.projectName.length === 0) {
+        this.$emit("message", {content: "O nome do projeto não pode ser vazio", type: MessageType.ERROR});
+        return true;
+      }
+      return false;
+    },
+    compileSketch() {
+      if (this.currentBoard == null) {
+        this.$emit("message", {content: "Não existe nenhuma placa selecionada", type: MessageType.WARNING});
+        return;
+      }
+      this.compilingSketch = true;
+      axios.post("/sysconfig/sketchs/compile", {}, {
+        params: {
+          boardName: this.currentBoard.fqbn,
+          code: this.currentFile.sourceCode
+        }
+      }).then((response) => {
+        this.boardResponse = response.data;
+        this.compilingSketch = false;
+      });
+    },
+    deploySketch() {
+      if (this.currentBoard == null) {
+        this.$emit("message", {content: "Não existe nenhuma placa selecionada", type: MessageType.WARNING});
+        return;
+      }
+      this.deployingSketch = true;
+      axios.post("/sysconfig/sketchs/deploy", {}, {
+        params: {
+          serialPort: this.currentBoard.port,
+          boardName: this.currentBoard.fqbn
+        }
+      }).then((response) => {
+        this.boardResponse = response.data;
+        this.deployingSketch = false;
+      });
+    },
+    saveProject() {
+      this.savingProject = true;
+      return axios.put("/sysconfig/projects", {
+        name: this.projectName,
+        agents: this.agents,
+        firmwares: this.firmwares
+      }).then(() => {
+        setTimeout(() => {
+          this.savingProject = false;
+        }, 100);
+      });
+    },
+    startMas() {
+      this.startingMas = true;
+      axios.put("/sysconfig/mas/start").then((response) => {
+        this.$emit("message", {
+          content: response.data.message,
+          type: MessageType.SUCCESS
+        });
+        this.startingMas = false;
+      });
+    },
+    stopMas() {
+      this.stopingMas = true;
+      axios.put("/sysconfig/mas/stop").then((response) => {
+        if (response.data.length !== 0) {
+          this.$emit("message", {content: response.data, type: MessageType.SUCCESS});
+        } else {
+          this.$emit("message", {content: "SMA já foi parado", type: MessageType.WARNING});
+        }
+        this.stopingMas = false;
+      });
+    },
+    importMas() {
+      if (this.projectIsInvalid()) {
+        return;
+      }
+      this.importingMas = true;
+      this.saveProject().then(() => {
+        axios.post("/sysconfig/mas/import", {
+          name: this.projectName,
+          agents: this.agents
+        }).then(() => {
+          this.$emit("message", {content: "SMA importado com sucesso", type: MessageType.SUCCESS});
+          this.importingMas = false;
+        });
+      });
+    },
+    removeAgentFile(index) {
+      if (this.currentFile === this.agents[index]) {
+        this.currentFile = this.agents[index - 1];
+      }
+      this.agents.splice(index, 1);
+    },
+    removeFirmwareFile(index) {
+      if (this.currentFile === this.firmwares[index]) {
+        this.currentFile = this.firmwares[index - 1];
+      }
+      this.firmwares.splice(index, 1);
+    },
+    showAgentFile(index) {
+      this.currentFile = this.agents[index];
+      this.firmwareFileIsOpen = false;
+    },
+    showFirmwareFile(index) {
+      this.currentFile = this.firmwares[index];
+      this.firmwareFileIsOpen = true;
+    },
+    addFirmwareFile() {
+      this.firmwares.push({
+        name: FIRMWARE_DEFAULT_FILE_NAME + " " + (this.firmwares.length + 1),
+        sourceCode: "void setup() {\n"
+            + "  // put your setup code here, to run once:\n" + "\n" + "}\n" + "\n" + "void loop() {\n"
+            + "  // put your main code here, to run repeatedly:\n" + "\n" + "}",
+      });
+    },
+    addAgentFile() {
+      this.agents.push({
+        name: AGENT_DEFAULT_FILE_NAME + " " + (this.agents.length + 1),
+        archClass: AGENT_TYPE_JASON,
+        sourceCode: "/* Initial beliefs and rules */\n" + "\n" + "/* Initial goals */\n" + "\n" + "!start.\n" + "\n"
+            + "/* Plans */\n" + "\n" + "+!start <- .print(\"Hello world!\").",
+      });
+    },
+    importLibrary(event) {
+      let files = event.target.files;
+      if (files.length === 0) {
+        return;
+      }
+
+      this.loadingLibraries = true;
+      axios.post("/sysconfig/libraries/import", {file: files[0]}, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      }).then((response) => {
+        if (response.status === 200) {
+          this.$emit("message", {
+            content: response.data,
+            type: MessageType.SUCCESS
+          });
+          this.loadLibraries(true).then(() => {
+            this.loadingLibraries = true;
+          });
+        } else {
+          this.$emit("message", {
+            content: response.data,
+            type: MessageType.ERROR
+          });
+          this.loadingLibraries = true;
+        }
+      });
+    },
+    loadLibraries(refresh) {
+      this.loadingLibraries = true;
+      return axios.get("/sysconfig/libraries", {params: {refresh: refresh}}).then((response) => {
+        this.libraries = response.data;
+      }).then(() => {
+        this.loadingLibraries = false;
+      });
+    },
+    loadBoards(refresh) {
+      this.currentBoard = null;
+      this.loadingBoards = true;
+      return axios.get("/sysconfig/boards", {params: {refresh: refresh}}).then((response) => {
+        this.boards = response.data;
+        this.loadingBoards = false;
+        this.currentBoard = this.boards[0];
+      });
+    },
     write(event, text, setPositionInner) {
       event.preventDefault();
       setTimeout(() => {
         let selectionStart = this.$refs.coder.selectionStart;
-        let beforeText = this.currentFile.code.substring(0, selectionStart);
-        let afterText = this.currentFile.code.substring(selectionStart);
-        this.currentFile.code = beforeText + text + afterText;
+        let beforeText = this.currentFile.sourceCode.substring(0, selectionStart);
+        let afterText = this.currentFile.sourceCode.substring(selectionStart);
+        this.currentFile.sourceCode = beforeText + text + afterText;
         let selectionPosition;
 
         if (setPositionInner) {
-          selectionPosition = this.currentFile.code.indexOf(POS_CHAR);
-          this.currentFile.code = this.currentFile.code.replace(POS_CHAR, "");
+          selectionPosition = this.currentFile.sourceCode.indexOf(POS_CHAR);
+          this.currentFile.sourceCode = this.currentFile.sourceCode.replace(POS_CHAR, "");
         } else {
           selectionPosition = selectionStart + text.length;
         }
@@ -237,42 +501,6 @@ export default {
         }, 0)
       }, 0);
     },
-    removeAgentFile(index) {
-      if (this.currentFile === this.agentFiles[index]) {
-        this.currentFile = this.agentFiles[index - 1];
-      }
-      this.agentFiles.splice(index, 1);
-    },
-    removeFirmwareFile(index) {
-      if (this.currentFile === this.firmwareFiles[index]) {
-        this.currentFile = this.firmwareFiles[index - 1];
-      }
-      this.firmwareFiles.splice(index, 1);
-    },
-    showAgentFile(index) {
-      this.currentFile = this.agentFiles[index];
-    },
-    showFirmwareFile(index) {
-      this.currentFile = this.firmwareFiles[index];
-    },
-    addFirmwareFile() {
-      this.firmwareFiles.push({
-        name: FIRMWARE_DEFAULT_FILE_NAME + " " + (this.firmwareFiles.length + 1),
-        code: "",
-        fileType: FILE_TYPE_FIRMWARE
-      });
-    },
-    addAgentFile() {
-      this.agentFiles.push({
-        name: AGENT_DEFAULT_FILE_NAME + " " + (this.agentFiles.length + 1),
-        type: AGENT_TYPE_JASON,
-        code: "",
-        fileType: FILE_TYPE_AGENT
-      });
-    },
-    addLibrary(input) {
-      console.log(input);
-    }
   }
 }
 </script>
@@ -295,8 +523,22 @@ export default {
   --base-font-size: 11px;
   --file-name-selected-height: 4px;
   --bar-height: calc(var(--base-height) + var(--file-name-selected-height));
+  font-size: 11px;
   width: 100vw;
   height: 100vh;
+}
+
+.coder__log-monitor {
+  height: 500px;
+  min-width: 1000px;
+  border: 0;
+  border-radius: var(--border-radius-item);
+}
+
+.coder__compiled-response {
+  padding: var(--ratio-3);
+  background-color: var(--pallete-color-black-3);
+  border-radius: var(--border-radius-item);
 }
 
 .coder *:not(input, textarea) {
@@ -304,15 +546,14 @@ export default {
 }
 
 .coder__header {
-  padding: 0 var(--ratio-3);
   background-color: var(--pallete-color-black-3);
   border-bottom: 1px solid var(--pallete-color-black-1);
   height: var(--bar-height);
-  font-size: var(--base-font-size);
 }
 
 .coder__header__logo {
   font-size: 14px;
+  margin-left: var(--ratio-3);
 }
 
 .coder__coding {
@@ -324,19 +565,22 @@ export default {
   width: 100%;
   height: calc(var(--base-height) + var(--file-name-selected-height));
   background-color: var(--pallete-color-black-2);
-  font-size: var(--base-font-size);
-  padding-right: var(--ratio-3);
   border-bottom: 1px solid var(--pallete-color-black-1);
+}
+
+.coder__project-status {
+  margin: auto 0 auto auto;
+  user-select: none;
 }
 
 .coder__coding__file-name {
   border: 0;
   padding: var(--ratio-4) var(--ratio-3);
   color: var(--pallete-text-main);
-  height: var(--base-height);
+  height: calc(var(--base-height) + var(--file-name-selected-height) - 1px);
   width: 125px;
   background-color: var(--pallete-color-black-3);
-  box-shadow: 0 calc(var(--file-name-selected-height) - 1px) var(--pallete-color-main-2);
+  border-bottom: var(--file-name-selected-height) solid var(--pallete-color-main-2);
 }
 
 .coder__coding__file-name:hover {
@@ -352,12 +596,13 @@ export default {
   height: calc(100vh - calc(2 * var(--bar-height)));
   overflow-y: scroll;
   font-size: var(--text-size-little);
+  --writer-font-size: 12px;
 }
 
 .coder__writer__lines {
   min-height: 100%;
   height: fit-content;
-  width: 100px;
+  min-width: 90px;
   background-color: var(--pallete-color-black-2);
   padding: var(--ratio-2) 0;
   color: var(--pallete-text-aside);
@@ -365,6 +610,7 @@ export default {
 }
 
 .coder__writer__line {
+  font-size: var(--writer-font-size);
   text-align: left;
   padding-left: var(--ratio-2);
 }
@@ -381,14 +627,14 @@ export default {
   letter-spacing: 1px;
   font-weight: 1000;
   overflow-y: hidden;
+  font-size: var(--writer-font-size);
 }
 
 /* Lateral */
 
 .coder__explorer {
-  width: var(--explorer-width);
+  min-width: var(--explorer-width);
   background-color: var(--pallete-color-black-2);
-  font-size: var(--base-font-size);
   --libraries-height: 250px;
 }
 
@@ -397,17 +643,35 @@ export default {
   height: calc(100vh - var(--bar-height) - var(--libraries-height));
 }
 
-.coder__explorer__project-name {
+.coder__header-bar {
   background-color: var(--pallete-color-black-3);
-  border: 0;
   border-bottom: 1px solid var(--pallete-color-black-1);
+  min-height: var(--bar-height);
   height: var(--bar-height);
+}
+
+.coder__header-bar__title {
+  margin: auto auto auto var(--ratio-3);
+}
+
+.coder__explorer__project-name {
+  padding-right: var(--ratio-3);
+}
+
+.coder__explorer__project-name > input {
+  background-color: transparent;
+  border: 0;
   padding: 0 var(--ratio-3);
   color: var(--pallete-text-main);
+  flex-grow: 1;
 }
 
 .coder__explorer__project-name:hover {
   background-color: var(--pallete-color-black-4);
+}
+
+.coder__explorer__project-name:hover > .coder__project-status {
+  display: none;
 }
 
 .coder__explorer__project-name:focus {
@@ -419,6 +683,7 @@ export default {
   height: var(--base-height);
   flex-shrink: 0;
   user-select: none;
+  padding-right: var(--ratio-3);
 }
 
 .coder__explorer__item__toggle {
@@ -436,25 +701,25 @@ export default {
 }
 
 .coder__explorer__item.first-level {
-  padding: 0 var(--ratio-3);
+  padding-left: 10px;
 }
 
 .coder__explorer__item.second-level {
-  padding: 0 var(--ratio-2);
+  padding-left: 30px;
 }
 
 .coder__explorer__item.third-level {
-  padding: 0 var(--ratio-1);
+  padding-left: 50px;
 }
 
-.coder__explorer__action {
+.coder__action {
   display: grid;
   place-items: center;
   border: 0;
-  height: var(--base-height);
+  height: 100%;
 }
 
-.coder__explorer__item__agent-type {
+.coder__action.is-agent-type {
   text-align: left;
   color: var(--pallete-text-main);
   background-color: var(--pallete-color-black-3);
@@ -473,9 +738,10 @@ export default {
   font-weight: 1000;
   font-size: var(--text-size-little);
   color: var(--pallete-text-aside);
+  width: 15px;
 }
 
-.coder__explorer__item__remove {
+.coder__action.is-remove {
   opacity: 0;
   margin-left: auto;
   background: url("@/assets/media/icon/remove.svg") center transparent no-repeat;
@@ -483,29 +749,59 @@ export default {
   aspect-ratio: 1/1;
 }
 
-.coder__explorer__item:hover > .coder__explorer__item__remove {
+.coder__explorer__item:hover > .is-remove {
   opacity: 1;
 }
 
-.coder__explorer__action:hover {
-  background-color: var(--pallete-color-black-4);
-}
-
-.coder__explorer__item__add {
+.coder__action.is-add {
   background: url("@/assets/media/icon/add.svg") center transparent no-repeat;
   background-size: 50%;
   aspect-ratio: 1/1;
 }
 
-.coder__explorer__item__refresh {
+.coder__action.is-refresh {
   background: url("@/assets/media/icon/refresh.svg") center transparent no-repeat;
   background-size: 50%;
   aspect-ratio: 1/1;
 }
 
+.coder__action:hover {
+  background-color: var(--pallete-color-black-4);
+}
+
 .coder__explorer__libraries {
   border-top: 1px solid var(--pallete-color-black-1);
   height: calc(var(--libraries-height) - calc(2 * var(--bar-height)));
+}
+
+/** Placas */
+
+.coder__boards {
+  width: 350px;
+  background-color: var(--pallete-color-black-2);
+  border-left: 1px solid var(--pallete-color-black-1);
+  height: calc(100vh - var(--bar-height));
+  overflow-y: auto;
+}
+
+.coder__board {
+  height: 75px;
+  padding: var(--ratio-3);
+}
+
+.coder__board:hover {
+  background-color: var(--pallete-color-black-3);
+}
+
+.coder__board__select {
+  height: 15px;
+  aspect-ratio: 1/1;
+  border-radius: var(--border-radius-total);
+  border: 2px solid var(--pallete-color-black-4);
+}
+
+.coder__board__select.is-selected {
+  background-color: var(--pallete-color-main-1);
 }
 
 </style>

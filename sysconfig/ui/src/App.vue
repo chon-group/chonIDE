@@ -3,7 +3,7 @@
     <div class="response u-column u-gap-3" ref="response">
       <Message v-for="(message, index) in messages" :key="index" :message="message"/>
     </div>
-    <router-view @message="(event) => message(event)"/>
+    <router-view @message="(event) => message(event)" @removeMessage="(event) => removeMessage(event)"/>
   </div>
 </template>
 
@@ -44,6 +44,13 @@ export default {
       } else {
         this.messages.push(message);
       }
+    },
+    removeMessage(contentMessage) {
+      this.messages.forEach((message, index) => {
+        if (message.content === contentMessage) {
+          this.messages.splice(index, 1);
+        }
+      });
     }
   }
 }
