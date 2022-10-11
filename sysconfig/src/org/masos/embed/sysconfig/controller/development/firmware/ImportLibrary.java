@@ -37,7 +37,8 @@ public class ImportLibrary extends HttpServlet {
             }
 
             String libraryPath = FirmwareContentManager.buildLibrary(submittedLibrary, executor);
-            String importResponse = executor.execute(FirmwareScriptManager.mountArduinoImportLibScript(libraryPath));
+            String importResponse = executor.execute(FirmwareScriptManager.mountArduinoImportLibScript(libraryPath),
+                    false);
 
             if (!FirmwareContentManager.wasImported(importResponse)) {
                 response.send(FAILED_IMPORT_MESSAGE, HttpStatus.BAD_REQUEST.getCode());

@@ -15,18 +15,18 @@ import java.io.IOException;
 public class CompileSketch extends HttpServlet {
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         Executor executor = (Executor) req.getSession().getAttribute("executor");
 
         if (executor != null) {
             String boardName = req.getParameter("boardName");
             String code = req.getParameter("code");
 
-            FirmwareContentManager.buildSketch(code, executor);
+            String buildSketchPath = FirmwareContentManager.buildSketch(code, executor);
 
-            Response.build(resp).text().ok(executor.execute(
-                    FirmwareScriptManager.mountArduinoCompileSketchScript(FirmwareContentManager.SKETCH_FILE_PATH,
-                            boardName)));
+            Response.build(resp).text().ok(
+                    executor.execute(FirmwareScriptManager.mountArduinoCompileSketchScript(buildSketchPath, boardName),
+                            true));
         }
     }
 }

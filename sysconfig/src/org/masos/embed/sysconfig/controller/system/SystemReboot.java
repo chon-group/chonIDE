@@ -15,7 +15,7 @@ public class SystemReboot extends HttpServlet {
         Executor executor = (Executor) req.getSession().getAttribute("executor");
         if (executor != null) {
             req.getSession().invalidate();
-            executor.execute("reboot");
+            executor.execute("reboot", false);
         }
     }
 }

@@ -19,7 +19,8 @@ public class DeploySketch extends HttpServlet {
             String boardName = req.getParameter("boardName");
             String serialPort = req.getParameter("serialPort");
             Response.build(resp).text().ok(
-                    executor.execute(FirmwareScriptManager.mountArduinoDeploySketchScript(boardName, serialPort)));
+                    executor.execute(FirmwareScriptManager.mountArduinoDeploySketchScript(boardName, serialPort),
+                            true));
         }
     }
 }

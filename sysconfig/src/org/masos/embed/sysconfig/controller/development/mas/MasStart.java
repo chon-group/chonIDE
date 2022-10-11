@@ -1,5 +1,10 @@
 package org.masos.embed.sysconfig.controller.development.mas;
 
+import org.masos.embed.sysconfig.controller.ControllerUtils;
+import org.masos.embed.sysconfig.controller.JsonManager;
+import org.masos.embed.sysconfig.file.content.MasContentManager;
+import org.masos.embed.sysconfig.file.dto.Project;
+import org.masos.embed.sysconfig.file.model.Mas;
 import org.masos.embed.sysconfig.model.Response;
 import org.masos.embed.sysconfig.model.executor.Executor;
 import org.masos.embed.sysconfig.script.ReasoningScriptManager;
@@ -20,7 +25,13 @@ public class MasStart extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
         Executor executor = (Executor) req.getSession().getAttribute("executor");
         if (executor != null) {
-            String response = executor.execute(ReasoningScriptManager.EMBEDDED_MAS_START);
+            // Importando SMA.
+            Project project = JsonManager.get().fromJson(ControllerUtils.getRequestBody(req), Project.class);
+            String buildMasPath = MasContentManager.buildMas(new Mas(project.getName(), project.getAgents()), executor);
+            executor.execute(ReasoningScriptManager.mountEmbeddedMASImportScript(buildMasPath), false);
+
+            // Iniciando SMA.
+            String response = executor.execute(ReasoningScriptManager.EMBEDDED_MAS_START, false);
             Matcher matcher = STOPING_MAS_MESSAGE_PATTERN.matcher(response);
             if (matcher.find()) {
                 response = response.replace(matcher.group(0), "");

@@ -1,8 +1,8 @@
 <template>
   <div class="coder u-column">
-    <Popup :title="'Compilado para ' + currentBoard.board" v-if="boardResponse != null" type="now">
+    <Popup title="Compilado" ref="boardResponse">
       <template v-slot:content>
-        <div class="coder__compiled-response is-small">
+        <div class="coder__compiled-response">
           {{ boardResponse }}
         </div>
       </template>
@@ -31,12 +31,6 @@
             Parar SMA
           </template>
         </Button>
-        <Button icon="upload.svg" transparent no-border adjust side-padding="10" @click="importMas" icon-ratio="12"
-                :is-loading="importingMas">
-          <template v-slot:content>
-            Importar SMA
-          </template>
-        </Button>
       </div>
     </div>
 
@@ -44,7 +38,7 @@
       <div class="coder__explorer u-column">
         <div class="coder__header-bar coder__explorer__project-name u-row">
           <input type="text" v-model="projectName"
-                 placeholder="Nome do projeto" ref="masName">
+                 placeholder="Nome do projeto">
           <div class="coder__project-status is-aside">
             <div v-if="savingProject" class="u-row u-gap-3">
               <Loading border-width="1" ratio="14" main-color="var(--pallete-text-main)"/>
@@ -129,7 +123,7 @@
       </div>
       <div class="coder__coding u-column">
         <div class="coder__coding__controller u-row u-justify-i-between">
-          <input type="text" class="coder__coding__file-name" ref="fileName"
+          <input type="text" class="coder__coding__file-name"
                  placeholder="Nome do arquivo"
                  v-model="currentFile.name"/>
           <div class="u-row">
@@ -315,7 +309,7 @@ export default {
     },
     compileSketch() {
       if (this.currentBoard == null) {
-        this.$emit("message", {content: "Não existe nenhuma placa selecionada", type: MessageType.WARNING});
+        this.$emit("message", {content: "Nenhuma placa foi selecionada", type: MessageType.WARNING});
         return;
       }
       this.compilingSketch = true;
@@ -327,6 +321,7 @@ export default {
       }).then((response) => {
         this.boardResponse = response.data;
         this.compilingSketch = false;
+        this.$refs.boardResponse.showing(true);
       });
     },
     deploySketch() {
@@ -341,6 +336,7 @@ export default {
           boardName: this.currentBoard.fqbn
         }
       }).then((response) => {
+        this.$refs.boardResponse.showing(true);
         this.boardResponse = response.data;
         this.deployingSketch = false;
       });
@@ -358,8 +354,14 @@ export default {
       });
     },
     startMas() {
+      if (this.projectIsInvalid()) {
+        return;
+      }
       this.startingMas = true;
-      axios.put("/sysconfig/mas/start").then((response) => {
+      axios.put("/sysconfig/mas/start", {
+        name: this.projectName,
+        agents: this.agents
+      }).then((response) => {
         this.$emit("message", {
           content: response.data.message,
           type: MessageType.SUCCESS
@@ -370,28 +372,12 @@ export default {
     stopMas() {
       this.stopingMas = true;
       axios.put("/sysconfig/mas/stop").then((response) => {
-        console.log(response);
-        if (response.data === '') {
-          this.$emit("message", {content: response.data, type: MessageType.SUCCESS});
-        } else {
+        if (response.data.length === 0) {
           this.$emit("message", {content: "SMA já foi parado", type: MessageType.WARNING});
+        } else {
+          this.$emit("message", {content: response.data, type: MessageType.SUCCESS});
         }
         this.stopingMas = false;
-      });
-    },
-    importMas() {
-      if (this.projectIsInvalid()) {
-        return;
-      }
-      this.importingMas = true;
-      this.saveProject().then(() => {
-        axios.post("/sysconfig/mas/import", {
-          name: this.projectName,
-          agents: this.agents
-        }).then(() => {
-          this.$emit("message", {content: "SMA importado com sucesso", type: MessageType.SUCCESS});
-          this.importingMas = false;
-        });
       });
     },
     removeAgentFile(index) {
@@ -527,17 +513,11 @@ export default {
   height: 100vh;
 }
 
-.coder__log-monitor {
-  height: 500px;
-  min-width: 1000px;
-  border: 0;
-  border-radius: var(--border-radius-item);
-}
-
 .coder__compiled-response {
   padding: var(--ratio-3);
   background-color: var(--pallete-color-black-3);
   border-radius: var(--border-radius-item);
+  line-height: 1.7;
 }
 
 .coder *:not(input, textarea) {

@@ -14,7 +14,7 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/users")
 public class UserConnection extends HttpServlet {
 
-    private static final String DEFAULT_HOST = "127.0.0.1";
+    private static final String DEFAULT_HOST = "localhost";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
@@ -35,8 +35,10 @@ public class UserConnection extends HttpServlet {
             host = DEFAULT_HOST;
         }
 
+        Response response = Response.build(resp);
+
         if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
-            Response.build(resp).json().ok(false);
+            response.ok(false);
         }
 
         SSHExecutor sshExecutor = new SSHExecutor(username, password, host);
@@ -48,10 +50,11 @@ public class UserConnection extends HttpServlet {
                 executor = sshExecutor;
             }
             req.getSession().setAttribute("executor", executor);
-            Response.build(resp).json().ok(true);
+            response.ok(true);
+            return;
         }
 
-        Response.build(resp).json().ok(false);
+        response.ok(false);
     }
 
     @Override

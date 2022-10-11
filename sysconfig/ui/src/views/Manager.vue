@@ -25,6 +25,13 @@
               </template>
             </Button>
           </a>
+          <router-link to="/coder">
+            <Button navigation>
+              <template v-slot:content>
+                chonIDE
+              </template>
+            </Button>
+          </router-link>
         </div>
       </div>
       <div class="u-row u-gap-2">
@@ -302,7 +309,6 @@ export default {
     },
     getBoards() {
       axios.get("/sysconfig/boards").then((response) => {
-        console.log(this.response.data);
         if (response.data == null) {
           this.boards = [];
         } else {

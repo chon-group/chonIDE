@@ -19,7 +19,7 @@ public class StatusNetwork extends HttpServlet {
         Executor executor = (Executor) req.getSession().getAttribute("executor");
         if (executor != null) {
             Response.build(resp).json().ok(
-                    executor.execute(ConnectionScriptManager.WIFI_STATUS).replace(" Nickname", ""));
+                    executor.execute(ConnectionScriptManager.WIFI_STATUS, false).replace(" Nickname", ""));
         }
     }
 }

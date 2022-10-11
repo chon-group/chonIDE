@@ -24,13 +24,12 @@
       <input type="checkbox" class="login__check-box" v-model="useLocalHost">
     </div>
 
-    <Popup :title="'Conectando à rede'" type="now" v-if="this.awaitConnection == 'true'" :can-close="false">
+    <Popup :title="'Conectando à rede'" :can-close="false" ref="conecting">
       <template v-slot:content>
         <div class="u-column u-gap-2 u-align-i-center" v-if="awaitConnectionCounter != 0">
           <span>
             Por favor, aguarde...
-            <span v-if="currentDomain != null"></span>
-            {{ awaitConnectionCounter }}
+            <span v-if="currentDomain != null">{{ awaitConnectionCounter }}</span>
           </span>
           <Loading/>
         </div>
@@ -83,6 +82,7 @@ export default {
   mounted() {
     this.awaitConnection = localStorage.getItem("connecting");
     if (this.awaitConnection === 'true') {
+      this.$refs.conecting.showing(true);
       axios.get("/sysconfig/domains").then((response) => {
         this.currentDomain = response.data.domain;
         axios.delete("/sysconfig/users");

@@ -23,7 +23,7 @@ public class ConnectClientNetwork extends HttpServlet {
             String command = !network.getPassword().isEmpty() ? ConnectionScriptManager.mountWifiClientModeScript(
                     network.getEssid(), network.getPassword()) : ConnectionScriptManager.mountWifiClientModeScript(
                     network.getEssid());
-            executor.execute(command);
+            executor.execute(command, false);
         }
     }
 }

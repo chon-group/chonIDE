@@ -11,7 +11,7 @@ import java.util.List;
 
 public class FileUtils {
 
-    public static final String NEW_LINE = "\n";
+    public static final String BREAK_LINE = "\n";
 
     public static final String COMPACTED_FILE_EXTENSION = ".zip";
 
@@ -225,7 +225,7 @@ public class FileUtils {
             bufferedReader = new BufferedReader(fileReader);
             String line = bufferedReader.readLine();
             while (line != null) {
-                stringBuilder.append(line).append(NEW_LINE);
+                stringBuilder.append(line).append(BREAK_LINE);
                 line = bufferedReader.readLine();
             }
         } catch (Exception e) {

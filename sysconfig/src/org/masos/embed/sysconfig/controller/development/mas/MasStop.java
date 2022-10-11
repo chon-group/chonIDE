@@ -16,7 +16,7 @@ public class MasStop extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
         Executor executor = (Executor) req.getSession().getAttribute("executor");
         if (executor != null) {
-            String response = executor.execute(ReasoningScriptManager.EMBEDDED_MAS_STOP);
+            String response = executor.execute(ReasoningScriptManager.EMBEDDED_MAS_STOP, false);
             Response.build(resp).text().ok(response);
         }
     }

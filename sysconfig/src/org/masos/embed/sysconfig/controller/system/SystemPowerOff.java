@@ -15,7 +15,7 @@ public class SystemPowerOff extends HttpServlet {
         Executor executor = (Executor) req.getSession().getAttribute("executor");
         if (executor != null) {
             req.getSession().invalidate();
-            executor.execute("poweroff");
+            executor.execute("poweroff", false);
         }
     }
 }

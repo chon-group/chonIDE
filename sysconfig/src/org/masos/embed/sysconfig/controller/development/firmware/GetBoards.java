@@ -20,7 +20,7 @@ public class GetBoards extends HttpServlet {
         if (executor != null) {
             String boards = (String) req.getSession().getAttribute("boards");
             if (boards == null || ControllerUtils.isRefreshRequest(req)) {
-                boards = executor.execute(FirmwareScriptManager.ARDUINO_LIST_BOARDS);
+                boards = executor.execute(FirmwareScriptManager.ARDUINO_LIST_BOARDS, false);
                 req.getSession().setAttribute("boards", boards);
             }
             Response.build(resp).json().ok(boards);

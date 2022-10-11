@@ -4,10 +4,8 @@ import java.io.File;
 
 public class FileConstants {
 
-    public static final String TMP_PATH = "/tmp/";
+    public static final String TMP_DIRECTORY = File.separator + "tmp" + File.separator;
 
-    private static final String ROOT_DIRECTORY_NAME = File.separator + "chonide";
-
-    public static final String BASE_PATH = ROOT_DIRECTORY_NAME;
+    public static final String ROOT_DIRECTORY = File.separator + "root" + File.separator;
 
 }

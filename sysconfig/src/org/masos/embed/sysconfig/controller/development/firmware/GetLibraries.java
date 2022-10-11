@@ -19,7 +19,7 @@ public class GetLibraries extends HttpServlet {
         if (executor != null) {
             String libraries = (String) req.getSession().getAttribute("libraries");
             if (libraries == null || ControllerUtils.isRefreshRequest(req)) {
-                libraries = executor.execute(FirmwareScriptManager.ARDUINO_LIST_LIBRARIES);
+                libraries = executor.execute(FirmwareScriptManager.ARDUINO_LIST_LIBRARIES, false);
                 req.getSession().setAttribute("libraries", libraries);
             }
             Response.build(resp).json().ok(libraries);

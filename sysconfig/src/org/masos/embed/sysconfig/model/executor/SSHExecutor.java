@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-public class SSHExecutor extends Executor {
+public class SSHExecutor implements Executor {
 
     private static final String FILE_REMOTE_SEPARATOR = "/";
 
@@ -75,12 +75,53 @@ public class SSHExecutor extends Executor {
      */
     public boolean test() {
         Session session = this.connectSession();
-        if (session != null) {
+        if (session == null) {
+            return false;
+        }
+        if (session.isConnected()) {
             session.disconnect();
             return true;
         } else {
             return false;
         }
+    }
+
+    private synchronized String executeInRemote(String command) {
+        Session session = this.connectSession();
+        try {
+            ChannelExec channel = (ChannelExec) session.openChannel("exec");
+            channel.setCommand(command);
+            channel.setInputStream(null);
+            channel.setErrStream(System.err);
+
+            InputStream in = channel.getInputStream();
+            channel.connect();
+            byte[] tmp = new byte[1024];
+
+            String output = "";
+            while (true) {
+                while (in.available() > 0) {
+                    int i = in.read(tmp, 0, 1024);
+                    if (i < 0) {
+                        break;
+                    }
+                    output = output + (new String(tmp, 0, i));
+                }
+                if (channel.isClosed()) {
+                    if (channel.getExitStatus() != 0) {
+                        return null;
+                    }
+                    break;
+                }
+            }
+            channel.disconnect();
+            return output;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            session.disconnect();
+        }
+        return null;
     }
 
     public void setResourceInRemote(File resource) {
@@ -114,42 +155,11 @@ public class SSHExecutor extends Executor {
     }
 
     @Override
-    public String execute(String command) {
-        Session session = this.connectSession();
-        try {
-            ChannelExec channel = (ChannelExec) session.openChannel("exec");
-            channel.setCommand(command);
-            channel.setInputStream(null);
-            channel.setErrStream(System.err);
-
-            InputStream in = channel.getInputStream();
-            channel.connect();
-            byte[] tmp = new byte[1024];
-
-            String output = "";
-            while (true) {
-                while (in.available() > 0) {
-                    int i = in.read(tmp, 0, 1024);
-                    if (i < 0) {
-                        break;
-                    }
-                    output = output + (new String(tmp, 0, i));
-                }
-                if (channel.isClosed()) {
-                    if (channel.getExitStatus() != 0) {
-                        return null;
-                    }
-                    break;
-                }
-            }
-
-            channel.disconnect();
-            return output.replace(FileUtils.NEW_LINE, "");
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            session.disconnect();
+    public String execute(String command, boolean mantainLineBreak) {
+        String output = this.executeInRemote(command);
+        if (!mantainLineBreak) {
+            return output.replace(FileUtils.BREAK_LINE, "");
         }
-        return null;
+        return output;
     }
 }

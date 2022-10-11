@@ -1,15 +1,13 @@
 <template>
-  <div :style="type !== 'now' ? {display: 'none'}: ''">
-    <div class="pop-up-background u-total-center">
-      <div class="c-base-container pop-up u-column u-gap-2">
-        <div class="u-row u-align-i-center u-justify-i-between">
-          <span class="pop-up__title">{{ title }}</span>
-          <div class="pop-up__close-action" @click="close" v-if="canClose"></div>
-        </div>
-        <slot name="content"></slot>
-        <div class="u-row u-gap-3 u-justify-i-end">
-          <slot name="action"></slot>
-        </div>
+  <div style='display: none' class="pop-up-background u-total-center">
+    <div class="c-base-container pop-up u-column u-gap-2">
+      <div class="u-row u-align-i-center u-justify-i-between">
+        <span class="pop-up__title">{{ title }}</span>
+        <div class="pop-up__close-action" @click="close" v-if="canClose"></div>
+      </div>
+      <slot name="content"></slot>
+      <div class="u-row u-gap-3 u-justify-i-end">
+        <slot name="action"></slot>
       </div>
     </div>
   </div>
@@ -35,11 +33,16 @@ export default {
   },
   methods: {
     close() {
-      this.$el.style.display = "none";
-      try {
+      this.showing(false);
+      if(this.triggerElement != null && this.for != null) {
         this.triggerElement.appendChild(this.$el);
-      } catch (e) {
-        this.$el.remove();
+      }
+    },
+    showing(isShowing) {
+      if (isShowing) {
+        this.$el.removeAttribute("style");
+      } else {
+        this.$el.style.display = "none";
       }
     }
   },
@@ -50,7 +53,7 @@ export default {
     }
     this.triggerElement.appendChild(this.$el);
     this.triggerElement.onclick = () => {
-      this.$el.style.display = "block";
+      this.showing(true);
       document.body.appendChild(this.$el);
     }
   }

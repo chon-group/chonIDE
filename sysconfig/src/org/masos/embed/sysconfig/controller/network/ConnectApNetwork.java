@@ -23,7 +23,7 @@ public class ConnectApNetwork extends HttpServlet {
             String command = !network.getPassword().isEmpty() ? ConnectionScriptManager.mountWifiAPModeScript(
                     network.getEssid(), network.getPassword()) : ConnectionScriptManager.mountWifiAPModaScript(
                     network.getEssid());
-            executor.execute(command);
+            executor.execute(command, false);
         }
     }
 }

@@ -15,7 +15,6 @@ export default {
   methods: {
     mountResponseClasses() {
       let classes;
-      console.log(MessageType.ERROR);
       if (this.message.type === MessageType.ERROR) {
         classes = "is-error";
       } else if (this.message.type === MessageType.SUCCESS) {

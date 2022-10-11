@@ -17,19 +17,19 @@ import java.util.List;
 
 public class MasContentManager {
 
-    public static final String AGENT_FILE_EXTENSION = ".asl";
+    private static final String AGENT_FILE_EXTENSION = ".asl";
 
-    public static final String AGENT_FOLDER_NAME = "asl";
+    private static final String AGENT_DIRECTORY_NAME = "asl";
 
     private static final String DEFAULT_MAS_NAME = "mas_project";
 
     private static final String MAS_DIRECTORY_NAME = "mas_project";
 
-    private static final String MAS_DIRECTORY_PATH = FileConstants.TMP_PATH + MAS_DIRECTORY_NAME;
+    private static final String MAS_DIRECTORY_PATH = FileConstants.TMP_DIRECTORY + MAS_DIRECTORY_NAME;
 
-    public static final String MAS_BUILD_FILE = MAS_DIRECTORY_PATH + FileUtils.COMPACTED_FILE_EXTENSION;
+    private static final String MAS_FILE_PATH = MAS_DIRECTORY_PATH + FileUtils.COMPACTED_FILE_EXTENSION;
 
-    public static void buildMas(Mas mas, Executor executor) {
+    public static String buildMas(Mas mas, Executor executor) {
         File masDirectory = new File(MAS_DIRECTORY_PATH);
         if (!FileUtils.createFolder(masDirectory)) {
             throw new ErrorCreatingFolderException(MAS_DIRECTORY_PATH);
@@ -42,7 +42,7 @@ public class MasContentManager {
         FileUtils.writeFileContent(masStructureFile,
                 new MasStructure(mas.getName(), mas.getAgents()).getCompleteStructure());
 
-        File agentDirectory = new File(masDirectory, AGENT_FOLDER_NAME);
+        File agentDirectory = new File(masDirectory, AGENT_DIRECTORY_NAME);
         if (!FileUtils.createFolder(agentDirectory)) {
             throw new ErrorCreatingFolderException(agentDirectory.getName());
         }
@@ -62,6 +62,8 @@ public class MasContentManager {
             FileUtils.deleteFile(masBuild);
             FileUtils.deleteFolder(masDirectory);
         }
+
+        return MAS_FILE_PATH;
     }
 
     protected static Mas createDefaultMas() {

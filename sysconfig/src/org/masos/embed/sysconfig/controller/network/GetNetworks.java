@@ -22,8 +22,8 @@ public class GetNetworks extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         Executor executor = (Executor) req.getSession().getAttribute("executor");
         if (executor != null) {
-            String allNetworksResponse = executor.execute(ConnectionScriptManager.WIFI_SCAN_LIST);
-            String knownNetworksResponse = executor.execute(ConnectionScriptManager.WIFI_WELL_KNOWN_LIST);
+            String allNetworksResponse = executor.execute(ConnectionScriptManager.WIFI_SCAN_LIST, false);
+            String knownNetworksResponse = executor.execute(ConnectionScriptManager.WIFI_WELL_KNOWN_LIST, false);
 
             JsonArray allNetworks;
             JsonArray allKnownNetworks;

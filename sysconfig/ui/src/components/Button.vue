@@ -1,7 +1,7 @@
 <template>
-  <a :href="link != null ? link : ''" :target="link != null ? '_blank' : ''" class="button" :class="[skinClasses,
-  'u-row u-align-i-center u-justify-i-center']" @click="link == null ? $event.preventDefault() : null">
-    <div v-if="transparent != null" class="button-background"></div>
+  <a v-if="link != null" :href="link != null ? link : ''" :target="link != null ? '_blank' : ''" class="button"
+     :class="[skinClasses,'u-row u-align-i-center u-justify-i-center']">
+    <div v-if="transparent == null && navigation == null" class="button-background"></div>
     <Loading v-if="isLoading" ratio="14" border-width="1" aside-color="rgba(255,255,255,0.2)"
              main-color="white"/>
     <img v-else-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)" class="button__icon">
@@ -9,6 +9,15 @@
       <slot name="content"></slot>
     </span>
   </a>
+  <button type="button" v-else class="button" :class="[skinClasses,'u-row u-align-i-center u-justify-i-center']">
+    <div v-if="transparent == null && navigation == null" class="button-background"></div>
+    <Loading v-if="isLoading" ratio="14" border-width="1" aside-color="rgba(255,255,255,0.2)"
+             main-color="white"/>
+    <img v-else-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)" class="button__icon">
+    <span v-if="$slots.content != null">
+      <slot name="content"></slot>
+    </span>
+  </button>
 </template>
 
 <script>
