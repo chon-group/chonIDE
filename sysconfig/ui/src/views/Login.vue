@@ -35,9 +35,9 @@
         </div>
         <div v-else class="u-column u-gap-3 u-align-i-center is-big">
           Seu novo link de acesso ao sysconfig
-          <a :href="'https://' + currentDomain + ':3270/sysconfig'" target="_blank"
+          <a :href="'https://' + currentDomain + ':3270/sysconfig/login'" target="_blank"
              class="login__new-link">{{
-              'https://' + currentDomain + ':3270/sysconfig'
+              'https://' + currentDomain + ':3270/sysconfig/login'
             }}</a>
         </div>
       </template>

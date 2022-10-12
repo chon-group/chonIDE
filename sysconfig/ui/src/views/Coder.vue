@@ -81,7 +81,7 @@
                       @click="removeAgentFile(index)" v-if="index !== 0">
               </button>
             </div>
-            <div class="coder__explorer__item second-level u-row u-align-i-center">
+            <div class="coder__explorer__item first-level u-row u-align-i-center">
               <div class="u-height-cover u-width-cover u-row u-align-i-center" @click="firmwaresOpen = !firmwaresOpen">
                 <img src="@/assets/media/icon/toggle.svg" class="coder__explorer__item__toggle" :class="firmwaresOpen ?
           'open' : ''">
@@ -90,7 +90,7 @@
               <button class="coder__action is-add" @click="addFirmwareFile"></button>
             </div>
             <div v-for="(firmware,index) in firmwares" :key="index"
-                 class="coder__explorer__item third-level u-row u-align-i-center u-gap-3" v-show="firmwaresOpen">
+                 class="coder__explorer__item second-level u-row u-align-i-center u-gap-3" v-show="firmwaresOpen">
               <div class="u-height-cover u-width-cover u-row u-align-i-center u-gap-3" @click="showFirmwareFile(index)">
                 <span class="coder__explorer__item__icon">C++</span>
                 <span class="coder__explorer__item__name">{{ firmware.name }}</span>
@@ -581,7 +581,7 @@ export default {
 .coder__writer__lines {
   min-height: 100%;
   height: fit-content;
-  min-width: 90px;
+  min-width: 68px;
   background-color: var(--pallete-color-black-2);
   padding: var(--ratio-2) 0;
   color: var(--pallete-text-aside);
