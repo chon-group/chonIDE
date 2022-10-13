@@ -4,7 +4,9 @@ import org.masos.embed.sysconfig.file.FileConstants;
 import org.masos.embed.sysconfig.file.FileUtils;
 import org.masos.embed.sysconfig.file.model.Firmware;
 import org.masos.embed.sysconfig.model.executor.Executor;
+import org.masos.embed.sysconfig.model.executor.RuntimeExecutor;
 import org.masos.embed.sysconfig.model.executor.SSHExecutor;
+import org.masos.embed.sysconfig.script.FirmwareScriptManager;
 
 import javax.servlet.http.Part;
 import java.io.ByteArrayInputStream;
@@ -24,6 +26,9 @@ public class FirmwareContentManager {
 
     private static final String LIBRARY_PREFIX_PATH = FileConstants.TMP_DIRECTORY + LIB_FILE_PREFIX;
 
+    private static final String LIBRARY_BUILD_DIRECTORY = FileConstants.ROOT_DIRECTORY + File.separator + "Arduino"
+            + File.separator + "libraries";
+
     public static List<Firmware> createDefaultFirmwares() {
         return Arrays.asList(new Firmware("sketch 1",
                 "void setup() {\n" + "  // put your setup code here, to run once:\n" + "\n" + "}\n" + "\n"
@@ -40,15 +45,22 @@ public class FirmwareContentManager {
         return SKETCH_BUILD_FILE;
     }
 
-    public static String buildLibrary(Part submittedLibrary, Executor executor) throws IOException {
+    public static boolean buildLibrary(Part submittedLibrary, Executor executor) throws IOException {
         String libraryPath = LIBRARY_PREFIX_PATH + submittedLibrary.getSubmittedFileName();
         File libraryFile = new File(libraryPath);
         FileUtils.createFile(libraryFile, submittedLibrary.getInputStream());
-        if (executor instanceof SSHExecutor) {
-            ((SSHExecutor) executor).setResourceInRemote(libraryFile);
+        try {
+            if (executor instanceof RuntimeExecutor) {
+                return FileUtils.unzipFiles(libraryFile, LIBRARY_BUILD_DIRECTORY);
+            } else {
+                ((SSHExecutor) executor).setResourceInRemote(libraryFile);
+                String importResponse = executor.execute(FirmwareScriptManager.mountArduinoImportLibScript(libraryPath),
+                        false);
+                return wasImportedInRemote(importResponse);
+            }
+        } finally {
             libraryFile.delete();
         }
-        return libraryPath;
     }
 
     public static boolean isValidSubmittedLibrary(Part submittedLibrary) {
@@ -56,7 +68,7 @@ public class FirmwareContentManager {
                 FileUtils.COMPACTED_FILE_EXTENSION);
     }
 
-    public static boolean wasImported(String importResponse) {
+    public static boolean wasImportedInRemote(String importResponse) {
         return !importResponse.contains("cannot find or open") && !importResponse.contains(
                 "End-of-central-directory signature not found") && importResponse.contains("inflating:");
     }

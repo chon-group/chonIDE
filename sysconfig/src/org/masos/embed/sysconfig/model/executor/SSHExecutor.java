@@ -86,6 +86,37 @@ public class SSHExecutor implements Executor {
         }
     }
 
+    public String setResourceInRemote(File resource) {
+        Session session = this.connectSession();
+        try {
+            ChannelSftp sftp = (ChannelSftp) session.openChannel("sftp");
+            sftp.connect();
+            String absoluteResourcePath = resource.getAbsolutePath();
+            String remoteResourcePath = getRemoteResourcePath(absoluteResourcePath);
+            if (FileUtils.isFile(absoluteResourcePath)) {
+                sftp.put(resource.getAbsolutePath(), remoteResourcePath, ChannelSftp.OVERWRITE);
+            } else {
+                List<String> folders = Arrays.stream(remoteResourcePath.split(FILE_REMOTE_SEPARATOR)).filter(
+                        folder -> !folder.isEmpty()).collect(Collectors.toList());
+                String resultPath = FILE_REMOTE_SEPARATOR;
+                for (int i = 0; i < folders.size(); i++) {
+                    resultPath += folders.get(i) + FILE_REMOTE_SEPARATOR;
+                    try {
+                        sftp.cd(resultPath);
+                    } catch (SftpException e) {
+                        sftp.mkdir(resultPath);
+                    }
+                }
+            }
+            sftp.disconnect();
+            return remoteResourcePath;
+        } catch (JSchException | SftpException e) {
+            throw new ErrorSettingResourceInRemoteException(resource.getName(), e);
+        } finally {
+            session.disconnect();
+        }
+    }
+
     private synchronized String executeInRemote(String command) {
         Session session = this.connectSession();
         try {
@@ -122,36 +153,6 @@ public class SSHExecutor implements Executor {
             session.disconnect();
         }
         return null;
-    }
-
-    public void setResourceInRemote(File resource) {
-        Session session = this.connectSession();
-        try {
-            ChannelSftp sftp = (ChannelSftp) session.openChannel("sftp");
-            sftp.connect();
-            String absoluteResourcePath = resource.getAbsolutePath();
-            String remoteResourcePath = getRemoteResourcePath(absoluteResourcePath);
-            if (FileUtils.isFile(absoluteResourcePath)) {
-                sftp.put(resource.getAbsolutePath(), remoteResourcePath, ChannelSftp.OVERWRITE);
-            } else {
-                List<String> folders = Arrays.stream(remoteResourcePath.split(FILE_REMOTE_SEPARATOR)).filter(
-                        folder -> !folder.isEmpty()).collect(Collectors.toList());
-                String resultPath = FILE_REMOTE_SEPARATOR;
-                for (int i = 0; i < folders.size(); i++) {
-                    resultPath += folders.get(i) + FILE_REMOTE_SEPARATOR;
-                    try {
-                        sftp.cd(resultPath);
-                    } catch (SftpException e) {
-                        sftp.mkdir(resultPath);
-                    }
-                }
-            }
-            sftp.disconnect();
-        } catch (JSchException | SftpException e) {
-            throw new ErrorSettingResourceInRemoteException(resource.getName(), e);
-        } finally {
-            session.disconnect();
-        }
     }
 
     @Override

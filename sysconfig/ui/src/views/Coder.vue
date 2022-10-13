@@ -1,6 +1,6 @@
 <template>
   <div class="coder u-column">
-    <Popup title="Compilado" ref="boardResponse">
+    <Popup title="Resposta da placa" ref="boardResponse">
       <template v-slot:content>
         <div class="coder__compiled-response">
           {{ boardResponse }}
@@ -9,12 +9,32 @@
     </Popup>
 
     <div class="coder__header u-row u-justify-i-between u-align-i-center">
-      <h2 class="coder__header__logo u-row">
-        chonIDE
-      </h2>
+      <div class="u-row u-align-i-center u-height-cover u-gap-3">
+        <h2 class="coder__header__logo u-row">chonIDE</h2>
+        <div class="u-row u-height-cover">
+          <router-link to="/connect" class="u-height-cover">
+            <Button transparent no-border adjust side-padding="10" icon-ratio="12" icon="wifi-quality-4.svg">
+              <template v-slot:content>
+                Redes
+              </template>
+            </Button>
+          </router-link>
+          <router-link to="/domain" class="u-height-cover">
+            <Button transparent no-border adjust side-padding="10" icon-ratio="12" icon="domain.svg">
+              <template v-slot:content>
+                Nome do bot
+              </template>
+            </Button>
+          </router-link>
+        </div>
+      </div>
       <div class="u-row u-height-cover">
-        <Button transparent no-border adjust side-padding="10" icon-ratio="12" @click="showLogMonitor = true"
-                v-if="domain != null" class="sma-logs-button" :link="'http://' + domain.domain + ':3271'">
+        <Button transparent no-border adjust side-padding="10" v-if="domain != null" :link="mindInspectorUrl">
+          <template v-slot:content>
+            Mind Inspector
+          </template>
+        </Button>
+        <Button transparent no-border adjust side-padding="10"  v-if="domain != null" :link="logsUrl">
           <template v-slot:content>
             Logs do SMA
           </template>
@@ -31,6 +51,11 @@
             Parar SMA
           </template>
         </Button>
+        <Button icon="reset.svg" transparent no-border adjust side-padding="10" icon-ratio="13" @click="resetSystem"/>
+        <Button icon="turn-off.svg" transparent no-border adjust side-padding="10" icon-ratio="13.5"
+                @click="turnOffSystem"/>
+        <Button icon="logout.svg" transparent no-border adjust side-padding="10" icon-ratio="12"
+                @click="logout"/>
       </div>
     </div>
 
@@ -188,11 +213,13 @@ import axios from "axios";
 import {MessageType} from "@/assets/js/model/Enums";
 import Loading from "@/components/Loading";
 import Popup from "@/components/Popup";
+import router from "@/router";
 
 const LINE_BREAK_CHAR = "\n", TAB_CHAR = "\t", POS_CHAR = "$";
 const CODER_DIFF_HEIGHT = 18;
 const AGENT_TYPE_ARGO = "Argo", AGENT_TYPE_JASON = "Jason", AGENT_TYPE_COMMUNICATOR = "Communicator";
 const AGENT_DEFAULT_FILE_NAME = "Agente", FIRMWARE_DEFAULT_FILE_NAME = "sketch";
+const DEFAULT_LINKS_PROTOCOL = "http://";
 
 export default {
   name: "Coder",
@@ -243,6 +270,12 @@ export default {
     }
   },
   computed: {
+    mindInspectorUrl() {
+      return DEFAULT_LINKS_PROTOCOL + this.domain.domain + ":3272";
+    },
+    logsUrl() {
+      return DEFAULT_LINKS_PROTOCOL + this.domain.domain + ":3271";
+    },
     lineQuantity() {
       try {
         if (this.currentFile.sourceCode === '') {
@@ -258,44 +291,43 @@ export default {
     PageUtils.setTitle("Criando SMA");
   },
   mounted() {
-    axios.get("/sysconfig/projects").then((response) => {
+    axios.get("/chonide/projects").then((response) => {
       this.agents = response.data.agents;
       this.firmwares = response.data.firmwares;
       this.projectName = response.data.name;
       this.currentFile = this.agents[0];
     });
 
-    axios.get("/sysconfig/domains").then((response) => {
+    axios.get("/chonide/domains").then((response) => {
       this.domain = response.data;
     });
 
-    this.loadBoards(false).then(() => {
-      if (this.boards.length !== 0) {
-        this.currentBoard = this.boards[0];
-      }
-    });
-
+    this.loadBoards(false);
     this.loadLibraries(false);
 
     // Implementação do codador.
     this.$refs.coder.addEventListener("keydown", (event) => {
-      if (event.keyCode === 13) {
+      if (event.which === 13) {
         this.$refs.coder.style.height = (this.$refs.coderLines.scrollHeight + CODER_DIFF_HEIGHT) + "px";
-      } else if (event.keyCode === 8) {
+      } else if (event.which === 8) {
         this.$refs.coder.style.height = (this.$refs.coderLines.scrollHeight - CODER_DIFF_HEIGHT) + "px";
-      } else if (event.keyCode === 221) {
+      } else if (event.which === 219) {
         if (event.shiftKey) {
           this.write(event, '{' + LINE_BREAK_CHAR + TAB_CHAR + POS_CHAR + LINE_BREAK_CHAR + '}', true);
         } else {
           this.write(event, `[${POS_CHAR}]`, true);
         }
-      } else if (event.keyCode === 57 && event.shiftKey) {
+      } else if (event.which === 57 && event.shiftKey) {
         this.write(event, `(${POS_CHAR})`, true);
-      } else if (event.keyCode === 9) {
+      } else if (event.which === 9) {
         event.preventDefault();
         this.write(event, TAB_CHAR, false);
-      } else if (event.keyCode === 192) {
-        this.write(event, `"${POS_CHAR}"`, true);
+      } else if (event.which === 222) {
+        if(event.shiftKey){
+          this.write(event, `"${POS_CHAR}"`, true);
+        } else {
+          this.write(event, `'${POS_CHAR}'`, true);
+        }
       }
     });
   },
@@ -313,7 +345,7 @@ export default {
         return;
       }
       this.compilingSketch = true;
-      axios.post("/sysconfig/sketchs/compile", {}, {
+      axios.post("/chonide/sketchs/compile", {}, {
         params: {
           boardName: this.currentBoard.fqbn,
           code: this.currentFile.sourceCode
@@ -330,7 +362,7 @@ export default {
         return;
       }
       this.deployingSketch = true;
-      axios.post("/sysconfig/sketchs/deploy", {}, {
+      axios.post("/chonide/sketchs/deploy", {}, {
         params: {
           serialPort: this.currentBoard.port,
           boardName: this.currentBoard.fqbn
@@ -343,7 +375,7 @@ export default {
     },
     saveProject() {
       this.savingProject = true;
-      return axios.put("/sysconfig/projects", {
+      return axios.put("/chonide/projects", {
         name: this.projectName,
         agents: this.agents,
         firmwares: this.firmwares
@@ -358,7 +390,7 @@ export default {
         return;
       }
       this.startingMas = true;
-      axios.put("/sysconfig/mas/start", {
+      axios.put("/chonide/mas/start", {
         name: this.projectName,
         agents: this.agents
       }).then((response) => {
@@ -371,14 +403,32 @@ export default {
     },
     stopMas() {
       this.stopingMas = true;
-      axios.put("/sysconfig/mas/stop").then((response) => {
-        if (response.data.length === 0) {
-          this.$emit("message", {content: "SMA já foi parado", type: MessageType.WARNING});
-        } else {
+      axios.put("/chonide/mas/stop").then((response) => {
+        if (response.data.includes("Encerrando SMA")) {
           this.$emit("message", {content: response.data, type: MessageType.SUCCESS});
+        } else {
+          this.$emit("message", {content: "SMA já foi parado", type: MessageType.WARNING});
         }
         this.stopingMas = false;
       });
+    },
+    turnOffSystem() {
+      this.$emit("message", {content: "Desligando sistema", type: MessageType.WARNING});
+      axios.put("/chonide/system/poweroff");
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+    },
+    resetSystem() {
+      this.$emit("message", {content: "Reiniciando sistema", type: MessageType.WARNING});
+      axios.put("/chonide/system/reboot");
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+    },
+    logout() {
+      axios.delete("/chonide/users");
+      router.push("/login");
     },
     removeAgentFile(index) {
       if (this.currentFile === this.agents[index]) {
@@ -427,7 +477,7 @@ export default {
       }
 
       this.loadingLibraries = true;
-      axios.post("/sysconfig/libraries/import", {file: files[0]}, {
+      axios.post("/chonide/libraries/import", {file: files[0]}, {
         headers: {
           "Content-Type": "multipart/form-data"
         }
@@ -438,20 +488,20 @@ export default {
             type: MessageType.SUCCESS
           });
           this.loadLibraries(true).then(() => {
-            this.loadingLibraries = true;
+            this.loadingLibraries = false;
           });
         } else {
           this.$emit("message", {
             content: response.data,
             type: MessageType.ERROR
           });
-          this.loadingLibraries = true;
+          this.loadingLibraries = false;
         }
       });
     },
     loadLibraries(refresh) {
       this.loadingLibraries = true;
-      return axios.get("/sysconfig/libraries", {params: {refresh: refresh}}).then((response) => {
+      return axios.get("/chonide/libraries", {params: {refresh: refresh}}).then((response) => {
         this.libraries = response.data;
       }).then(() => {
         this.loadingLibraries = false;
@@ -460,10 +510,12 @@ export default {
     loadBoards(refresh) {
       this.currentBoard = null;
       this.loadingBoards = true;
-      return axios.get("/sysconfig/boards", {params: {refresh: refresh}}).then((response) => {
+      axios.get("/chonide/boards", {params: {refresh: refresh}}).then((response) => {
         this.boards = response.data;
         this.loadingBoards = false;
-        this.currentBoard = this.boards[0];
+        if (this.boards.length != 0) {
+          this.currentBoard = this.boards[0];
+        }
       });
     },
     write(event, text, setPositionInner) {

@@ -1,18 +1,11 @@
 <template>
   <div class="u-column u-gap-1 u-align-i-center">
-    <Popup title="URL de acesso seu sistema" type="now" v-if="showUrl">
-      <template v-slot:content>
-        <a :href="'https://' + domain + '.bot.chon.group:3270/sysconfig'" target="_blank" class="domain__url is-huge">{{
-            domain
-          }}.bot.chon.group:3270/sysconfig</a>
-      </template>
-    </Popup>
     <div class="u-column u-gap-3 u-align-i-center">
       <h2 class="is-huge">Informe o nome do seu bot</h2>
       <span class="is-aside">
-        Através desse nome, você será capaz de acessar o sysconfig via:
+        Através desse nome, você será capaz de acessar a chonide via:
         <span v-if="domain !== ''" class="is-bold">
-          {{ domain }}.bot.chon.group:3270/sysconfig
+          {{ domainUrl }}
         </span>
       </span>
     </div>
@@ -25,10 +18,10 @@
         </template>
       </Button>
     </div>
-    <router-link to="/manager" v-if="!isFirstAccess">
-      <Button navigation>
+    <router-link to="/coder" v-if="!isFirstAccess">
+      <Button transparent>
         <template v-slot:content>
-          Voltar para gerenciador
+          Voltar para codador
         </template>
       </Button>
     </router-link>
@@ -40,20 +33,23 @@
 import axios from "axios";
 import PageUtils from "@/assets/js/util/PageUtils";
 import Button from "@/components/Button";
-import Popup from "@/components/Popup";
 import router from "@/router";
 import {MessageType} from "@/assets/js/model/Enums"
 
 
 export default {
   name: "Domain",
-  components: {Popup, Button},
+  components: {Button},
   data() {
     return {
       domain: '',
-      showUrl: false,
       loading: false,
       isFirstAccess: false
+    }
+  },
+  computed: {
+    domainUrl() {
+      return this.domain + '.bot.chon.group:3270/chonide';
     }
   },
   watch: {
@@ -72,12 +68,12 @@ export default {
   methods: {
     submit() {
       if (this.domain === '' || this.domain.length === 0) {
-        this.$emit("message",{content: "O nome não pode ser vazio", type: MessageType.ERROR});
+        this.$emit("message", {content: "O nome não pode ser vazio", type: MessageType.ERROR});
         return;
       }
       this.loading = true;
-      axios.post("/sysconfig/domains", {}, {params: {domain: this.domain}}).then(() => {
-        this.$emit("message",{content: "O nome do seu bot foi salvo com sucesso", type: MessageType.SUCCESS});
+      axios.post("/chonide/domains", {}, {params: {domain: this.domain}}).then(() => {
+        this.$emit("message", {content: "O nome do seu bot foi salvo com sucesso", type: MessageType.SUCCESS});
         router.push("/connect");
       });
     }
@@ -91,19 +87,6 @@ export default {
   width: 600px;
   color: var(--pallete-text-main);
   text-align: center;
-}
-
-.domain__url {
-  text-align: center;
-  color: var(--pallete-text-main);
-  padding: var(--ratio-3) 0;
-  border-radius: var(--border-radius-item);
-  background-color: var(--pallete-color-black-2);
-  border: var(--border-trace);
-}
-
-.domain__url:hover {
-  background-color: var(--pallete-color-black-3);
 }
 
 </style>

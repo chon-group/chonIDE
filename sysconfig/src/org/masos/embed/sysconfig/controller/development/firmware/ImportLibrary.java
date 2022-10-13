@@ -4,7 +4,6 @@ import org.masos.embed.sysconfig.file.content.FirmwareContentManager;
 import org.masos.embed.sysconfig.model.Response;
 import org.masos.embed.sysconfig.model.executor.Executor;
 import org.masos.embed.sysconfig.model.http.HttpStatus;
-import org.masos.embed.sysconfig.script.FirmwareScriptManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -36,11 +35,9 @@ public class ImportLibrary extends HttpServlet {
                 return;
             }
 
-            String libraryPath = FirmwareContentManager.buildLibrary(submittedLibrary, executor);
-            String importResponse = executor.execute(FirmwareScriptManager.mountArduinoImportLibScript(libraryPath),
-                    false);
+            boolean wasImported = FirmwareContentManager.buildLibrary(submittedLibrary, executor);
 
-            if (!FirmwareContentManager.wasImported(importResponse)) {
+            if (!wasImported) {
                 response.send(FAILED_IMPORT_MESSAGE, HttpStatus.BAD_REQUEST.getCode());
                 return;
             }

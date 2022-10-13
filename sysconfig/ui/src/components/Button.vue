@@ -1,7 +1,7 @@
 <template>
   <a v-if="link != null" :href="link != null ? link : ''" :target="link != null ? '_blank' : ''" class="button"
      :class="[skinClasses,'u-row u-align-i-center u-justify-i-center']">
-    <div v-if="transparent == null && navigation == null" class="button-background"></div>
+    <div class="button-background"></div>
     <Loading v-if="isLoading" ratio="14" border-width="1" aside-color="rgba(255,255,255,0.2)"
              main-color="white"/>
     <img v-else-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)" class="button__icon">
@@ -10,7 +10,7 @@
     </span>
   </a>
   <button type="button" v-else class="button" :class="[skinClasses,'u-row u-align-i-center u-justify-i-center']">
-    <div v-if="transparent == null && navigation == null" class="button-background"></div>
+    <div class="button-background"></div>
     <Loading v-if="isLoading" ratio="14" border-width="1" aside-color="rgba(255,255,255,0.2)"
              main-color="white"/>
     <img v-else-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)" class="button__icon">
@@ -28,7 +28,6 @@ export default {
   components: {Loading},
   props: {
     transparent: String,
-    underlined: String,
     navigation: String,
     icon: String,
     iconRatio: String,
@@ -40,21 +39,14 @@ export default {
     sidePadding: String,
     link: String
   },
-  data() {
-    return {
-      iconRatioStyle: this.iconRatio != null ? this.iconRatio + "px" : "15px",
-      skinClasses: this.mountSkinClasses(),
-      colorStyle: this.color == null ? "var(--pallete-color-main-1)" : this.color,
-      sidePaddingStyle: this.sidePadding == null ? 'initial' : this.sidePadding + 'px'
-    }
-  },
-  methods: {
-    mountSkinClasses() {
+  computed: {
+    iconRatioStyle() {
+      return this.iconRatio != null ? this.iconRatio + "px" : "15px";
+    },
+    skinClasses() {
       let classes;
       if (this.transparent != null) {
         classes = "is-transparent"
-      } else if (this.underlined != null) {
-        classes = "is-underlined";
       } else if (this.navigation != null) {
         classes = "is-navigation";
       } else {
@@ -84,6 +76,12 @@ export default {
       }
 
       return classes;
+    },
+    colorStyle() {
+      return this.color == null ? "var(--pallete-color-main-1)" : this.color;
+    },
+    sidePaddingStyle() {
+      return this.sidePadding == null ? 'initial' : this.sidePadding + 'px';
     }
   }
 }
@@ -117,21 +115,11 @@ export default {
   padding: var(--action-padding-1);
 }
 
-.button.is-underlined {
-  background-color: transparent;
-  color: var(--pallete-text-main);
-  text-decoration: underline;
-}
-
 .button.is-transparent {
   background-color: transparent;
   color: var(--pallete-text-main);
   height: var(--action-ratio-1);
   padding: var(--action-padding-1);
-}
-
-.button.is-transparent:hover {
-  background-color: var(--pallete-color-black-3);
 }
 
 .button.is-navigation {
@@ -157,10 +145,6 @@ export default {
 
 .button-background:hover {
   background-color: rgba(255, 255, 255, 0.08);
-}
-
-.button.is-underlined:hover {
-  font-weight: 600;
 }
 
 .button.is-rounded {

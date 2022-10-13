@@ -18,7 +18,7 @@ public class DomainView extends HttpServlet {
         if (executor != null) {
             req.getRequestDispatcher("/domain.html").forward(req, resp);
         } else {
-            resp.sendRedirect("/sysconfig/login");
+            resp.sendRedirect("/chonide/login");
         }
     }
 

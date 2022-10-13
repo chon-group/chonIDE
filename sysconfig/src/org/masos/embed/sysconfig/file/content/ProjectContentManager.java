@@ -27,14 +27,14 @@ public class ProjectContentManager {
         if (projectDirectory == null) {
             projectDirectory = new File(PROJECT_DIRECTORY_PATH);
         }
+        FileUtils.createFolder(projectDirectory);
 
-        if (!projectDirectory.exists()) {
-            projectDirectory.mkdirs();
+        if (projectFile == null) {
+            projectFile = new File(PROJECT_FILE_PATH);
         }
-        projectFile = new File(PROJECT_FILE_PATH);
         // Primeira uso.
         if (!projectFile.exists()) {
-            projectFile.createNewFile();
+            FileUtils.createFile(projectFile);
             Mas mas = MasContentManager.createDefaultMas();
             Project project = new Project(mas.getName(), mas.getAgents(),
                     FirmwareContentManager.createDefaultFirmwares());

@@ -22,8 +22,8 @@
     --ratio-3: 10px;
     --ratio-4: 5px;
 
-    --border-radius-container: 6px;
-    --border-radius-item: 3px;
+    --border-radius-container: 3px;
+    --border-radius-item: 2px;
     --border-radius-total: 999px;
 
     --border-trace: 1px solid var(--pallete-color-black-3);

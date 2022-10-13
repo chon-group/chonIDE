@@ -2,14 +2,12 @@ package org.masos.embed.sysconfig.file.content;
 
 import org.masos.embed.sysconfig.file.FileConstants;
 import org.masos.embed.sysconfig.file.FileUtils;
-import org.masos.embed.sysconfig.file.exception.ErrorCreatingFileException;
-import org.masos.embed.sysconfig.file.exception.ErrorCreatingFolderException;
-import org.masos.embed.sysconfig.file.exception.ErrorWritingFileContentException;
 import org.masos.embed.sysconfig.file.model.Agent;
 import org.masos.embed.sysconfig.file.model.AgentArchClass;
 import org.masos.embed.sysconfig.file.model.Mas;
 import org.masos.embed.sysconfig.model.executor.Executor;
 import org.masos.embed.sysconfig.model.executor.SSHExecutor;
+import org.masos.embed.sysconfig.script.ReasoningScriptManager;
 
 import java.io.File;
 import java.util.Arrays;
@@ -23,47 +21,35 @@ public class MasContentManager {
 
     private static final String DEFAULT_MAS_NAME = "mas_project";
 
-    private static final String MAS_DIRECTORY_NAME = "mas_project";
+    private static final String MAS_DIRECTORY_NAME = "EmbeddedMAS";
 
-    private static final String MAS_DIRECTORY_PATH = FileConstants.TMP_DIRECTORY + MAS_DIRECTORY_NAME;
+    private static final String MAS_DIRECTORY_PATH = FileConstants.ROOT_DIRECTORY + MAS_DIRECTORY_NAME;
 
-    private static final String MAS_FILE_PATH = MAS_DIRECTORY_PATH + FileUtils.COMPACTED_FILE_EXTENSION;
-
-    public static String buildMas(Mas mas, Executor executor) {
+    public static void buildMas(Mas mas, Executor executor) {
         File masDirectory = new File(MAS_DIRECTORY_PATH);
-        if (!FileUtils.createFolder(masDirectory)) {
-            throw new ErrorCreatingFolderException(MAS_DIRECTORY_PATH);
-        }
+        FileUtils.createFolder(masDirectory);
 
         File masStructureFile = new File(masDirectory, mas.getName() + MasStructure.MAS_STRUCTURE_FILE_EXTENSION);
-        if (!FileUtils.createFile(masStructureFile)) {
-            throw new ErrorCreatingFileException(masStructureFile.getName());
-        }
+        FileUtils.createFile(masStructureFile);
         FileUtils.writeFileContent(masStructureFile,
                 new MasStructure(mas.getName(), mas.getAgents()).getCompleteStructure());
 
         File agentDirectory = new File(masDirectory, AGENT_DIRECTORY_NAME);
-        if (!FileUtils.createFolder(agentDirectory)) {
-            throw new ErrorCreatingFolderException(agentDirectory.getName());
-        }
+        FileUtils.createFolder(agentDirectory);
+
         for (Agent agent : mas.getAgents()) {
             File agentFile = new File(agentDirectory, agent.getName() + AGENT_FILE_EXTENSION);
-            if (!FileUtils.createFile(agentFile)) {
-                throw new ErrorCreatingFileException(agentFile.getName());
-            }
-            if (!FileUtils.writeFileContent(agentFile, agent.getSourceCode())) {
-                throw new ErrorWritingFileContentException(agentFile.getName());
-            }
+            FileUtils.createFile(agentFile);
+            FileUtils.writeFileContent(agentFile, agent.getSourceCode());
         }
 
-        File masBuild = FileUtils.zipFolder(masDirectory);
         if (executor instanceof SSHExecutor) {
-            ((SSHExecutor) executor).setResourceInRemote(masBuild);
+            File masBuild = FileUtils.zipFilesByFolder(masDirectory);
+            String masBuildRemotePath = ((SSHExecutor) executor).setResourceInRemote(masBuild);
+            String command = ReasoningScriptManager.mountEmbeddedMASImportScript(masBuildRemotePath);
+            executor.execute(command, false);
             FileUtils.deleteFile(masBuild);
-            FileUtils.deleteFolder(masDirectory);
         }
-
-        return MAS_FILE_PATH;
     }
 
     protected static Mas createDefaultMas() {

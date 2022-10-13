@@ -6,8 +6,8 @@
 
     <packaging>war</packaging>
 
-    <groupId>org.masos.embed.sysconfig</groupId>
-    <artifactId>sysconfig</artifactId>
+    <groupId>org.masos.embed.chonide</groupId>
+    <artifactId>chonide</artifactId>
     <version>0.0.1</version>
 
     <properties>

@@ -18,7 +18,7 @@ public class CoderView extends HttpServlet {
         if (executor != null) {
             req.getRequestDispatcher("/coder.html").forward(req, resp);
         } else {
-            resp.sendRedirect("/sysconfig/login");
+            resp.sendRedirect("/chonide/login");
         }
     }
 }

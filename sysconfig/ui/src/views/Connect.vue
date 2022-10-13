@@ -109,10 +109,10 @@
         </Popup>
       </div>
     </div>
-    <router-link to="/manager" v-if="!isFirstAccess">
-      <Button navigation>
+    <router-link to="/coder" v-if="!isFirstAccess">
+      <Button transparent>
         <template v-slot:content>
-          Voltar para gerenciador
+          Voltar para codador
         </template>
       </Button>
     </router-link>
@@ -148,7 +148,7 @@ export default {
     PageUtils.isFirstAccess().then((response) => {
       this.isFirstAccess = response.data;
     });
-    axios.get("/sysconfig/networks/status").then((response) => {
+    axios.get("/chonide/networks/status").then((response) => {
       this.connectedNetwork = response.data;
     });
     this.getNetworks();
@@ -159,7 +159,7 @@ export default {
   methods: {
     getNetworks() {
       this.isSearching = true;
-      axios.get("/sysconfig/networks").then((response) => {
+      axios.get("/chonide/networks").then((response) => {
         this.networks = response.data;
         this.isSearching = false;
       });
@@ -177,7 +177,7 @@ export default {
       }
 
       this.isConnecting = true;
-      axios.post("/sysconfig/networks/ap", {
+      axios.post("/chonide/networks/ap", {
         essid: essid,
         password: password
       }).then(() => {
@@ -192,7 +192,7 @@ export default {
       let password = this.$refs['network'][networkIndex].$el.querySelector("input[name='password']").value;
 
       this.isConnecting = true;
-      axios.post("/sysconfig/networks/client", {
+      axios.post("/chonide/networks/client", {
         essid: essid,
         password: password
       }).then(() => {
@@ -207,7 +207,7 @@ export default {
       let password = this.$refs['manual-network-password-input'].$refs.input.value;
 
       this.isConnecting = true;
-      axios.post("/sysconfig/networks/client", {
+      axios.post("/chonide/networks/client", {
         essid: essid,
         password: password
       }).then(() => {

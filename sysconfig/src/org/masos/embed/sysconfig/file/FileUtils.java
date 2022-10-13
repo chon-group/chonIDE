@@ -122,10 +122,31 @@ public class FileUtils {
         }
     }
 
-    public static File zipFolder(File folder) {
+    public static boolean unzipFiles(File zipFile, String directoryToExtract) {
+        try {
+            ZipFile zippedFile = new ZipFile(zipFile);
+            zippedFile.extractAll(directoryToExtract);
+            zippedFile.close();
+            return true;
+        } catch (IOException e) {
+            throw new ErrorZippingFileException(zipFile.getName(), e);
+        }
+    }
+
+    public static File zipFilesByFolder(File folder) {
         try {
             ZipFile zipFile = new ZipFile(folder.getAbsoluteFile() + COMPACTED_FILE_EXTENSION);
-            zipFile.addFolder(folder);
+            File[] files = folder.listFiles();
+            if (files.length == 0) {
+                throw new ErrorZippingFileException(folder.getName(), new Exception("Pasta vazia"));
+            }
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    zipFile.addFolder(file);
+                } else {
+                    zipFile.addFile(file);
+                }
+            }
             zipFile.close();
             return zipFile.getFile();
         } catch (IOException e) {

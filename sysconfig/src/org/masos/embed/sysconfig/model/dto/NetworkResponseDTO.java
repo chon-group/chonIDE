@@ -3,7 +3,7 @@ package org.masos.embed.sysconfig.model.dto;
 import org.masos.embed.sysconfig.model.annotation.ResponseObject;
 
 /**
- * Classe modelo que representa uma rede retornada como resposta para sysconfig.
+ * Classe modelo que representa uma rede retornada como resposta para chonide.
  */
 @ResponseObject
 public class NetworkResponseDTO implements Comparable<NetworkResponseDTO> {

@@ -33,10 +33,10 @@ public class ConnectionScriptManager {
     private static final String WIFI_AP_MODE_WITHOUT_ENCRIPTION = WIFI_CONF_COMMAND + "-m ap -e %s -k NONE";
 
     /** Script para realizar conexão em modo cliente com encriptação do sistema. */
-    private static final String WIFI_CLIENT_MODE_WITH_ENCRIPTION = WIFI_CONF_COMMAND + "-m client -e %s -k %s";
+    private static final String WIFI_CLIENT_MODE_WITH_ENCRIPTION = WIFI_CONF_COMMAND + "-m client -e %s -k %s --reboot";
 
     /** Script para realizar conexão em modo cliente sem encriptação do sistema. */
-    private static final String WIFI_CLIENT_MODE_WITHOUT_ENCRIPTION = WIFI_CONF_COMMAND + "-m client -e %s";
+    private static final String WIFI_CLIENT_MODE_WITHOUT_ENCRIPTION = WIFI_CONF_COMMAND + "-m client -e %s --reboot";
 
     /** Comando para interação de conexão wi-fi. */
     private static final String WIFI_CONN_COMMAND = "chonosWifiConn ";

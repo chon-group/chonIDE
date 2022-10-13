@@ -27,8 +27,7 @@ public class MasStart extends HttpServlet {
         if (executor != null) {
             // Importando SMA.
             Project project = JsonManager.get().fromJson(ControllerUtils.getRequestBody(req), Project.class);
-            String buildMasPath = MasContentManager.buildMas(new Mas(project.getName(), project.getAgents()), executor);
-            executor.execute(ReasoningScriptManager.mountEmbeddedMASImportScript(buildMasPath), false);
+             MasContentManager.buildMas(new Mas(project.getName(), project.getAgents()), executor);
 
             // Iniciando SMA.
             String response = executor.execute(ReasoningScriptManager.EMBEDDED_MAS_START, false);

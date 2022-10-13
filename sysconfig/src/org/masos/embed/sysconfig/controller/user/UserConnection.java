@@ -61,6 +61,7 @@ public class UserConnection extends HttpServlet {
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
         HttpSession session = req.getSession();
         if(session != null) {
+            session.removeAttribute("executor");
             session.invalidate();
         }
     }

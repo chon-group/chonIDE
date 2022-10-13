@@ -18,7 +18,7 @@ public class ConnectView extends HttpServlet {
         if (executor != null) {
             req.getRequestDispatcher("/connect.html").forward(req, resp);
         } else {
-            resp.sendRedirect("/sysconfig/login");
+            resp.sendRedirect("/chonide/login");
         }
     }
 

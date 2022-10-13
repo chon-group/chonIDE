@@ -4,7 +4,7 @@ const {defineConfig} = require('@vue/cli-service')
 module.exports = defineConfig({
     transpileDependencies: true,
     outputDir: "../resources/",
-    publicPath: isDev ? "/" : "/sysconfig",
+    publicPath: isDev ? "/" : "/chonide",
     pages: {
         login: {
             entry: "src/main.ts",

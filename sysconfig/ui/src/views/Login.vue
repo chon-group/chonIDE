@@ -2,9 +2,8 @@
   <div class="login u-column u-align-i-center u-justify-i-center u-gap-1">
     <Response ref="response"/>
     <h1 class="logo u-column u-align-i-center u-gap-2">
-      <span class="logo__systemname u-row u-gap-3 u-align-i-center">
-        <span class="is-bold">chonos</span>
-        <span class="is-aside is-light">sysconfig</span>
+      <span class="logo__systemname">
+        <span class="is-bold">chonIDE</span>
       </span>
     </h1>
     <div class="u-column u-gap-2 u-align-i-center">
@@ -35,9 +34,9 @@
         </div>
         <div v-else class="u-column u-gap-3 u-align-i-center is-big">
           Seu novo link de acesso ao sysconfig
-          <a :href="'https://' + currentDomain + ':3270/sysconfig/login'" target="_blank"
+          <a :href="'https://' + currentDomain + ':3270/chonide/login'" target="_blank"
              class="login__new-link">{{
-              'https://' + currentDomain + ':3270/sysconfig/login'
+              'https://' + currentDomain + ':3270/chonide/login'
             }}</a>
         </div>
       </template>
@@ -83,9 +82,9 @@ export default {
     this.awaitConnection = localStorage.getItem("connecting");
     if (this.awaitConnection === 'true') {
       this.$refs.conecting.showing(true);
-      axios.get("/sysconfig/domains").then((response) => {
+      axios.get("/chonide/domains").then((response) => {
         this.currentDomain = response.data.domain;
-        axios.delete("/sysconfig/users");
+        axios.delete("/chonide/users");
         let interval = setInterval(() => {
           this.awaitConnectionCounter--;
           if (this.awaitConnectionCounter == 0) {
@@ -111,7 +110,7 @@ export default {
       }
 
       this.loading = true;
-      axios.post("/sysconfig/users",
+      axios.post("/chonide/users",
           {},
           {params: {username: this.username, password: this.password, host: this.currentHost}}
       ).then((response) => {
@@ -120,7 +119,7 @@ export default {
             if (Boolean(response.data) === true) {
               router.push("/domain");
             } else {
-              router.push("/manager");
+              router.push("/coder");
             }
           });
         } else {
@@ -149,7 +148,6 @@ export default {
 .logo__systemname {
   color: var(--pallete-text-main);
   font-size: var(--text-size-title);
-  font-weight: 700;
 }
 
 .login__form {

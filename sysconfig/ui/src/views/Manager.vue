@@ -188,7 +188,7 @@ export default {
       if (response.data == true) {
         router.push("/");
       } else {
-        axios.get("/sysconfig/domains").then((response) => {
+        axios.get("/chonide/domains").then((response) => {
           this.currentDomain = response.data.domain;
         });
       }
@@ -199,20 +199,20 @@ export default {
   methods: {
     turnOff() {
       this.$emit("message", {content: "Desligando sistema", type: MessageType.WARNING});
-      axios.put("/sysconfig/system/poweroff");
+      axios.put("/chonide/system/poweroff");
       setTimeout(() => {
         router.push("/");
       }, 2000);
     },
     reset() {
       this.$emit("message", {content: "Reiniciando sistema", type: MessageType.WARNING});
-      axios.put("/sysconfig/system/reboot");
+      axios.put("/chonide/system/reboot");
       setTimeout(() => {
         router.push("/");
       }, 2000);
     },
     logout() {
-      axios.delete("/sysconfig/users");
+      axios.delete("/chonide/users");
       router.push("/");
     },
     uploadLibrary() {
@@ -228,7 +228,7 @@ export default {
 
       this.$refs['pop-up-import-library'].close();
       this.isSearchingLibraries = true;
-      axios.post("/sysconfig/libraries/import", formData, {
+      axios.post("/chonide/libraries/import", formData, {
         headers: {
           "Content-Type": "multipart/form-data"
         }
@@ -245,7 +245,7 @@ export default {
     },
     startMas() {
       this.isStartingMas = true;
-      axios.put("/sysconfig/projectController/start").then((response) => {
+      axios.put("/chonide/projectController/start").then((response) => {
         if (response.data != null || response.data.length != 0) {
           this.$emit("message",)
           this.$emit("message", {
@@ -265,7 +265,7 @@ export default {
     },
     stopMas() {
       this.isStopingMas = true;
-      axios.put("/sysconfig/projectController/stop").then((response) => {
+      axios.put("/chonide/projectController/stop").then((response) => {
         if (response.data != null || response.data.length != 0) {
           this.$emit("message", {content: response.data, type: MessageType.SUCCESS});
         } else {
@@ -289,7 +289,7 @@ export default {
 
       this.$refs['pop-up-import-projectController'].close();
       this.isImportingMas = true;
-      axios.post("/sysconfig/projectController/import", formData, {
+      axios.post("/chonide/projectController/import", formData, {
         headers: {
           "Content-Type": "multipart/form-data"
         }
@@ -299,7 +299,7 @@ export default {
       });
     },
     code(board) {
-      axios.post("/sysconfig/sketch/board", {}, {params: {boardName: board.fqbn}}).then(() => {
+      axios.post("/chonide/sketch/board", {}, {params: {boardName: board.fqbn}}).then(() => {
         router.push("/coder");
       });
     },
@@ -308,7 +308,7 @@ export default {
       this.getBoards();
     },
     getBoards() {
-      axios.get("/sysconfig/boards").then((response) => {
+      axios.get("/chonide/boards").then((response) => {
         if (response.data == null) {
           this.boards = [];
         } else {
@@ -324,7 +324,7 @@ export default {
       this.getLibraries();
     },
     getLibraries() {
-      axios.get("/sysconfig/libraries").then((response) => {
+      axios.get("/chonide/libraries").then((response) => {
         this.libraries = response.data;
         this.isSearchingLibraries = false;
       }).catch((error) => {
