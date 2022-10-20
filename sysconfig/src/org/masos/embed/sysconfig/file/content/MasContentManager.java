@@ -27,6 +27,9 @@ public class MasContentManager {
 
     public static void buildMas(Mas mas, Executor executor) {
         File masDirectory = new File(MAS_DIRECTORY_PATH);
+        if(masDirectory.exists()){
+            FileUtils.deleteFolder(masDirectory);
+        }
         FileUtils.createFolder(masDirectory);
 
         File masStructureFile = new File(masDirectory, mas.getName() + MasStructure.MAS_STRUCTURE_FILE_EXTENSION);
@@ -57,7 +60,7 @@ public class MasContentManager {
     }
 
     private static Agent createDefaultAgent() {
-        return new Agent("embeddedAgent1", AgentArchClass.JASON.getName(),
+        return new Agent("agent1", AgentArchClass.JASON.getName(),
                 "/* Initial beliefs and rules */\n" + "\n" + "/* Initial goals */\n" + "\n" + "!start.\n" + "\n"
                         + "/* Plans */\n" + "\n" + "+!start <- .print(\"Hello world!\").");
     }

@@ -6,7 +6,7 @@
 
     <packaging>war</packaging>
 
-    <groupId>org.masos.embed.chonide</groupId>
+    <groupId>org.masos.embed.sysconfig</groupId>
     <artifactId>chonide</artifactId>
     <version>0.0.1</version>
 

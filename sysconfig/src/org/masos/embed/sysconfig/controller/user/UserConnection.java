@@ -18,9 +18,14 @@ public class UserConnection extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+        if(req.getSession() == null) {
+            Response.build(resp).json().ok(false);
+            return;
+        }
         Executor executor = (Executor) req.getSession().getAttribute("executor");
         if (executor != null) {
             Response.build(resp).json().ok(true);
+            return;
         }
         Response.build(resp).json().ok(false);
     }

@@ -218,7 +218,7 @@ import router from "@/router";
 const LINE_BREAK_CHAR = "\n", TAB_CHAR = "\t", POS_CHAR = "$";
 const CODER_DIFF_HEIGHT = 18;
 const AGENT_TYPE_ARGO = "Argo", AGENT_TYPE_JASON = "Jason", AGENT_TYPE_COMMUNICATOR = "Communicator";
-const AGENT_DEFAULT_FILE_NAME = "Agente", FIRMWARE_DEFAULT_FILE_NAME = "sketch";
+const AGENT_DEFAULT_FILE_NAME = "agent", FIRMWARE_DEFAULT_FILE_NAME = "sketch";
 const DEFAULT_LINKS_PROTOCOL = "http://";
 
 export default {
@@ -298,6 +298,8 @@ export default {
       this.currentFile = this.agents[0];
     });
 
+    this.$refs.coder.style.height = (this.$refs.coderLines.scrollHeight + (2 * CODER_DIFF_HEIGHT)) + "px";
+
     axios.get("/chonide/domains").then((response) => {
       this.domain = response.data;
     });
@@ -332,6 +334,15 @@ export default {
     });
   },
   methods: {
+    isUserValid(){
+      axios.get("/chonide/users").then((response) => {
+        if(response.data === false) {
+          router.push("/login");
+          this.$emit("message", {content: "O tempo da sessão terminou", type: MessageType.ERROR});
+        }
+        return response.data;
+      });
+    },
     projectIsInvalid() {
       if (this.projectName.length === 0) {
         this.$emit("message", {content: "O nome do projeto não pode ser vazio", type: MessageType.ERROR});
@@ -340,6 +351,9 @@ export default {
       return false;
     },
     compileSketch() {
+      if(!this.isUserValid()){
+        return;
+      }
       if (this.currentBoard == null) {
         this.$emit("message", {content: "Nenhuma placa foi selecionada", type: MessageType.WARNING});
         return;
@@ -357,6 +371,9 @@ export default {
       });
     },
     deploySketch() {
+      if(!this.isUserValid()){
+        return;
+      }
       if (this.currentBoard == null) {
         this.$emit("message", {content: "Não existe nenhuma placa selecionada", type: MessageType.WARNING});
         return;
@@ -374,6 +391,9 @@ export default {
       });
     },
     saveProject() {
+      if(!this.isUserValid()){
+        return;
+      }
       this.savingProject = true;
       return axios.put("/chonide/projects", {
         name: this.projectName,
@@ -385,7 +405,10 @@ export default {
         }, 100);
       });
     },
-    startMas() {
+    startMas(){
+      if(!this.isUserValid()){
+        return;
+      }
       if (this.projectIsInvalid()) {
         return;
       }
@@ -402,6 +425,9 @@ export default {
       });
     },
     stopMas() {
+      if(!this.isUserValid()){
+        return;
+      }
       this.stopingMas = true;
       axios.put("/chonide/mas/stop").then((response) => {
         if (response.data.includes("Encerrando SMA")) {
@@ -413,6 +439,9 @@ export default {
       });
     },
     turnOffSystem() {
+      if(!this.isUserValid()){
+        return;
+      }
       this.$emit("message", {content: "Desligando sistema", type: MessageType.WARNING});
       axios.put("/chonide/system/poweroff");
       setTimeout(() => {
@@ -420,6 +449,9 @@ export default {
       }, 2000);
     },
     resetSystem() {
+      if(!this.isUserValid()){
+        return;
+      }
       this.$emit("message", {content: "Reiniciando sistema", type: MessageType.WARNING});
       axios.put("/chonide/system/reboot");
       setTimeout(() => {
@@ -431,26 +463,41 @@ export default {
       router.push("/login");
     },
     removeAgentFile(index) {
+      if(!this.isUserValid()){
+        return;
+      }
       if (this.currentFile === this.agents[index]) {
         this.currentFile = this.agents[index - 1];
       }
       this.agents.splice(index, 1);
     },
     removeFirmwareFile(index) {
+      if(!this.isUserValid()){
+        return;
+      }
       if (this.currentFile === this.firmwares[index]) {
         this.currentFile = this.firmwares[index - 1];
       }
       this.firmwares.splice(index, 1);
     },
     showAgentFile(index) {
+      if(!this.isUserValid()){
+        return;
+      }
       this.currentFile = this.agents[index];
       this.firmwareFileIsOpen = false;
     },
     showFirmwareFile(index) {
+      if(!this.isUserValid()){
+        return;
+      }
       this.currentFile = this.firmwares[index];
       this.firmwareFileIsOpen = true;
     },
     addFirmwareFile() {
+      if(!this.isUserValid()){
+        return;
+      }
       this.firmwares.push({
         name: FIRMWARE_DEFAULT_FILE_NAME + " " + (this.firmwares.length + 1),
         sourceCode: "void setup() {\n"
@@ -459,14 +506,20 @@ export default {
       });
     },
     addAgentFile() {
+      if(!this.isUserValid()){
+        return;
+      }
       this.agents.push({
-        name: AGENT_DEFAULT_FILE_NAME + " " + (this.agents.length + 1),
+        name: AGENT_DEFAULT_FILE_NAME + (this.agents.length + 1),
         archClass: AGENT_TYPE_JASON,
         sourceCode: "/* Initial beliefs and rules */\n" + "\n" + "/* Initial goals */\n" + "\n" + "!start.\n" + "\n"
             + "/* Plans */\n" + "\n" + "+!start <- .print(\"Hello world!\").",
       });
     },
     importLibrary(event) {
+      if(!this.isUserValid()){
+        return;
+      }
       let files = event.target.files;
       if (files.length === 0) {
         return;
@@ -500,6 +553,9 @@ export default {
       });
     },
     loadLibraries(refresh) {
+      if(!this.isUserValid()){
+        return;
+      }
       this.loadingLibraries = true;
       return axios.get("/chonide/libraries", {params: {refresh: refresh}}).then((response) => {
         this.libraries = response.data;
@@ -508,6 +564,9 @@ export default {
       });
     },
     loadBoards(refresh) {
+      if(!this.isUserValid()){
+        return;
+      }
       this.currentBoard = null;
       this.loadingBoards = true;
       axios.get("/chonide/boards", {params: {refresh: refresh}}).then((response) => {
