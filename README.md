@@ -3,12 +3,14 @@ _Developing an Embedded MAS is a task that requires the domain ofseveral areas o
 
 ## Demonstration
 
-<iframe width="560" height="315" src="https://youtu.be/MfZQjUNYglQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/MfZQjUNYglQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 ## How to install?
 Debian 11 and Ubuntu 22.04
 ```sh
- echo "deb [trusted=yes] http://packages.chon.group/ chonos main" | sudo tee /etc/apt/sources.list.d/chonos.list; sudo apt update; sudo apt install chonide
+ echo "deb [trusted=yes] http://packages.chon.group/ chonos main" | sudo tee /etc/apt/sources.list.d/chonos.list
+ sudo apt update
+ sudo apt install chonide
 ```
 ## Publications
 + WESAAC 2022
