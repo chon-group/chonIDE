@@ -334,13 +334,12 @@ export default {
     });
   },
   methods: {
-    isUserValid(){
+    validateUser(){
       axios.get("/chonide/users").then((response) => {
         if(response.data === false) {
           router.push("/login");
           this.$emit("message", {content: "O tempo da sessão terminou", type: MessageType.ERROR});
         }
-        return response.data;
       });
     },
     projectIsInvalid() {
@@ -351,9 +350,7 @@ export default {
       return false;
     },
     compileSketch() {
-      if(!this.isUserValid()){
-        return;
-      }
+      this.validateUser();
       if (this.currentBoard == null) {
         this.$emit("message", {content: "Nenhuma placa foi selecionada", type: MessageType.WARNING});
         return;
@@ -371,9 +368,7 @@ export default {
       });
     },
     deploySketch() {
-      if(!this.isUserValid()){
-        return;
-      }
+      !this.validateUser()
       if (this.currentBoard == null) {
         this.$emit("message", {content: "Não existe nenhuma placa selecionada", type: MessageType.WARNING});
         return;
@@ -391,9 +386,7 @@ export default {
       });
     },
     saveProject() {
-      if(!this.isUserValid()){
-        return;
-      }
+      !this.validateUser()
       this.savingProject = true;
       return axios.put("/chonide/projects", {
         name: this.projectName,
@@ -406,9 +399,7 @@ export default {
       });
     },
     startMas(){
-      if(!this.isUserValid()){
-        return;
-      }
+      !this.validateUser()
       if (this.projectIsInvalid()) {
         return;
       }
@@ -425,9 +416,7 @@ export default {
       });
     },
     stopMas() {
-      if(!this.isUserValid()){
-        return;
-      }
+      !this.validateUser()
       this.stopingMas = true;
       axios.put("/chonide/mas/stop").then((response) => {
         if (response.data.includes("Encerrando SMA")) {
@@ -439,9 +428,7 @@ export default {
       });
     },
     turnOffSystem() {
-      if(!this.isUserValid()){
-        return;
-      }
+      !this.validateUser()
       this.$emit("message", {content: "Desligando sistema", type: MessageType.WARNING});
       axios.put("/chonide/system/poweroff");
       setTimeout(() => {
@@ -449,9 +436,7 @@ export default {
       }, 2000);
     },
     resetSystem() {
-      if(!this.isUserValid()){
-        return;
-      }
+      !this.validateUser()
       this.$emit("message", {content: "Reiniciando sistema", type: MessageType.WARNING});
       axios.put("/chonide/system/reboot");
       setTimeout(() => {
@@ -463,41 +448,31 @@ export default {
       router.push("/login");
     },
     removeAgentFile(index) {
-      if(!this.isUserValid()){
-        return;
-      }
+      !this.validateUser()
       if (this.currentFile === this.agents[index]) {
         this.currentFile = this.agents[index - 1];
       }
       this.agents.splice(index, 1);
     },
     removeFirmwareFile(index) {
-      if(!this.isUserValid()){
-        return;
-      }
+      !this.validateUser()
       if (this.currentFile === this.firmwares[index]) {
         this.currentFile = this.firmwares[index - 1];
       }
       this.firmwares.splice(index, 1);
     },
     showAgentFile(index) {
-      if(!this.isUserValid()){
-        return;
-      }
+      !this.validateUser()
       this.currentFile = this.agents[index];
       this.firmwareFileIsOpen = false;
     },
     showFirmwareFile(index) {
-      if(!this.isUserValid()){
-        return;
-      }
+      !this.validateUser()
       this.currentFile = this.firmwares[index];
       this.firmwareFileIsOpen = true;
     },
     addFirmwareFile() {
-      if(!this.isUserValid()){
-        return;
-      }
+      !this.validateUser()
       this.firmwares.push({
         name: FIRMWARE_DEFAULT_FILE_NAME + " " + (this.firmwares.length + 1),
         sourceCode: "void setup() {\n"
@@ -506,9 +481,7 @@ export default {
       });
     },
     addAgentFile() {
-      if(!this.isUserValid()){
-        return;
-      }
+      !this.validateUser()
       this.agents.push({
         name: AGENT_DEFAULT_FILE_NAME + (this.agents.length + 1),
         archClass: AGENT_TYPE_JASON,
@@ -517,9 +490,7 @@ export default {
       });
     },
     importLibrary(event) {
-      if(!this.isUserValid()){
-        return;
-      }
+      !this.validateUser()
       let files = event.target.files;
       if (files.length === 0) {
         return;
@@ -553,9 +524,7 @@ export default {
       });
     },
     loadLibraries(refresh) {
-      if(!this.isUserValid()){
-        return;
-      }
+      !this.validateUser()
       this.loadingLibraries = true;
       return axios.get("/chonide/libraries", {params: {refresh: refresh}}).then((response) => {
         this.libraries = response.data;
@@ -564,9 +533,7 @@ export default {
       });
     },
     loadBoards(refresh) {
-      if(!this.isUserValid()){
-        return;
-      }
+      !this.validateUser()
       this.currentBoard = null;
       this.loadingBoards = true;
       axios.get("/chonide/boards", {params: {refresh: refresh}}).then((response) => {
