@@ -1,6 +1,6 @@
 package org.masos.embed.sysconfig.view;
 
-import org.masos.embed.sysconfig.model.executor.Executor;
+import org.masos.embed.sysconfig.domain.model.Executor;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
