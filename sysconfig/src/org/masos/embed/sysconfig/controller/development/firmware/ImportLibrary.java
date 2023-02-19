@@ -1,22 +1,20 @@
 package org.masos.embed.sysconfig.controller.development.firmware;
 
+import org.masos.embed.sysconfig.controller.ApiController;
+import org.masos.embed.sysconfig.controller.authentication.AuthenticatedUser;
 import org.masos.embed.sysconfig.file.content.FirmwareContentManager;
-import org.masos.embed.sysconfig.model.Response;
-import org.masos.embed.sysconfig.model.executor.Executor;
-import org.masos.embed.sysconfig.model.http.HttpStatus;
+import org.masos.embed.sysconfig.model.ResponseEntity;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.IOException;
+import java.util.Map;
 
-@WebServlet("/libraries/import")
+@WebServlet("/api/libraries/import")
 @MultipartConfig
-public class ImportLibrary extends HttpServlet {
+public class ImportLibrary extends ApiController {
 
     private static final String FAILED_IMPORT_MESSAGE
             = "Não foi possível importar, confira se o arquivo está vazio ou é válido";
@@ -24,25 +22,25 @@ public class ImportLibrary extends HttpServlet {
     private static final String SUCCESS_IMPORT_MESSAGE = "Biblioteca importada dom sucesso";
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Executor executor = (Executor) req.getSession().getAttribute("executor");
-        if (executor != null) {
-            Part submittedLibrary = req.getPart("file");
+    protected ResponseEntity post(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
+        Part submittedLibrary = (Part) parameters.get("file");
 
-            Response response = Response.build(resp).text();
-            if (!FirmwareContentManager.isValidSubmittedLibrary(submittedLibrary)) {
-                response.send(FAILED_IMPORT_MESSAGE, HttpStatus.BAD_REQUEST.getCode());
-                return;
-            }
-
-            boolean wasImported = FirmwareContentManager.buildLibrary(submittedLibrary, executor);
-
-            if (!wasImported) {
-                response.send(FAILED_IMPORT_MESSAGE, HttpStatus.BAD_REQUEST.getCode());
-                return;
-            }
-
-            response.ok(SUCCESS_IMPORT_MESSAGE);
+        ResponseEntity responseEntity = ResponseEntity.get();
+        if (!FirmwareContentManager.isValidSubmittedLibrary(submittedLibrary)) {
+            return responseEntity.status(HttpServletResponse.SC_BAD_REQUEST).message(FAILED_IMPORT_MESSAGE);
         }
+
+        boolean wasImported = false;
+        try {
+            wasImported = FirmwareContentManager.buildLibrary(submittedLibrary, authenticatedUser.getExecutor());
+        } catch (IOException ignored) {
+        }
+
+        if (!wasImported) {
+            return responseEntity.status(HttpServletResponse.SC_BAD_REQUEST).message(FAILED_IMPORT_MESSAGE);
+        }
+
+        return responseEntity.status(HttpServletResponse.SC_OK).message(SUCCESS_IMPORT_MESSAGE);
     }
+
 }

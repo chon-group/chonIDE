@@ -1,25 +1,22 @@
 package org.masos.embed.sysconfig.controller.network;
 
-import org.masos.embed.sysconfig.model.Response;
-import org.masos.embed.sysconfig.model.executor.Executor;
+import org.masos.embed.sysconfig.controller.ApiController;
+import org.masos.embed.sysconfig.controller.authentication.AuthenticatedUser;
+import org.masos.embed.sysconfig.model.ResponseEntity;
 import org.masos.embed.sysconfig.script.ConnectionScriptManager;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.util.Map;
 
-@WebServlet("/networks/status")
-public class StatusNetwork extends HttpServlet {
+@WebServlet("/api/networks/status")
+public class StatusNetwork extends ApiController {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Executor executor = (Executor) req.getSession().getAttribute("executor");
-        if (executor != null) {
-            Response.build(resp).json().ok(
-                    executor.execute(ConnectionScriptManager.WIFI_STATUS, false).replace(" Nickname", ""));
-        }
+    protected ResponseEntity get(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
+        return ResponseEntity.get().status(HttpServletResponse.SC_OK).data(
+                authenticatedUser.getExecutor().execute(ConnectionScriptManager.WIFI_STATUS, false)
+                        .replace(" Nickname", ""));
     }
+
 }

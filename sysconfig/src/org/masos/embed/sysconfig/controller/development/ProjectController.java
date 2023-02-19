@@ -1,53 +1,35 @@
 package org.masos.embed.sysconfig.controller.development;
 
+import org.masos.embed.sysconfig.controller.ApiController;
 import org.masos.embed.sysconfig.controller.JsonManager;
+import org.masos.embed.sysconfig.controller.authentication.AuthenticatedUser;
 import org.masos.embed.sysconfig.file.content.ProjectContentManager;
 import org.masos.embed.sysconfig.file.dto.Project;
-import org.masos.embed.sysconfig.model.Response;
-import org.masos.embed.sysconfig.model.executor.Executor;
-import org.masos.embed.sysconfig.model.http.HttpStatus;
-import org.masos.embed.sysconfig.controller.ControllerUtils;
+import org.masos.embed.sysconfig.model.ResponseEntity;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 
-@WebServlet("/projects")
-public class ProjectController extends HttpServlet {
+@WebServlet("/api/projects")
+public class ProjectController extends ApiController {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Response response = Response.build(resp).allowAnyOrigin();
-        Executor executor = (Executor) req.getSession().getAttribute("executor");
-        if (executor == null) {
-            return;
+    protected ResponseEntity get(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
+        ResponseEntity responseEntity = ResponseEntity.get();
+        try {
+            return responseEntity.status(HttpServletResponse.SC_OK).data(ProjectContentManager.get());
+        } catch (IOException e) {
+            return responseEntity.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).message(e.getMessage());
         }
-
-        Project project = (Project) req.getSession().getAttribute("project");
-        if (project == null) {
-            project = ProjectContentManager.get();
-            req.getSession().setAttribute("project", project);
-        }
-        response.json().ok(project);
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
-        Response response = Response.build(resp).allowAnyOrigin();
-        Executor executor = (Executor) req.getSession().getAttribute("executor");
-        if (executor == null) {
-            return;
-        }
-
-        Project project = JsonManager.get().fromJson(ControllerUtils.getRequestBody(req), Project.class);
-        if (project != null) {
-            ProjectContentManager.set(project);
-            req.getSession().setAttribute("project", project);
-        } else {
-            response.json().status(HttpStatus.BAD_REQUEST);
-        }
+    protected ResponseEntity put(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
+        Project project = JsonManager.get().fromJson(parameters.get("project").toString(), Project.class);
+        ProjectContentManager.set(project);
+        return ResponseEntity.get().status(HttpServletResponse.SC_OK).data(project);
     }
+
 }

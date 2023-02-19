@@ -1,23 +1,21 @@
 package org.masos.embed.sysconfig.controller.development.mas;
 
-import org.masos.embed.sysconfig.model.Response;
-import org.masos.embed.sysconfig.model.executor.Executor;
+import org.masos.embed.sysconfig.controller.ApiController;
+import org.masos.embed.sysconfig.controller.authentication.AuthenticatedUser;
+import org.masos.embed.sysconfig.model.ResponseEntity;
 import org.masos.embed.sysconfig.script.ReasoningScriptManager;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
-@WebServlet("/mas/stop")
-public class MasStop extends HttpServlet {
+@WebServlet("/api/mas/stop")
+public class MasStop extends ApiController {
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
-        Executor executor = (Executor) req.getSession().getAttribute("executor");
-        if (executor != null) {
-            String response = executor.execute(ReasoningScriptManager.EMBEDDED_MAS_STOP, false);
-            Response.build(resp).text().ok(response);
-        }
+    protected ResponseEntity put(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
+        String response = authenticatedUser.getExecutor().execute(ReasoningScriptManager.EMBEDDED_MAS_STOP, false);
+        return ResponseEntity.get().status(HttpServletResponse.SC_OK).data(response);
     }
+
 }

@@ -1,37 +1,29 @@
 package org.masos.embed.sysconfig.controller.domain;
 
-import org.masos.embed.sysconfig.model.Response;
-import org.masos.embed.sysconfig.model.executor.Executor;
+import org.masos.embed.sysconfig.controller.ApiController;
+import org.masos.embed.sysconfig.controller.authentication.AuthenticatedUser;
+import org.masos.embed.sysconfig.model.ResponseEntity;
 import org.masos.embed.sysconfig.script.ConnectionScriptManager;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
-@WebServlet("/domains")
-public class DomainController extends HttpServlet {
+@WebServlet("/api/domains")
+public class DomainController extends ApiController {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        Executor executor = (Executor) req.getSession().getAttribute("executor");
-        if (executor != null) {
-            String domain = (String) req.getSession().getAttribute("domain");
-            if (domain == null) {
-                domain = executor.execute(ConnectionScriptManager.DDNS_STATUS, false);
-                req.getSession().setAttribute("domain", domain);
-            }
-            Response.build(resp).json().ok(domain);
-        }
+    protected ResponseEntity get(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
+        return ResponseEntity.get().status(HttpServletResponse.SC_OK).data(
+                authenticatedUser.getExecutor().execute(ConnectionScriptManager.DDNS_STATUS, false));
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
-        Executor executor = (Executor) req.getSession().getAttribute("executor");
-        if (executor != null) {
-            String domain = req.getParameter("domain");
-            String domainCommand = ConnectionScriptManager.mountDDNSConfScript(domain);
-            req.getSession().setAttribute("domain", executor.execute(domainCommand, false));
-        }
+    protected ResponseEntity post(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
+        String domain = parameters.get("domain").toString();
+        String domainCommand = ConnectionScriptManager.mountDDNSConfScript(domain);
+        return ResponseEntity.get().status(HttpServletResponse.SC_OK).data(
+                authenticatedUser.getExecutor().execute(domainCommand, false));
     }
+
 }

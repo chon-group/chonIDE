@@ -1,21 +1,34 @@
 package org.masos.embed.sysconfig.controller.system;
 
-import org.masos.embed.sysconfig.model.executor.Executor;
+import org.masos.embed.sysconfig.controller.ApiController;
+import org.masos.embed.sysconfig.controller.authentication.AuthenticatedUser;
+import org.masos.embed.sysconfig.model.ResponseEntity;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
-@WebServlet("/system/poweroff")
-public class SystemPowerOff extends HttpServlet {
+@WebServlet("/api/system/poweroff")
+public class SystemPowerOff extends ApiController {
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
-        Executor executor = (Executor) req.getSession().getAttribute("executor");
-        if (executor != null) {
-            req.getSession().invalidate();
-            executor.execute("poweroff", false);
-        }
+    protected ResponseEntity get(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
+        return null;
+    }
+
+    @Override
+    protected ResponseEntity post(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
+        return null;
+    }
+
+    @Override
+    protected ResponseEntity put(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
+        authenticatedUser.getExecutor().execute("poweroff", false);
+        return ResponseEntity.get().status(HttpServletResponse.SC_OK);
+    }
+
+    @Override
+    protected ResponseEntity delete(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
+        return null;
     }
 }

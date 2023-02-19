@@ -86,6 +86,7 @@ public class AuthValidatorFilter implements Filter {
                 writer.write(JsonManager.get().toJson(responseEntity));
                 writer.flush();
                 writer.close();
+                SecurityContextHolder.get().getAuthenticatedUsersByToken().remove(jwt);
                 return;
             }
             authenticatedUser.setExpirationDate(

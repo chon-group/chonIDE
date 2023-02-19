@@ -4,6 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.masos.embed.sysconfig.controller.ApiController;
 import org.masos.embed.sysconfig.model.ResponseEntity;
+import org.masos.embed.sysconfig.model.executor.Executor;
+import org.masos.embed.sysconfig.model.executor.RuntimeExecutor;
 import org.masos.embed.sysconfig.model.executor.SSHExecutor;
 
 import javax.servlet.annotation.WebServlet;
@@ -27,28 +29,36 @@ public class AuthGeneratorServlet extends ApiController {
     private static final Algorithm JWT_ALGORITHM = Algorithm.HMAC256(UUID_KEY);
 
     @Override
-    protected ResponseEntity get(AuthenticatedUser authenticatedUser, Map<String, String> parameters) {
+    protected ResponseEntity get(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
         ResponseEntity responseEntity = ResponseEntity.get();
         if (authenticatedUser != null) {
             return responseEntity.status(HttpServletResponse.SC_OK);
         }
-        String username = parameters.get("username");
-        String password = parameters.get("password");
-        String host = parameters.get("host");
+        String username = (String) parameters.get("username");
+        String password = (String) parameters.get("password");
+        String host = (String) parameters.get("host");
 
         if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
             return responseEntity.status(HttpServletResponse.SC_BAD_REQUEST).message(
                     "Os parâmetros de 'username' e 'passowrd' estão vazios ou não existem.");
         }
+        boolean isDefaultHost = false;
         if (host == null || host.isEmpty()) {
             host = DEFAULT_HOST;
+            isDefaultHost = true;
         }
 
         SSHExecutor sshExecutor = new SSHExecutor(username, password, host);
         if (sshExecutor.test()) {
             String jwt = JWT.create().withSubject(username).sign(JWT_ALGORITHM);
             Date date = new Date(System.currentTimeMillis() + EXPIRATION_TIME);
-            AuthenticatedUser newAuthenticatedUser = new AuthenticatedUser(username, password, host);
+            Executor executor;
+            if (isDefaultHost) {
+                executor = new RuntimeExecutor();
+            } else {
+                executor = new SSHExecutor(username, password, host);
+            }
+            AuthenticatedUser newAuthenticatedUser = new AuthenticatedUser(executor);
             newAuthenticatedUser.setExpirationDate(date);
             newAuthenticatedUser.setLastRequisitionDate(date);
             SecurityContextHolder.get().getAuthenticatedUsersByToken().put(jwt, newAuthenticatedUser);
@@ -57,20 +67,5 @@ public class AuthGeneratorServlet extends ApiController {
             return responseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).message(
                     "Não foi possível autenticar seu usuário.");
         }
-    }
-
-    @Override
-    protected ResponseEntity post(AuthenticatedUser authenticatedUser, Map<String, String> parameters) {
-        return null;
-    }
-
-    @Override
-    protected ResponseEntity put(AuthenticatedUser authenticatedUser, Map<String, String> parameters) {
-        return null;
-    }
-
-    @Override
-    protected ResponseEntity delete(AuthenticatedUser authenticatedUser, Map<String, String> parameters) {
-        return null;
     }
 }

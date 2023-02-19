@@ -3,6 +3,7 @@ package org.masos.embed.sysconfig.controller.authentication;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.masos.embed.sysconfig.model.executor.Executor;
 
 import java.util.Date;
 
@@ -11,14 +12,8 @@ import java.util.Date;
 @Setter
 public class AuthenticatedUser {
 
-    /** Nome do usuário. */
-    private final String username;
-
-    /** Senha do usuário. */
-    private final String password;
-
-    /** Host do usuário. */
-    private final String host;
+    /** Executor de ações no sistema. */
+    private final Executor executor;
 
     /** Data de expiração de acesso ao sistema. */
     private Date expirationDate;

@@ -1,31 +1,30 @@
 package org.masos.embed.sysconfig.controller.development.firmware;
 
+import org.masos.embed.sysconfig.controller.ApiController;
+import org.masos.embed.sysconfig.controller.authentication.AuthenticatedUser;
 import org.masos.embed.sysconfig.file.content.FirmwareContentManager;
-import org.masos.embed.sysconfig.model.Response;
+import org.masos.embed.sysconfig.model.ResponseEntity;
 import org.masos.embed.sysconfig.model.executor.Executor;
 import org.masos.embed.sysconfig.script.FirmwareScriptManager;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
-@WebServlet("/sketchs/compile")
-public class CompileSketch extends HttpServlet {
+@WebServlet("/api/sketchs/compile")
+public class CompileSketch extends ApiController {
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
-        Executor executor = (Executor) req.getSession().getAttribute("executor");
+    protected ResponseEntity post(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
+        String boardName = parameters.get("boardName").toString();
+        String code = parameters.get("code").toString();
 
-        if (executor != null) {
-            String boardName = req.getParameter("boardName");
-            String code = req.getParameter("code");
+        Executor executor = authenticatedUser.getExecutor();
+        String buildSketchPath = FirmwareContentManager.buildSketch(code, executor);
 
-            String buildSketchPath = FirmwareContentManager.buildSketch(code, executor);
-
-            Response.build(resp).text().ok(
-                    executor.execute(FirmwareScriptManager.mountArduinoCompileSketchScript(buildSketchPath, boardName),
-                            true));
-        }
+        return ResponseEntity.get().status(HttpServletResponse.SC_OK).data(
+                executor.execute(FirmwareScriptManager.mountArduinoCompileSketchScript(buildSketchPath, boardName),
+                        true));
     }
+
 }

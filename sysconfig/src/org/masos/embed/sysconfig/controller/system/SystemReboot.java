@@ -1,21 +1,20 @@
 package org.masos.embed.sysconfig.controller.system;
 
-import org.masos.embed.sysconfig.model.executor.Executor;
+import org.masos.embed.sysconfig.controller.ApiController;
+import org.masos.embed.sysconfig.controller.authentication.AuthenticatedUser;
+import org.masos.embed.sysconfig.model.ResponseEntity;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
-@WebServlet("/system/reboot")
-public class SystemReboot extends HttpServlet {
+@WebServlet("/api/system/reboot")
+public class SystemReboot extends ApiController {
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
-        Executor executor = (Executor) req.getSession().getAttribute("executor");
-        if (executor != null) {
-            req.getSession().invalidate();
-            executor.execute("reboot", false);
-        }
+    protected ResponseEntity put(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
+        authenticatedUser.getExecutor().execute("reboot", false);
+        return ResponseEntity.get().status(HttpServletResponse.SC_OK);
     }
+
 }
