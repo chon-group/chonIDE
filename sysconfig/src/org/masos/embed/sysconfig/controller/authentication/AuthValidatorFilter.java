@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.masos.embed.sysconfig.controller.authentication.AuthGeneratorServlet.EXPIRATION_TIME;
+
 @WebFilter(urlPatterns = {"/api/*"})
 public class AuthValidatorFilter implements Filter {
 
@@ -22,6 +24,9 @@ public class AuthValidatorFilter implements Filter {
 
     /** Padrão do valor de cabeçalho de autenticação */
     private static final Pattern AUTHORIZATION_HEADER_VALUE_PATTERN = Pattern.compile("Bearer ([\\s\\S]+)");
+
+    /** Tempo seguro da última requisição em relação ao tempo de expiração. */
+    private static final long LAST_REQUISITION_SAFE_TIME = 300000;
 
     public AuthValidatorFilter() {
     }
@@ -64,13 +69,27 @@ public class AuthValidatorFilter implements Filter {
         String jwt = headerMatcher.group(1);
         AuthenticatedUser authenticatedUser = SecurityContextHolder.get().getAuthenticatedUsersByToken().get(jwt);
         if (authenticatedUser == null) {
-            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            responseEntity.status(HttpServletResponse.SC_FORBIDDEN).message("Não foi possível validar o token.").date(
-                    date);
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            responseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).message("Não foi possível validar o token.")
+                    .date(date);
             writer.write(JsonManager.get().toJson(responseEntity));
             writer.flush();
             writer.close();
             return;
+        }
+        long expirationTime = authenticatedUser.getExpirationDate().getTime();
+        if (date.getTime() >= expirationTime) {
+            long lastRequisitionTime = authenticatedUser.getLastRequisitionDate().getTime();
+            if (lastRequisitionTime + LAST_REQUISITION_SAFE_TIME >= expirationTime) {
+                resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                responseEntity.status(HttpServletResponse.SC_FORBIDDEN).message("Sessão terminou.").date(date);
+                writer.write(JsonManager.get().toJson(responseEntity));
+                writer.flush();
+                writer.close();
+                return;
+            }
+            authenticatedUser.setExpirationDate(
+                    new Date(authenticatedUser.getExpirationDate().getTime() + EXPIRATION_TIME));
         }
         req.setAttribute("user", authenticatedUser);
         chain.doFilter(request, response);

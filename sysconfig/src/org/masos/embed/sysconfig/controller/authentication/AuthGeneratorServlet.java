@@ -8,10 +8,14 @@ import org.masos.embed.sysconfig.model.executor.SSHExecutor;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.Map;
 
 @WebServlet("/auth")
 public class AuthGeneratorServlet extends ApiController {
+
+    /** Tempo de expiração do usuário autenticado (30 minutos). */
+    protected static final long EXPIRATION_TIME = 900000 * 2;
 
     /** Host padrão. */
     private static final String DEFAULT_HOST = "localhost";
@@ -41,9 +45,12 @@ public class AuthGeneratorServlet extends ApiController {
         }
 
         SSHExecutor sshExecutor = new SSHExecutor(username, password, host);
-        if (true) {
+        if (sshExecutor.test()) {
             String jwt = JWT.create().withSubject(username).sign(JWT_ALGORITHM);
+            Date date = new Date(System.currentTimeMillis() + EXPIRATION_TIME);
             AuthenticatedUser newAuthenticatedUser = new AuthenticatedUser(username, password, host);
+            newAuthenticatedUser.setExpirationDate(date);
+            newAuthenticatedUser.setLastRequisitionDate(date);
             SecurityContextHolder.get().getAuthenticatedUsersByToken().put(jwt, newAuthenticatedUser);
             return responseEntity.status(HttpServletResponse.SC_OK).message("Usuário autenticado.").data(jwt);
         } else {
