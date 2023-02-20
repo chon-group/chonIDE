@@ -69,7 +69,6 @@ export default {
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(3px);
   position: absolute;
   z-index: 5;
   overflow-y: hidden;

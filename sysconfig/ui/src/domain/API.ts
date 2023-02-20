@@ -100,4 +100,12 @@ export class EndPoints {
     public static NETWORKS_CLIENT = API_URL + "/networks/client";
 }
 
+export class Headers {
+    public static MULTIPART_CONFIG = {
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    };
+}
+
 

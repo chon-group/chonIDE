@@ -92,7 +92,8 @@
             </div>
             <div v-for="(agent,index) in agents" :key="index"
                  class="coder__explorer__item third-level u-row u-align-i-center u-gap-3" v-show="agentsOpen">
-              <div class="u-height-cover u-width-cover u-row u-align-i-center u-gap-3" @click="showAgentFile(index)">
+              <div class="u-height-cover u-width-cover u-row u-align-i-center u-gap-3"
+                   @click="this.currentFile = agent">
                 <span class="coder__explorer__item__icon">Ag</span>
                 <select class="is-agent-type coder__action" v-model="agent.archClass">
                   <option v-for="(type, index) in agentTypes" :key="index" :value="type"
@@ -100,11 +101,42 @@
                     {{ type }}
                   </option>
                 </select>
-                <span class="coder__explorer__item__name">{{ agent.name }}</span>
+                <input type="text" class="coder__explorer__item__name" v-model="agent.name" ref="input" readonly/>
               </div>
-              <button class="coder__action is-remove"
-                      @click="removeAgentFile(index)" v-if="index !== 0">
-              </button>
+              <Toggle type="contextmenu" direction="right">
+                <template v-slot:options>
+                  <button
+                      @click="editFileName($refs.input[index])">Renomear
+                  </button>
+                  <hr/>
+                  <button class="severe agent-delete-button">
+                    Excluir
+                    <Popup for="agent-delete-button" :title="'Deletar ' + agent.name" ref="delete-agent-popup"
+                           :can-close="false">
+                      <template v-slot:content>
+                        Você tem certeza que deseja deletar esse arquivo? Não será possível recupera-lo.
+                      </template>
+                      <template v-slot:action>
+                        <Button color="var(--pallete-color-black-4)"
+                                @click="$refs['delete-agent-popup'][index].close()">
+                          <template v-slot:content>
+                            Cancelar
+                          </template>
+                        </Button>
+                        <Button color="var(--pallete-color-red-1)"
+                                @click="() => {
+                                  removeFile(index, agents);
+                                  $refs['delete-agent-popup'][index].close()
+                                }">
+                          <template v-slot:content>
+                            Sim, deletar arquivo.
+                          </template>
+                        </Button>
+                      </template>
+                    </Popup>
+                  </button>
+                </template>
+              </Toggle>
             </div>
             <div class="coder__explorer__item first-level u-row u-align-i-center">
               <div class="u-height-cover u-width-cover u-row u-align-i-center" @click="firmwaresOpen = !firmwaresOpen">
@@ -116,12 +148,44 @@
             </div>
             <div v-for="(firmware,index) in firmwares" :key="index"
                  class="coder__explorer__item second-level u-row u-align-i-center u-gap-3" v-show="firmwaresOpen">
-              <div class="u-height-cover u-width-cover u-row u-align-i-center u-gap-3" @click="showFirmwareFile(index)">
+              <div class="u-height-cover u-width-cover u-row u-align-i-center u-gap-3"
+                   @click="this.currentFile = firmware">
                 <span class="coder__explorer__item__icon">C++</span>
                 <span class="coder__explorer__item__name">{{ firmware.name }}</span>
               </div>
-              <button class="coder__action is-remove"
-                      @click="removeFirmwareFile(index)" v-if="index !== 0"></button>
+              <Toggle type="contextmenu" direction="right">
+                <template v-slot:options>
+                  <button @click="editFileName($refs.input[index])">Renomear
+                  </button>
+                  <hr/>
+                  <button class="severe firmware-delete-button">
+                    Excluir
+                    <Popup for="firmware-delete-button" :title="'Deletar ' + firmware.name" ref="delete-firmware-popup"
+                           :can-close="false">
+                      <template v-slot:content>
+                        Você tem certeza que deseja deletar esse arquivo? Não será possível recupera-lo.
+                      </template>
+                      <template v-slot:action>
+                        <Button color="var(--pallete-color-black-4)"
+                                @click="$refs['delete-agent-popup'][index].close()">
+                          <template v-slot:content>
+                            Cancelar
+                          </template>
+                        </Button>
+                        <Button color="var(--pallete-color-red-1)"
+                                @click="() => {
+                                  removeFile(index, firmwares);
+                                  $refs['delete-firmware-popup'][index].close()
+                                }">
+                          <template v-slot:content>
+                            Sim, deletar arquivo.
+                          </template>
+                        </Button>
+                      </template>
+                    </Popup>
+                  </button>
+                </template>
+              </Toggle>
             </div>
           </div>
         </div>
@@ -148,9 +212,9 @@
       </div>
       <div class="coder__coding u-column">
         <div class="coder__coding__controller u-row u-justify-i-between">
-          <input type="text" class="coder__coding__file-name"
-                 placeholder="Nome do arquivo"
-                 v-model="currentFile.name"/>
+          <span type="text" class="coder__coding__file-name">
+            {{ currentFile != null ? currentFile.name : "Nenhum arquivo" }}
+          </span>
           <div class="u-row">
             <Button v-if="firmwareFileIsOpen" icon="upload.svg" transparent adjust icon-ratio="12"
                     no-border side-padding="10" no-pointer @click="compileSketch" :is-loading="compilingSketch">
@@ -170,8 +234,9 @@
           <div class="coder__writer__lines u-column" ref="coderLines">
             <div v-for="index in lineQuantity" :key="index" class="coder__writer__line">{{ index }}</div>
           </div>
-          <textarea class="coder__writer__text" ref="coder" v-model="currentFile.sourceCode"
-                    spellcheck="false"></textarea>
+          <textarea v-if="currentFile != null" class="coder__writer__text" ref="coder" v-model="currentFile.sourceCode"
+                    spellcheck="false" :readonly="currentFile != null ? false : true"></textarea>
+          <textarea v-else class="coder__writer__text" ref="coder" readonly></textarea>
         </div>
       </div>
       <div class="coder__boards u-column" v-if="firmwareFileIsOpen">
@@ -207,27 +272,28 @@
 </template>
 
 <script>
-import Util from "@/main/Util";
+import Util from "@/domain/Util";
 import Button from "@/components/Button";
-import {MessageType} from "@/main/Enums";
+import {AgentType, Key, MessageType} from "@/domain/Enums";
 import Loading from "@/components/Loading";
 import Popup from "@/components/Popup";
 import router, {Routes} from "@/router";
-import {API, EndPoints} from "@/main/API";
+import {API, EndPoints, Headers} from "@/domain/API";
+import Toggle from "@/components/Toggle";
+import defaultSourceCode from "@/domain/content/default-source-codes.json";
 
 const LINE_BREAK_CHAR = "\n", TAB_CHAR = "\t", POS_CHAR = "$";
 const CODER_DIFF_HEIGHT = 18;
-const AGENT_TYPE_ARGO = "Argo", AGENT_TYPE_JASON = "Jason", AGENT_TYPE_COMMUNICATOR = "Communicator";
 const AGENT_DEFAULT_FILE_NAME = "agent", FIRMWARE_DEFAULT_FILE_NAME = "sketch";
 const DEFAULT_LINKS_PROTOCOL = "http://";
 
 export default {
   name: "Coder",
-  components: {Loading, Button, Popup},
+  components: {Toggle, Loading, Button, Popup},
   data() {
     return {
       projectName: "",
-      currentFile: {},
+      currentFile: null,
       currentBoard: null,
       firmwareFileIsOpen: false,
       domain: null,
@@ -238,7 +304,7 @@ export default {
       masOpen: true,
       agentsOpen: true,
       firmwaresOpen: true,
-      agentTypes: [AGENT_TYPE_ARGO, AGENT_TYPE_JASON, AGENT_TYPE_COMMUNICATOR],
+      agentTypes: [AgentType.ARGO, AgentType.JASON, AgentType.COMMUNICATOR],
       boardResponse: null,
       savingProject: false,
       importingMas: false,
@@ -265,7 +331,7 @@ export default {
       deep: true
     },
     projectName(newValue) {
-      this.projectName = newValue.replace("-", "").replace(" ", "");
+      this.projectName = Util.removeInvalidCharacters(newValue);
       this.saveProject();
     }
   },
@@ -305,8 +371,8 @@ export default {
       this.domain = response.data.data;
     });
 
-    this.loadBoards(false);
-    this.loadLibraries(false);
+    this.loadBoards();
+    this.loadLibraries();
 
     // Implementação do codador.
     this.$refs.coder.addEventListener("keydown", (event) => {
@@ -376,6 +442,35 @@ export default {
         this.deployingSketch = false;
       });
     },
+    importLibrary(event) {
+      let files = event.target.files;
+      if (files.length === 0) {
+        return;
+      }
+      if (files[0].name.includes(" ")) {
+        this.$emit("message", {content: "O nome do arquivo não pode ter espaço", type: MessageType.ERROR});
+        return;
+      }
+
+      this.loadingLibraries = true;
+      API.post(EndPoints.LIBRARIES_IMPORT, Headers.MULTIPART_CONFIG, {file: files[0]}).then((response) => {
+        if (response.status === 200) {
+          this.$emit("message", {
+            content: response.data.data,
+            type: MessageType.SUCCESS
+          });
+          this.loadLibraries(true).then(() => {
+            this.loadingLibraries = false;
+          });
+        } else {
+          this.$emit("message", {
+            content: response.data.data,
+            type: MessageType.ERROR
+          });
+          this.loadingLibraries = false;
+        }
+      });
+    },
     saveProject() {
       this.savingProject = true;
       return API.put(EndPoints.PROJECTS, {}, {
@@ -433,76 +528,49 @@ export default {
       API.delete(EndPoints.USERS);
       router.push(Routes.LOGIN);
     },
-    removeAgentFile(index) {
-      if (this.currentFile === this.agents[index]) {
-        this.currentFile = this.agents[index - 1];
+    removeFile(index, files) {
+      if (this.currentFile == files[index]) {
+        if (index == 0) {
+          files.splice(index, 1);
+          if (files.length == 0) {
+            this.currentFile = null;
+          }
+        } else {
+          this.currentFile = files[index - 1];
+          files.splice(index, 1);
+        }
+      } else {
+        files.splice(index, 1);
       }
-      this.agents.splice(index, 1);
-    },
-    removeFirmwareFile(index) {
-      if (this.currentFile === this.firmwares[index]) {
-        this.currentFile = this.firmwares[index - 1];
-      }
-      this.firmwares.splice(index, 1);
-    },
-    showAgentFile(index) {
-      this.currentFile = this.agents[index];
-      this.firmwareFileIsOpen = false;
-    },
-    showFirmwareFile(index) {
-      this.currentFile = this.firmwares[index];
-      this.firmwareFileIsOpen = true;
     },
     addFirmwareFile() {
       this.firmwares.push({
-        name: FIRMWARE_DEFAULT_FILE_NAME + " " + (this.firmwares.length + 1),
-        sourceCode: "void setup() {\n"
-            + "  // put your setup code here, to run once:\n" + "\n" + "}\n" + "\n" + "void loop() {\n"
-            + "  // put your main code here, to run repeatedly:\n" + "\n" + "}",
+        name: FIRMWARE_DEFAULT_FILE_NAME + (this.firmwares.length + 1),
+        sourceCode: defaultSourceCode.firmware
       });
     },
     addAgentFile() {
       this.agents.push({
         name: AGENT_DEFAULT_FILE_NAME + (this.agents.length + 1),
-        archClass: AGENT_TYPE_JASON,
-        sourceCode: "/* Initial beliefs and rules */\n" + "\n" + "/* Initial goals */\n" + "\n" + "!start.\n" + "\n"
-            + "/* Plans */\n" + "\n" + "+!start <- .print(\"Hello world!\").",
+        archClass: AgentType.JASON,
+        sourceCode: defaultSourceCode.agent
       });
     },
-    importLibrary(event) {
-      let files = event.target.files;
-      if (files.length === 0) {
-        return;
+    editFileName(input) {
+      input.focus();
+      input.readOnly = false;
+      input.onblur = () => {
+        input.readOnly = true;
       }
-      if (files[0].name.includes(" ")) {
-        this.$emit("message", {content: "O nome do arquivo não pode ter espaço", type: MessageType.ERROR});
-        return;
+      input.onkeydown = (event) => {
+        if (event.key == Key.ENTER) {
+          input.readOnly = true;
+          return;
+        }
+        input.value = Util.removeInvalidCharacters(input.value);
       }
-
-      this.loadingLibraries = true;
-      API.post(EndPoints.LIBRARIES_IMPORT, {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      }, {file: files[0]}).then((response) => {
-        if (response.status === 200) {
-          this.$emit("message", {
-            content: response.data.data,
-            type: MessageType.SUCCESS
-          });
-          this.loadLibraries(true).then(() => {
-            this.loadingLibraries = false;
-          });
-        } else {
-          this.$emit("message", {
-            content: response.data.data,
-            type: MessageType.ERROR
-          });
-          this.loadingLibraries = false;
-        }
-      });
     },
-    loadLibraries(refresh) {
+    loadLibraries(refresh = false) {
       this.loadingLibraries = true;
       return API.get(EndPoints.LIBRARIES, refresh).then((response) => {
         this.libraries = response.data.data;
@@ -560,10 +628,9 @@ export default {
 .coder {
   --explorer-width: 350px;
   --base-height: 27px;
-  --base-font-size: 11px;
   --file-name-selected-height: 4px;
   --bar-height: calc(var(--base-height) + var(--file-name-selected-height));
-  font-size: 11px;
+  font-size: var(--font-size);
   width: 100vw;
   height: 100vh;
 }
@@ -615,14 +682,9 @@ export default {
   width: 125px;
   background-color: var(--pallete-color-black-3);
   border-bottom: var(--file-name-selected-height) solid var(--pallete-color-main-2);
-}
-
-.coder__coding__file-name:hover {
-  background-color: var(--pallete-color-black-4);
-}
-
-.coder__coding__file-name:focus {
-  background-color: var(--pallete-color-black-4);
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
 }
 
 .coder__writer {
@@ -766,6 +828,10 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   position: relative;
+  color: var(--pallete-text-main);
+  background-color: transparent;
+  border: none;
+  cursor: default;
 }
 
 .coder__explorer__item__icon {

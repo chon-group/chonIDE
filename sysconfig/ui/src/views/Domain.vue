@@ -30,11 +30,11 @@
 
 <script>
 
-import Util from "@/main/Util";
+import Util from "@/domain/Util";
 import Button from "@/components/Button";
 import router, {Routes} from "@/router";
-import {MessageType} from "@/main/Enums"
-import {API, EndPoints} from "@/main/API";
+import {MessageType} from "@/domain/Enums"
+import {API, EndPoints} from "@/domain/API";
 
 
 export default {

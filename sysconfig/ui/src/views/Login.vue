@@ -1,6 +1,5 @@
 <template>
   <div class="login u-column u-align-i-center u-justify-i-center u-gap-1">
-    <Response ref="response"/>
     <h1 class="logo u-column u-align-i-center u-gap-2">
       <span class="logo__systemname">
         <span class="is-bold">chonIDE</span>
@@ -19,7 +18,9 @@
       <RoundedButton @click="submit" :is-loading="loading"/>
     </div>
     <div class="u-row u-gap-3 u-align-i-center u-justify-i-center">
-      <span class="is-aside">Usar host local</span>
+      <span class="is-aside">
+        Usar host local
+      </span>
       <input type="checkbox" class="login__check-box" v-model="useLocalHost">
     </div>
 
@@ -47,13 +48,13 @@
 
 <script>
 import RoundedButton from "@/components/RoundedButton";
-import Util from "@/main/Util";
+import Util from "@/domain/Util";
 import Trace from "@/components/Trace";
 import router, {Routes} from "@/router";
-import {MessageType} from "@/main/Enums"
+import {MessageType} from "@/domain/Enums"
 import Popup from "@/components/Popup";
 import Loading from "@/components/Loading";
-import {API, EndPoints} from "@/main/API";
+import {API, EndPoints} from "@/domain/API";
 
 
 export default {

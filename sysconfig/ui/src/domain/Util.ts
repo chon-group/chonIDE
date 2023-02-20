@@ -6,6 +6,10 @@ export default class Util {
         document.title = name + this.TITLE_SUFFIX;
     }
 
+    public static removeInvalidCharacters(string: string) {
+        return string.replace(/[^a-zA-Z0-9]/g, "");
+    }
+
 }
 
 

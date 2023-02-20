@@ -124,11 +124,11 @@
 import Button from "@/components/Button";
 import Popup from "@/components/Popup";
 import Input from "@/components/Input";
-import Util from "@/main/Util";
+import Util from "@/domain/Util";
 import Loading from "@/components/Loading";
 import router, {Routes} from "@/router";
-import {MessageType} from "@/main/Enums"
-import {API, EndPoints} from "@/main/API";
+import {MessageType} from "@/domain/Enums"
+import {API, EndPoints} from "@/domain/API";
 
 export default {
   name: "Connect",
