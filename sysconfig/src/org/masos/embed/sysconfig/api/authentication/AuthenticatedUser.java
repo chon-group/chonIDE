@@ -15,6 +15,9 @@ public class AuthenticatedUser {
     /** Executor de ações no sistema. */
     private final Executor executor;
 
+    /** Token de acesso ao sistema. */
+    private final String token;
+
     /** Data de expiração de acesso ao sistema. */
     private Date expirationDate;
 

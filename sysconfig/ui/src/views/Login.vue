@@ -47,13 +47,13 @@
 
 <script>
 import RoundedButton from "@/components/RoundedButton";
-import PageUtils from "@/assets/js/util/PageUtils";
+import Util from "@/main/Util";
 import Trace from "@/components/Trace";
-import axios from "axios";
-import router from "@/router";
-import {MessageType} from "@/assets/js/model/Enums"
+import router, {Routes} from "@/router";
+import {MessageType} from "@/main/Enums"
 import Popup from "@/components/Popup";
 import Loading from "@/components/Loading";
+import {API, EndPoints} from "@/main/API";
 
 
 export default {
@@ -73,7 +73,8 @@ export default {
     }
   },
   setup() {
-    PageUtils.setTitle("Entrar");
+    Util.setTitle("Entrar");
+    API.loadToken();
   },
   beforeUnmount() {
     document.removeEventListener("keypress", this.keyPressListener);
@@ -82,9 +83,9 @@ export default {
     this.awaitConnection = localStorage.getItem("connecting");
     if (this.awaitConnection === 'true') {
       this.$refs.conecting.showing(true);
-      axios.get("/chonide/domains").then((response) => {
-        this.currentDomain = response.data.domain;
-        axios.delete("/chonide/users");
+      API.get(EndPoints.DOMAINS).then((response) => {
+        this.currentDomain = response.data.data.domain;
+        API.delete(EndPoints.USERS);
         let interval = setInterval(() => {
           this.awaitConnectionCounter--;
           if (this.awaitConnectionCounter == 0) {
@@ -93,6 +94,12 @@ export default {
           }
         }, 1000);
       });
+    } else {
+      // API.get(EndPoints.USERS).then((response) => {
+      //   if (response.status == 200) {
+      //     router.push("/coder");
+      //   }
+      // });
     }
 
     this.keyPressListener = (event) => {
@@ -110,25 +117,20 @@ export default {
       }
 
       this.loading = true;
-      axios.post("/chonide/users",
-          {},
-          {params: {username: this.username, password: this.password, host: this.currentHost}}
-      ).then((response) => {
-        if (response.data === true) {
-          PageUtils.isFirstAccess().then((response) => {
-            if (Boolean(response.data) === true) {
-              router.push("/domain");
+      API.auth(this.username, this.password, this.currentHost).then((response) => {
+        if (response.status == 200) {
+          API.get(EndPoints.USERS_FIRST_ACCESS).then((response) => {
+            if (response.data.data == true) {
+              router.push(Routes.DOMAIN);
             } else {
-              router.push("/coder");
+              router.push(Routes.CODER);
             }
           });
         } else {
           this.loading = false;
           this.$emit("message", {content: "Não foi possível conectar ao sistema", type: MessageType.ERROR});
         }
-      }).catch(() => {
-        this.loading = false;
-      });
+      })
     }
   }
 }

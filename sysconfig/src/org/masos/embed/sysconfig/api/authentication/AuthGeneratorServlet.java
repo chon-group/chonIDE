@@ -16,6 +16,7 @@ import java.util.Map;
 @WebServlet("/auth")
 public class AuthGeneratorServlet extends ApiController {
 
+
     /** Tempo de expiração do usuário autenticado (30 minutos). */
     protected static final long EXPIRATION_TIME = 900000 * 2;
 
@@ -29,7 +30,7 @@ public class AuthGeneratorServlet extends ApiController {
     private static final Algorithm JWT_ALGORITHM = Algorithm.HMAC256(UUID_KEY);
 
     @Override
-    protected ResponseEntity get(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
+    protected ResponseEntity post(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
         ResponseEntity responseEntity = ResponseEntity.get();
         if (authenticatedUser != null) {
             return responseEntity.status(HttpServletResponse.SC_OK);
@@ -58,7 +59,7 @@ public class AuthGeneratorServlet extends ApiController {
             } else {
                 executor = new SSHExecutor(username, password, host);
             }
-            AuthenticatedUser newAuthenticatedUser = new AuthenticatedUser(executor);
+            AuthenticatedUser newAuthenticatedUser = new AuthenticatedUser(executor, jwt);
             newAuthenticatedUser.setExpirationDate(date);
             newAuthenticatedUser.setLastRequisitionDate(date);
             SecurityContextHolder.get().getAuthenticatedUsersByToken().put(jwt, newAuthenticatedUser);

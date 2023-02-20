@@ -30,11 +30,11 @@
 
 <script>
 
-import axios from "axios";
-import PageUtils from "@/assets/js/util/PageUtils";
+import Util from "@/main/Util";
 import Button from "@/components/Button";
-import router from "@/router";
-import {MessageType} from "@/assets/js/model/Enums"
+import router, {Routes} from "@/router";
+import {MessageType} from "@/main/Enums"
+import {API, EndPoints} from "@/main/API";
 
 
 export default {
@@ -58,11 +58,12 @@ export default {
     }
   },
   setup() {
-    PageUtils.setTitle("Nome do bot");
+    Util.setTitle("Nome do bot");
+    API.loadToken();
   },
   mounted() {
-    PageUtils.isFirstAccess().then((response) => {
-      this.isFirstAccess = Boolean(response.data);
+    API.get(EndPoints.USERS_FIRST_ACCESS).then((response) => {
+      this.isFirstAccess = Boolean(response.data.data);
     });
   },
   methods: {
@@ -72,9 +73,9 @@ export default {
         return;
       }
       this.loading = true;
-      axios.post("/chonide/domains", {}, {params: {domain: this.domain}}).then(() => {
+      API.post(EndPoints.DOMAINS, {params: {domain: this.domain}}).then(() => {
         this.$emit("message", {content: "O nome do seu bot foi salvo com sucesso", type: MessageType.SUCCESS});
-        router.push("/connect");
+        router.push(Routes.CONNECT);
       });
     }
   }

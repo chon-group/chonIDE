@@ -1,11 +1,11 @@
 package org.masos.embed.sysconfig.api.controller.development;
 
+import org.masos.embed.sysconfig.api.authentication.AuthenticatedUser;
 import org.masos.embed.sysconfig.api.controller.ApiController;
 import org.masos.embed.sysconfig.api.controller.JsonManager;
-import org.masos.embed.sysconfig.api.authentication.AuthenticatedUser;
+import org.masos.embed.sysconfig.api.controller.ResponseEntity;
 import org.masos.embed.sysconfig.domain.file.content.ProjectContentManager;
 import org.masos.embed.sysconfig.domain.file.model.Project;
-import org.masos.embed.sysconfig.api.controller.ResponseEntity;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
@@ -27,7 +27,7 @@ public class ProjectController extends ApiController {
 
     @Override
     protected ResponseEntity put(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
-        Project project = JsonManager.get().fromJson(parameters.get("project").toString(), Project.class);
+        Project project = JsonManager.get().fromJson(parameters.get("data").toString(), Project.class);
         ProjectContentManager.set(project);
         return ResponseEntity.get().status(HttpServletResponse.SC_OK).data(project);
     }

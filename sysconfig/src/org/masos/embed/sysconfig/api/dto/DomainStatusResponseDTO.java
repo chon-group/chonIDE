@@ -1,6 +1,6 @@
 package org.masos.embed.sysconfig.api.dto;
 
-public class DomainStatusDTO {
+public class DomainStatusResponseDTO {
 
     private String domain;
 
@@ -12,11 +12,11 @@ public class DomainStatusDTO {
 
     private String registredAddress;
 
-    public DomainStatusDTO() {
+    public DomainStatusResponseDTO() {
     }
 
-    public DomainStatusDTO(String domain, String ddns_user, String ddns_token, String localAddress,
-                           String registredAddress) {
+    public DomainStatusResponseDTO(String domain, String ddns_user, String ddns_token, String localAddress,
+                                   String registredAddress) {
         this.domain = domain;
         this.ddns_user = ddns_user;
         this.ddns_token = ddns_token;

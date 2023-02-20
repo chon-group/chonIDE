@@ -27,7 +27,7 @@ public class ImportLibrary extends ApiController {
 
         ResponseEntity responseEntity = ResponseEntity.get();
         if (!FirmwareContentManager.isValidSubmittedLibrary(submittedLibrary)) {
-            return responseEntity.status(HttpServletResponse.SC_BAD_REQUEST).message(FAILED_IMPORT_MESSAGE);
+            return responseEntity.status(HttpServletResponse.SC_BAD_REQUEST).data(FAILED_IMPORT_MESSAGE);
         }
 
         boolean wasImported = false;
@@ -37,10 +37,10 @@ public class ImportLibrary extends ApiController {
         }
 
         if (!wasImported) {
-            return responseEntity.status(HttpServletResponse.SC_BAD_REQUEST).message(FAILED_IMPORT_MESSAGE);
+            return responseEntity.status(HttpServletResponse.SC_BAD_REQUEST).data(FAILED_IMPORT_MESSAGE);
         }
 
-        return responseEntity.status(HttpServletResponse.SC_OK).message(SUCCESS_IMPORT_MESSAGE);
+        return responseEntity.status(HttpServletResponse.SC_OK).data(SUCCESS_IMPORT_MESSAGE);
     }
 
 }

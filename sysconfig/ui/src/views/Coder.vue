@@ -34,7 +34,7 @@
             Mind Inspector
           </template>
         </Button>
-        <Button transparent no-border adjust side-padding="10"  v-if="domain != null" :link="logsUrl">
+        <Button transparent no-border adjust side-padding="10" v-if="domain != null" :link="logsUrl">
           <template v-slot:content>
             Logs do SMA
           </template>
@@ -207,13 +207,13 @@
 </template>
 
 <script>
-import PageUtils from "@/assets/js/util/PageUtils";
+import Util from "@/main/Util";
 import Button from "@/components/Button";
-import axios from "axios";
-import {MessageType} from "@/assets/js/model/Enums";
+import {MessageType} from "@/main/Enums";
 import Loading from "@/components/Loading";
 import Popup from "@/components/Popup";
-import router from "@/router";
+import router, {Routes} from "@/router";
+import {API, EndPoints} from "@/main/API";
 
 const LINE_BREAK_CHAR = "\n", TAB_CHAR = "\t", POS_CHAR = "$";
 const CODER_DIFF_HEIGHT = 18;
@@ -288,20 +288,21 @@ export default {
     }
   },
   setup() {
-    PageUtils.setTitle("Criando SMA");
+    Util.setTitle("Criando SMA");
+    API.loadToken();
   },
   mounted() {
-    axios.get("/chonide/projects").then((response) => {
-      this.agents = response.data.agents;
-      this.firmwares = response.data.firmwares;
-      this.projectName = response.data.name;
+    API.get(EndPoints.PROJECTS).then((response) => {
+      this.agents = response.data.data.agents;
+      this.firmwares = response.data.data.firmwares;
+      this.projectName = response.data.data.name;
       this.currentFile = this.agents[0];
     });
 
     this.$refs.coder.style.height = (this.$refs.coderLines.scrollHeight + (2 * CODER_DIFF_HEIGHT)) + "px";
 
-    axios.get("/chonide/domains").then((response) => {
-      this.domain = response.data;
+    API.get(EndPoints.DOMAINS).then((response) => {
+      this.domain = response.data.data;
     });
 
     this.loadBoards(false);
@@ -325,7 +326,7 @@ export default {
         event.preventDefault();
         this.write(event, TAB_CHAR, false);
       } else if (event.which === 222) {
-        if(event.shiftKey){
+        if (event.shiftKey) {
           this.write(event, `"${POS_CHAR}"`, true);
         } else {
           this.write(event, `'${POS_CHAR}'`, true);
@@ -334,14 +335,6 @@ export default {
     });
   },
   methods: {
-    validateUser(){
-      axios.get("/chonide/users").then((response) => {
-        if(response.data === false) {
-          router.push("/login");
-          this.$emit("message", {content: "O tempo da sessão terminou", type: MessageType.ERROR});
-        }
-      });
-    },
     projectIsInvalid() {
       if (this.projectName.length === 0) {
         this.$emit("message", {content: "O nome do projeto não pode ser vazio", type: MessageType.ERROR});
@@ -350,45 +343,42 @@ export default {
       return false;
     },
     compileSketch() {
-      this.validateUser();
       if (this.currentBoard == null) {
         this.$emit("message", {content: "Nenhuma placa foi selecionada", type: MessageType.WARNING});
         return;
       }
       this.compilingSketch = true;
-      axios.post("/chonide/sketchs/compile", {}, {
+      API.post(EndPoints.SKETCH_COMPILE, {
         params: {
           boardName: this.currentBoard.fqbn,
           code: this.currentFile.sourceCode
         }
       }).then((response) => {
-        this.boardResponse = response.data;
+        this.boardResponse = response.data.data;
         this.compilingSketch = false;
         this.$refs.boardResponse.showing(true);
       });
     },
     deploySketch() {
-      !this.validateUser()
       if (this.currentBoard == null) {
         this.$emit("message", {content: "Não existe nenhuma placa selecionada", type: MessageType.WARNING});
         return;
       }
       this.deployingSketch = true;
-      axios.post("/chonide/sketchs/deploy", {}, {
+      API.post(EndPoints.SKETCH_DEPLOY, {
         params: {
           serialPort: this.currentBoard.port,
           boardName: this.currentBoard.fqbn
         }
       }).then((response) => {
         this.$refs.boardResponse.showing(true);
-        this.boardResponse = response.data;
+        this.boardResponse = response.data.data;
         this.deployingSketch = false;
       });
     },
     saveProject() {
-      !this.validateUser()
       this.savingProject = true;
-      return axios.put("/chonide/projects", {
+      return API.put(EndPoints.PROJECTS, {}, {
         name: this.projectName,
         agents: this.agents,
         firmwares: this.firmwares
@@ -398,29 +388,27 @@ export default {
         }, 100);
       });
     },
-    startMas(){
-      !this.validateUser()
+    startMas() {
       if (this.projectIsInvalid()) {
         return;
       }
       this.startingMas = true;
-      axios.put("/chonide/mas/start", {
+      API.put(EndPoints.MAS_START, {}, {
         name: this.projectName,
         agents: this.agents
       }).then((response) => {
         this.$emit("message", {
-          content: response.data.message,
+          content: response.data.data.message,
           type: MessageType.SUCCESS
         });
         this.startingMas = false;
       });
     },
     stopMas() {
-      !this.validateUser()
       this.stopingMas = true;
-      axios.put("/chonide/mas/stop").then((response) => {
-        if (response.data.includes("Encerrando SMA")) {
-          this.$emit("message", {content: response.data, type: MessageType.SUCCESS});
+      API.put(EndPoints.MAS_STOP).then((response) => {
+        if (response.data.data.includes("Encerrando SMA")) {
+          this.$emit("message", {content: response.data.data, type: MessageType.SUCCESS});
         } else {
           this.$emit("message", {content: "SMA já foi parado", type: MessageType.WARNING});
         }
@@ -428,51 +416,44 @@ export default {
       });
     },
     turnOffSystem() {
-      !this.validateUser()
       this.$emit("message", {content: "Desligando sistema", type: MessageType.WARNING});
-      axios.put("/chonide/system/poweroff");
+      API.put(EndPoints.SYSTEM_POWEROFF);
       setTimeout(() => {
-        router.push("/login");
+        router.push(Routes.LOGIN);
       }, 2000);
     },
     resetSystem() {
-      !this.validateUser()
       this.$emit("message", {content: "Reiniciando sistema", type: MessageType.WARNING});
-      axios.put("/chonide/system/reboot");
+      API.put(EndPoints.SYSTEM_REBOOT);
       setTimeout(() => {
-        router.push("/login");
+        router.push(Routes.LOGIN);
       }, 2000);
     },
     logout() {
-      axios.delete("/chonide/users");
-      router.push("/login");
+      API.delete(EndPoints.USERS);
+      router.push(Routes.LOGIN);
     },
     removeAgentFile(index) {
-      !this.validateUser()
       if (this.currentFile === this.agents[index]) {
         this.currentFile = this.agents[index - 1];
       }
       this.agents.splice(index, 1);
     },
     removeFirmwareFile(index) {
-      !this.validateUser()
       if (this.currentFile === this.firmwares[index]) {
         this.currentFile = this.firmwares[index - 1];
       }
       this.firmwares.splice(index, 1);
     },
     showAgentFile(index) {
-      !this.validateUser()
       this.currentFile = this.agents[index];
       this.firmwareFileIsOpen = false;
     },
     showFirmwareFile(index) {
-      !this.validateUser()
       this.currentFile = this.firmwares[index];
       this.firmwareFileIsOpen = true;
     },
     addFirmwareFile() {
-      !this.validateUser()
       this.firmwares.push({
         name: FIRMWARE_DEFAULT_FILE_NAME + " " + (this.firmwares.length + 1),
         sourceCode: "void setup() {\n"
@@ -481,7 +462,6 @@ export default {
       });
     },
     addAgentFile() {
-      !this.validateUser()
       this.agents.push({
         name: AGENT_DEFAULT_FILE_NAME + (this.agents.length + 1),
         archClass: AGENT_TYPE_JASON,
@@ -490,7 +470,6 @@ export default {
       });
     },
     importLibrary(event) {
-      !this.validateUser()
       let files = event.target.files;
       if (files.length === 0) {
         return;
@@ -501,14 +480,14 @@ export default {
       }
 
       this.loadingLibraries = true;
-      axios.post("/chonide/libraries/import", {file: files[0]}, {
+      API.post(EndPoints.LIBRARIES_IMPORT, {
         headers: {
           "Content-Type": "multipart/form-data"
         }
-      }).then((response) => {
+      }, {file: files[0]}).then((response) => {
         if (response.status === 200) {
           this.$emit("message", {
-            content: response.data,
+            content: response.data.data,
             type: MessageType.SUCCESS
           });
           this.loadLibraries(true).then(() => {
@@ -516,7 +495,7 @@ export default {
           });
         } else {
           this.$emit("message", {
-            content: response.data,
+            content: response.data.data,
             type: MessageType.ERROR
           });
           this.loadingLibraries = false;
@@ -524,20 +503,18 @@ export default {
       });
     },
     loadLibraries(refresh) {
-      !this.validateUser()
       this.loadingLibraries = true;
-      return axios.get("/chonide/libraries", {params: {refresh: refresh}}).then((response) => {
-        this.libraries = response.data;
+      return API.get(EndPoints.LIBRARIES, refresh).then((response) => {
+        this.libraries = response.data.data;
       }).then(() => {
         this.loadingLibraries = false;
       });
     },
     loadBoards(refresh) {
-      !this.validateUser()
       this.currentBoard = null;
       this.loadingBoards = true;
-      axios.get("/chonide/boards", {params: {refresh: refresh}}).then((response) => {
-        this.boards = response.data;
+      API.get(EndPoints.BOARDS, refresh).then((response) => {
+        this.boards = response.data.data;
         this.loadingBoards = false;
         if (this.boards.length != 0) {
           this.currentBoard = this.boards[0];

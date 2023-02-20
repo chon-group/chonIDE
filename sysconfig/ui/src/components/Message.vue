@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import {MessageType} from "@/assets/js/model/Enums";
+import {MessageType} from "@/main/Enums";
 
 export default {
   name: "Message",

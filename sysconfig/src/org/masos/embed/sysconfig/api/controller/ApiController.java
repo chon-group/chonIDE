@@ -9,12 +9,15 @@ import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public abstract class ApiController extends HttpServlet {
 
@@ -47,6 +50,13 @@ public abstract class ApiController extends HttpServlet {
             String parameterName = parameterNames.nextElement();
             parameters.put(parameterName, request.getParameter(parameterName));
         }
+        try {
+            String dataString = new BufferedReader(new InputStreamReader(request.getInputStream())).lines().collect(
+                    Collectors.joining());
+            parameters.put("data", dataString);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         if (this.getClass().getAnnotation(MultipartConfig.class) == null) {
             return parameters;
         }
@@ -76,7 +86,7 @@ public abstract class ApiController extends HttpServlet {
             return;
         }
         resp.setCharacterEncoding(HttpEncoding.UTF_8.getType());
-        resp.setHeader("Content-Type", HttpContent.JSON.getType() + "; charset=" + HttpEncoding.UTF_8.getType());
+        resp.setHeader("Content-Type", HttpContent.JSON.getType() + "; charset=" + HttpEncoding.ISO_8859_1.getType());
         resp.setStatus(responseEntity.getStatus());
         responseEntity.date(new Date(System.currentTimeMillis()));
         try {
@@ -91,7 +101,7 @@ public abstract class ApiController extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         AuthenticatedUser authenticatedUser = (AuthenticatedUser) req.getAttribute("user");
         ResponseEntity responseEntity = this.get(authenticatedUser, this.getParameters(req));
         this.flush(resp, responseEntity);

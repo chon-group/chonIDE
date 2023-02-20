@@ -1,12 +1,12 @@
 package org.masos.embed.sysconfig.api.controller.development.mas;
 
+import org.masos.embed.sysconfig.api.authentication.AuthenticatedUser;
 import org.masos.embed.sysconfig.api.controller.ApiController;
 import org.masos.embed.sysconfig.api.controller.JsonManager;
-import org.masos.embed.sysconfig.api.authentication.AuthenticatedUser;
-import org.masos.embed.sysconfig.domain.file.content.MasContentManager;
-import org.masos.embed.sysconfig.domain.file.model.Project;
-import org.masos.embed.sysconfig.domain.file.model.Mas;
 import org.masos.embed.sysconfig.api.controller.ResponseEntity;
+import org.masos.embed.sysconfig.domain.file.content.MasContentManager;
+import org.masos.embed.sysconfig.domain.file.model.Mas;
+import org.masos.embed.sysconfig.domain.file.model.Project;
 import org.masos.embed.sysconfig.domain.model.Executor;
 import org.masos.embed.sysconfig.domain.script.ReasoningScriptManager;
 
@@ -25,7 +25,7 @@ public class MasStart extends ApiController {
     protected ResponseEntity get(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
         Executor executor = authenticatedUser.getExecutor();
         // Importando SMA.
-        Project project = JsonManager.get().fromJson(parameters.get("project").toString(), Project.class);
+        Project project = JsonManager.get().fromJson(parameters.get("data").toString(), Project.class);
         MasContentManager.buildMas(new Mas(project.getName(), project.getAgents()), executor);
 
         // Iniciando SMA.

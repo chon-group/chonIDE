@@ -1,34 +1,34 @@
 import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
 import Login from "@/views/Login.vue";
 import Connect from "@/views/Connect.vue";
-import Manager from "@/views/Manager.vue";
 import Domain from "@/views/Domain.vue";
 import Coder from "@/views/Coder.vue";
 
+export class Routes {
+    public static LOGIN = "/login";
+    public static CONNECT = "/connect";
+    public static CODER = "/coder";
+    public static DOMAIN = "/domain";
+}
 
 const routes: Array<RouteRecordRaw> = [
     {
-        path: '/login',
+        path: Routes.LOGIN,
         name: 'Login',
         component: Login
     },
     {
-        path: '/connect',
+        path: Routes.CONNECT,
         name: 'Connect',
         component: Connect
     },
     {
-        path: '/manager',
-        name: 'Manager',
-        component: Manager
-    },
-    {
-        path: '/domain',
+        path: Routes.DOMAIN,
         name: 'Domain',
         component: Domain
     },
     {
-        path: '/coder',
+        path: Routes.CODER,
         name: 'Coder',
         component: Coder
     }

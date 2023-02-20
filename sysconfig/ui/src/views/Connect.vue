@@ -124,11 +124,11 @@
 import Button from "@/components/Button";
 import Popup from "@/components/Popup";
 import Input from "@/components/Input";
-import PageUtils from "@/assets/js/util/PageUtils";
-import axios from "axios";
+import Util from "@/main/Util";
 import Loading from "@/components/Loading";
-import router from "@/router";
-import {MessageType} from "@/assets/js/model/Enums"
+import router, {Routes} from "@/router";
+import {MessageType} from "@/main/Enums"
+import {API, EndPoints} from "@/main/API";
 
 export default {
   name: "Connect",
@@ -145,22 +145,23 @@ export default {
     }
   },
   mounted() {
-    PageUtils.isFirstAccess().then((response) => {
-      this.isFirstAccess = response.data;
+    API.get(EndPoints.USERS_FIRST_ACCESS).then((response) => {
+      this.isFirstAccess = response.data.data;
     });
-    axios.get("/chonide/networks/status").then((response) => {
-      this.connectedNetwork = response.data;
+    API.get(EndPoints.NETWORKS_STATUS).then((response) => {
+      this.connectedNetwork = response.data.data;
     });
     this.getNetworks();
   },
   setup() {
-    PageUtils.setTitle("Conectar");
+    Util.setTitle("Conectar");
+    API.loadToken();
   },
   methods: {
     getNetworks() {
       this.isSearching = true;
-      axios.get("/chonide/networks").then((response) => {
-        this.networks = response.data;
+      API.get(EndPoints.NETWORKS).then((response) => {
+        this.networks = response.data.data;
         this.isSearching = false;
       });
     },
@@ -169,7 +170,7 @@ export default {
       let password = this.$refs['customized-network-password-input'].$refs.input.value;
 
       if (password.length < 8) {
-        this.$emit("message",{
+        this.$emit("message", {
           content: "A senha da rede precisa ser igual ou mais que 8 caracteres", type:
           MessageType.ERROR
         });
@@ -177,14 +178,16 @@ export default {
       }
 
       this.isConnecting = true;
-      axios.post("/chonide/networks/ap", {
-        essid: essid,
-        password: password
+      API.post(EndPoints.NETWORKS_AP, {
+        params: {
+          essid: essid,
+          password: password
+        }
       }).then(() => {
         this.isConnecting = false;
         this.$refs['customized-network-pop-up'].close();
         localStorage.setItem("connecting", "true");
-        router.push("/login");
+        router.push(Routes.LOGIN);
       });
     },
     connectNetwork(networkIndex) {
@@ -192,14 +195,16 @@ export default {
       let password = this.$refs['network'][networkIndex].$el.querySelector("input[name='password']").value;
 
       this.isConnecting = true;
-      axios.post("/chonide/networks/client", {
-        essid: essid,
-        password: password
+      API.post(EndPoints.NETWORKS_CLIENT, {
+        params: {
+          essid: essid,
+          password: password
+        }
       }).then(() => {
         this.isConnecting = false;
         this.$refs['network'][networkIndex].close();
         localStorage.setItem("connecting", "true");
-        router.push("/login");
+        router.push(Routes.LOGIN);
       });
     },
     connectManualNetwork() {
@@ -207,14 +212,16 @@ export default {
       let password = this.$refs['manual-network-password-input'].$refs.input.value;
 
       this.isConnecting = true;
-      axios.post("/chonide/networks/client", {
-        essid: essid,
-        password: password
+      API.post(EndPoints.NETWORKS_CLIENT, {
+        params: {
+          essid: essid,
+          password: password
+        }
       }).then(() => {
         this.isConnecting = false;
         this.$refs['manual-network-pop-up'].close();
         localStorage.setItem("connecting", "true");
-        router.push("/login");
+        router.push(Routes.LOGIN);
       });
     }
   }
