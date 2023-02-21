@@ -33,7 +33,7 @@
           </span>
           <Loading/>
         </div>
-        <div v-else class="u-column u-gap-3 u-align-i-center is-big">
+        <div v-else class="u-column u-gap-3 u-align-i-center is-headline">
           Seu novo link de acesso à chonide
           <a :href="'https://' + currentDomain + ':3270/chonide/login'" target="_blank"
              class="login__new-link">{{

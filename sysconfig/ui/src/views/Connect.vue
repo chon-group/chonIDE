@@ -49,7 +49,7 @@
           Criar rede própria (AP)
         </template>
       </Button>
-      <Button @click="getNetworks" icon="refresh.svg" icon-ratio="15.5">
+      <Button @click="getNetworks" icon="refresh.svg" icon-ratio="15.5px">
         <template v-slot:content>
           Atualizar
         </template>
@@ -58,12 +58,12 @@
 
     <Loading v-if="isSearching"/>
 
-    <span v-if="networks == null" class="is-aside is-big">
+    <span v-if="networks == null" class="is-aside is-headline">
       Procurando redes disponíveis...
     </span>
 
     <div v-else class="networks u-column u-align-i-center u-gap-3">
-      <span v-if="networks.length === 0" class="is-aside is-big">
+      <span v-if="networks.length === 0" class="is-aside is-headline">
         Não foram encontradas redes disponíveis
       </span>
       <div class="c-base-container network u-row u-justify-i-between u-align-i-center"
@@ -109,13 +109,11 @@
         </Popup>
       </div>
     </div>
-    <router-link to="/coder" v-if="!isFirstAccess">
-      <Button transparent>
-        <template v-slot:content>
-          Voltar para codador
-        </template>
-      </Button>
-    </router-link>
+    <Button @click="backToCoder" v-if="!isFirstAccess">
+      <template v-slot:content>
+        Voltar para codador
+      </template>
+    </Button>
   </div>
 </template>
 
@@ -158,6 +156,9 @@ export default {
     API.loadToken();
   },
   methods: {
+    backToCoder() {
+      router.push(Routes.CODER);
+    },
     getNetworks() {
       this.isSearching = true;
       API.get(EndPoints.NETWORKS).then((response) => {

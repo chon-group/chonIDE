@@ -48,8 +48,8 @@ export default {
 <style scoped>
 .input {
   width: 100%;
-  padding: var(--action-padding-1);
-  height: var(--action-ratio-1);
+  padding: var(--action-side-padding);
+  height: var(--action-height);
   border: 1px solid var(--pallete-color-black-3);
   background-color: var(--pallete-color-black-1);
   border-radius: var(--border-radius-item);

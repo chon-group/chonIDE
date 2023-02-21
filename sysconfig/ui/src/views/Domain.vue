@@ -1,30 +1,26 @@
 <template>
-  <div class="u-column u-gap-1 u-align-i-center">
-    <div class="u-column u-gap-3 u-align-i-center">
-      <h2 class="is-huge">Informe o nome do seu bot</h2>
-      <span class="is-aside">
-        Através desse nome, você será capaz de acessar a chonide via:
-        <span v-if="domain !== ''" class="is-bold">
-          {{ domainUrl }}
-        </span>
-      </span>
-    </div>
+  <div class="domain u-column u-gap-1 u-align-i-center">
+    <h2 class="is-huge">Informe o nome do seu bot</h2>
     <div class="u-column u-align-i-center u-gap-2">
-      <input type="text" class="c-base-container domain-input is-huge" v-model="domain" placeholder="Nome do bot"
+      <input type="text" class="domain__name is-huge" v-model="domain" placeholder="Nome do bot"
              maxlength="30">
-      <Button @click="submit" :isLoading="loading">
-        <template v-slot:content>
-          Salvar nome
-        </template>
-      </Button>
+      <div class="domain__new-url u-column u-gap-3 u-align-i-center">
+        <span class="is-headline">URL de acesso a chonIDE</span>
+        <span class="is-huge is-aside">{{domainUrl}}</span>
+      </div>
+      <div class="u-row u-gap-3">
+        <Button @click="backToCoder" v-if="!isFirstAccess">
+          <template v-slot:content>
+            Voltar para codador
+          </template>
+        </Button>
+        <Button @click="submit" :isLoading="loading">
+          <template v-slot:content>
+            Salvar nome
+          </template>
+        </Button>
+      </div>
     </div>
-    <router-link to="/coder" v-if="!isFirstAccess">
-      <Button transparent>
-        <template v-slot:content>
-          Voltar para codador
-        </template>
-      </Button>
-    </router-link>
   </div>
 </template>
 
@@ -49,12 +45,16 @@ export default {
   },
   computed: {
     domainUrl() {
-      return this.domain + '.bot.chon.group:3270/chonide';
+      if(this.domain.length > 0) {
+        return this.domain + '.bot.chon.group:3270/chonide';
+      } else {
+        return "<nome>.bot.chon.group:3270/chonide"
+      }
     }
   },
   watch: {
     domain(newValue) {
-      this.domain = newValue.replace(" ", "").toLowerCase();
+      this.domain = Util.removeInvalidCharacters(newValue).toLowerCase();
     }
   },
   setup() {
@@ -67,6 +67,9 @@ export default {
     });
   },
   methods: {
+    backToCoder() {
+      router.push(Routes.CODER);
+    },
     submit() {
       if (this.domain === '' || this.domain.length === 0) {
         this.$emit("message", {content: "O nome não pode ser vazio", type: MessageType.ERROR});
@@ -84,10 +87,21 @@ export default {
 
 <style scoped>
 
-.domain-input {
-  width: 600px;
+.domain__name {
+  min-width: 500px;
   color: var(--pallete-text-main);
   text-align: center;
+  padding-bottom: var(--ratio-2);
+  background-color: transparent;
+  border: none;
+  border-bottom: var(--border-trace);
+}
+
+.domain__new-url {
+  border: var(--border-trace);
+  border-radius: var(--border-radius-container);
+  padding: var(--ratio-2);
+  background-color: var(--pallete-color-black-2);
 }
 
 </style>

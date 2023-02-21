@@ -104,7 +104,7 @@ export default {
   padding: var(--ratio-4) 0;
   min-width: 125px;
   background-color: var(--pallete-color-black-2);
-  font-size: var(--font-size);
+  font-size: var(--text-size-normal);
   border: 1px solid var(--pallete-color-black-3);
 }
 

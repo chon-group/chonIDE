@@ -28,22 +28,19 @@
 
     --border-trace: 1px solid var(--pallete-color-black-3);
 
-    --action-padding-1: 0px 16px;
-    --action-ratio-1: 40px;
-    --action-ratio-2: 30px;
+    --action-side-padding: 15px;
+    --action-height: 35px;
 
     --shadow-item-1: 0 2px 1px rgba(0, 0, 0, 0.15);
     --shadow-item-2: 0 2px 1px rgba(0, 0, 0, 1);
 
     --container-width-1: 800px;
-    --container-width-2: 600px;
+    --container-width-2: 500px;
 
-    --text-size-normal: 1em;
-    --text-size-little: 0.9em;
-    --text-size-headline: 1.25em;
-    --text-size-title: 1.6em;
+    --text-size-normal: 12px;
+    --text-size-little: 10px;
+    --text-size-headline: 16px;
+    --text-size-title: 20px;
 
     --background-hover-transition: background-color 0.1s ease-in;
-
-    --font-size: 11px;
 }

@@ -77,6 +77,7 @@ export default {
 .pop-up {
   width: var(--container-width-2);
   z-index: 10;
+  font-size: var(--text-size-normal);
 }
 
 .pop-up__title {
@@ -85,8 +86,8 @@ export default {
 }
 
 .pop-up__close-action {
-  width: var(--action-ratio-1);
-  height: var(--action-ratio-1);
+  width: var(--action-height);
+  height: var(--action-height);
   background: url("@/assets/media/icon/close-action.svg") center no-repeat;
   background-size: 40%;
   cursor: pointer;

@@ -13,14 +13,15 @@
         <h2 class="coder__header__logo u-row">chonIDE</h2>
         <div class="u-row u-height-cover">
           <router-link to="/connect" class="u-height-cover">
-            <Button transparent no-border adjust side-padding="10" icon-ratio="12" icon="wifi-quality-4.svg">
+            <Button color="transparent" no-border height-adjust side-padding="10px" icon-ratio="12px"
+                    icon="wifi-quality-4.svg">
               <template v-slot:content>
                 Redes
               </template>
             </Button>
           </router-link>
           <router-link to="/domain" class="u-height-cover">
-            <Button transparent no-border adjust side-padding="10" icon-ratio="12" icon="domain.svg">
+            <Button color="transparent" no-border height-adjust side-padding="10px" icon-ratio="12px" icon="domain.svg">
               <template v-slot:content>
                 Nome do bot
               </template>
@@ -29,32 +30,36 @@
         </div>
       </div>
       <div class="u-row u-height-cover">
-        <Button transparent no-border adjust side-padding="10" v-if="domain != null" :link="mindInspectorUrl">
+        <Button color="transparent" no-border height-adjust side-padding="10px" v-if="domain != null"
+                :link="mindInspectorUrl">
           <template v-slot:content>
             Mind Inspector
           </template>
         </Button>
-        <Button transparent no-border adjust side-padding="10" v-if="domain != null" :link="logsUrl">
+        <Button color="transparent" no-border height-adjust side-padding="10px" v-if="domain != null" :link="logsUrl">
           <template v-slot:content>
             Logs do SMA
           </template>
         </Button>
-        <Button icon="start.svg" transparent no-border adjust side-padding="10" icon-ratio="12" @click="startMas"
+        <Button icon="start.svg" color="transparent" no-border height-adjust side-padding="10px" icon-ratio="12px"
+                @click="startMas"
                 :is-loading="startingMas">
           <template v-slot:content>
             Iniciar SMA
           </template>
         </Button>
-        <Button icon="stop.svg" transparent no-border adjust side-padding="10" icon-ratio="12" @click="stopMas"
+        <Button icon="stop.svg" color="transparent" no-border height-adjust side-padding="10px" icon-ratio="12px"
+                @click="stopMas"
                 :is-loading="stopingMas">
           <template v-slot:content>
             Parar SMA
           </template>
         </Button>
-        <Button icon="reset.svg" transparent no-border adjust side-padding="10" icon-ratio="13" @click="resetSystem"/>
-        <Button icon="turn-off.svg" transparent no-border adjust side-padding="10" icon-ratio="13.5"
+        <Button icon="reset.svg" color="transparent" no-border height-adjust side-padding="10px" icon-ratio="13px"
+                @click="resetSystem"/>
+        <Button icon="turn-off.svg" color="transparent" no-border height-adjust side-padding="10px" icon-ratio="13.5px"
                 @click="turnOffSystem"/>
-        <Button icon="logout.svg" transparent no-border adjust side-padding="10" icon-ratio="12"
+        <Button icon="logout.svg" color="transparent" no-border height-adjust side-padding="10px" icon-ratio="12px"
                 @click="logout"/>
       </div>
     </div>
@@ -62,8 +67,7 @@
     <div class="u-row">
       <div class="coder__explorer u-column">
         <div class="coder__header-bar coder__explorer__project-name u-row">
-          <input type="text" v-model="projectName"
-                 placeholder="Nome do projeto">
+          <input type="text" v-model="projectName" placeholder="Nome do projeto">
           <div class="coder__project-status is-aside">
             <div v-if="savingProject" class="u-row u-gap-3">
               <Loading border-width="1" ratio="14" main-color="var(--pallete-text-main)"/>
@@ -93,7 +97,7 @@
             <div v-for="(agent,index) in agents" :key="index"
                  class="coder__explorer__item third-level u-row u-align-i-center u-gap-3" v-show="agentsOpen">
               <div class="u-height-cover u-width-cover u-row u-align-i-center u-gap-3"
-                   @click="this.currentFile = agent">
+                   @click="showAgentFile(agent)">
                 <span class="coder__explorer__item__icon">Ag</span>
                 <select class="is-agent-type coder__action" v-model="agent.archClass">
                   <option v-for="(type, index) in agentTypes" :key="index" :value="type"
@@ -111,7 +115,7 @@
                   <hr/>
                   <button class="severe agent-delete-button">
                     Excluir
-                    <Popup for="agent-delete-button" :title="'Deletar ' + agent.name" ref="delete-agent-popup"
+                    <Popup for="agent-delete-button" :title="'Excluir arquivo ' + agent.name" ref="delete-agent-popup"
                            :can-close="false">
                       <template v-slot:content>
                         Você tem certeza que deseja deletar esse arquivo? Não será possível recupera-lo.
@@ -129,7 +133,7 @@
                                   $refs['delete-agent-popup'][index].close()
                                 }">
                           <template v-slot:content>
-                            Sim, deletar arquivo.
+                            Sim, deletar arquivo
                           </template>
                         </Button>
                       </template>
@@ -138,55 +142,56 @@
                 </template>
               </Toggle>
             </div>
-            <div class="coder__explorer__item first-level u-row u-align-i-center">
-              <div class="u-height-cover u-width-cover u-row u-align-i-center" @click="firmwaresOpen = !firmwaresOpen">
-                <img src="@/assets/media/icon/toggle.svg" class="coder__explorer__item__toggle" :class="firmwaresOpen ?
+          </div>
+          <div class="coder__explorer__item first-level u-row u-align-i-center">
+            <div class="u-height-cover u-width-cover u-row u-align-i-center" @click="firmwaresOpen = !firmwaresOpen">
+              <img src="@/assets/media/icon/toggle.svg" class="coder__explorer__item__toggle" :class="firmwaresOpen ?
           'open' : ''">
-                <span>Firmwares</span>
-              </div>
-              <button class="coder__action is-add" @click="addFirmwareFile"></button>
+              <span>Firmwares</span>
             </div>
-            <div v-for="(firmware,index) in firmwares" :key="index"
-                 class="coder__explorer__item second-level u-row u-align-i-center u-gap-3" v-show="firmwaresOpen">
-              <div class="u-height-cover u-width-cover u-row u-align-i-center u-gap-3"
-                   @click="this.currentFile = firmware">
-                <span class="coder__explorer__item__icon">C++</span>
-                <span class="coder__explorer__item__name">{{ firmware.name }}</span>
-              </div>
-              <Toggle type="contextmenu" direction="right">
-                <template v-slot:options>
-                  <button @click="editFileName($refs.input[index])">Renomear
-                  </button>
-                  <hr/>
-                  <button class="severe firmware-delete-button">
-                    Excluir
-                    <Popup for="firmware-delete-button" :title="'Deletar ' + firmware.name" ref="delete-firmware-popup"
-                           :can-close="false">
-                      <template v-slot:content>
-                        Você tem certeza que deseja deletar esse arquivo? Não será possível recupera-lo.
-                      </template>
-                      <template v-slot:action>
-                        <Button color="var(--pallete-color-black-4)"
-                                @click="$refs['delete-agent-popup'][index].close()">
-                          <template v-slot:content>
-                            Cancelar
-                          </template>
-                        </Button>
-                        <Button color="var(--pallete-color-red-1)"
-                                @click="() => {
+            <button class="coder__action is-add" @click="addFirmwareFile"></button>
+          </div>
+          <div v-for="(firmware,index) in firmwares" :key="index"
+               class="coder__explorer__item second-level u-row u-align-i-center u-gap-3" v-show="firmwaresOpen">
+            <div class="u-height-cover u-width-cover u-row u-align-i-center u-gap-3"
+                 @click="showFirmwareFile(firmware)">
+              <span class="coder__explorer__item__icon">C++</span>
+              <span class="coder__explorer__item__name">{{ firmware.name }}</span>
+            </div>
+            <Toggle type="contextmenu" direction="right">
+              <template v-slot:options>
+                <button @click="editFileName($refs.input[index])">
+                  Renomear
+                </button>
+                <hr/>
+                <button class="severe firmware-delete-button">
+                  Excluir
+                  <Popup for="firmware-delete-button" :title="'Deletar ' + firmware.name" ref="delete-firmware-popup"
+                         :can-close="false">
+                    <template v-slot:content>
+                      Você tem certeza que deseja deletar esse arquivo? Não será possível recupera-lo.
+                    </template>
+                    <template v-slot:action>
+                      <Button color="var(--pallete-color-black-4)"
+                              @click="$refs['delete-firmware-popup'][index].close()">
+                        <template v-slot:content>
+                          Cancelar
+                        </template>
+                      </Button>
+                      <Button color="var(--pallete-color-red-1)"
+                              @click="() => {
                                   removeFile(index, firmwares);
                                   $refs['delete-firmware-popup'][index].close()
                                 }">
-                          <template v-slot:content>
-                            Sim, deletar arquivo.
-                          </template>
-                        </Button>
-                      </template>
-                    </Popup>
-                  </button>
-                </template>
-              </Toggle>
-            </div>
+                        <template v-slot:content>
+                          Sim, deletar arquivo.
+                        </template>
+                      </Button>
+                    </template>
+                  </Popup>
+                </button>
+              </template>
+            </Toggle>
           </div>
         </div>
         <div class="coder__explorer__libraries">
@@ -216,14 +221,14 @@
             {{ currentFile != null ? currentFile.name : "Nenhum arquivo" }}
           </span>
           <div class="u-row">
-            <Button v-if="firmwareFileIsOpen" icon="upload.svg" transparent adjust icon-ratio="12"
-                    no-border side-padding="10" no-pointer @click="compileSketch" :is-loading="compilingSketch">
+            <Button v-if="firmwareFileIsOpen" icon="upload.svg" transparent height-adjust icon-ratio="12px"
+                    no-border side-padding="10px" @click="compileSketch" :is-loading="compilingSketch">
               <template v-slot:content>
                 Compilar
               </template>
             </Button>
-            <Button v-if="firmwareFileIsOpen" icon="white-circle.svg" transparent adjust icon-ratio="12"
-                    no-border side-padding="10" no-pointer @click="deploySketch" :is-loading="deployingSketch">
+            <Button v-if="firmwareFileIsOpen" icon="white-circle.svg" transparent height-adjust icon-ratio="12px"
+                    no-border side-padding="10px" @click="deploySketch" :is-loading="deployingSketch">
               <template v-slot:content>
                 Deploy
               </template>
@@ -524,6 +529,25 @@ export default {
         router.push(Routes.LOGIN);
       }, 2000);
     },
+    loadLibraries(refresh = false) {
+      this.loadingLibraries = true;
+      return API.get(EndPoints.LIBRARIES, refresh).then((response) => {
+        this.libraries = response.data.data;
+      }).then(() => {
+        this.loadingLibraries = false;
+      });
+    },
+    loadBoards(refresh) {
+      this.currentBoard = null;
+      this.loadingBoards = true;
+      API.get(EndPoints.BOARDS, refresh).then((response) => {
+        this.boards = response.data.data;
+        this.loadingBoards = false;
+        if (this.boards.length != 0) {
+          this.currentBoard = this.boards[0];
+        }
+      });
+    },
     logout() {
       API.delete(EndPoints.USERS);
       router.push(Routes.LOGIN);
@@ -556,6 +580,14 @@ export default {
         sourceCode: defaultSourceCode.agent
       });
     },
+    showAgentFile(agent) {
+      this.currentFile = agent;
+      this.firmwareFileIsOpen = false;
+    },
+    showFirmwareFile(firmware) {
+      this.currentFile = firmware;
+      this.firmwareFileIsOpen = true;
+    },
     editFileName(input) {
       input.focus();
       input.readOnly = false;
@@ -569,25 +601,6 @@ export default {
         }
         input.value = Util.removeInvalidCharacters(input.value);
       }
-    },
-    loadLibraries(refresh = false) {
-      this.loadingLibraries = true;
-      return API.get(EndPoints.LIBRARIES, refresh).then((response) => {
-        this.libraries = response.data.data;
-      }).then(() => {
-        this.loadingLibraries = false;
-      });
-    },
-    loadBoards(refresh) {
-      this.currentBoard = null;
-      this.loadingBoards = true;
-      API.get(EndPoints.BOARDS, refresh).then((response) => {
-        this.boards = response.data.data;
-        this.loadingBoards = false;
-        if (this.boards.length != 0) {
-          this.currentBoard = this.boards[0];
-        }
-      });
     },
     write(event, text, setPositionInner) {
       event.preventDefault();
@@ -630,7 +643,6 @@ export default {
   --base-height: 27px;
   --file-name-selected-height: 4px;
   --bar-height: calc(var(--base-height) + var(--file-name-selected-height));
-  font-size: var(--font-size);
   width: 100vw;
   height: 100vh;
 }
@@ -691,8 +703,7 @@ export default {
   width: 100%;
   height: calc(100vh - calc(2 * var(--bar-height)));
   overflow-y: scroll;
-  font-size: var(--text-size-little);
-  --writer-font-size: 12px;
+  --writer-font-size: var(--text-size-normal);
 }
 
 .coder__writer__lines {

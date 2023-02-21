@@ -27,40 +27,32 @@ export default {
   name: 'Button',
   components: {Loading},
   props: {
-    transparent: String,
-    navigation: String,
     icon: String,
-    iconRatio: String,
-    color: String,
-    rounded: String,
+    iconRatio: {
+      default: "15px",
+      type: String,
+      required: false
+    },
+    color: {
+      default: "var(--pallete-color-black-2)",
+      required: false,
+      type: String
+    },
     noBorder: String,
     isLoading: Boolean,
-    adjust: String,
+    heightAdjust: String,
     sidePadding: String,
     link: String
   },
   computed: {
-    iconRatioStyle() {
-      return this.iconRatio != null ? this.iconRatio + "px" : "15px";
-    },
     skinClasses() {
-      let classes;
-      if (this.transparent != null) {
-        classes = "is-transparent"
-      } else if (this.navigation != null) {
-        classes = "is-navigation";
-      } else {
-        classes = "is-filled";
+      let classes = "";
+      if (this.heightAdjust != null) {
+        classes += " is-height-adjust";
       }
-
-      if (this.adjust != null) {
-        classes += " is-adjust";
-      }
-
       if (this.sidePadding != null) {
         classes += " side-padding";
       }
-
       if (this.icon != null) {
         if (this.$slots.content != null) {
           classes += " has-icon";
@@ -68,20 +60,10 @@ export default {
           classes += " is-icon";
         }
       }
-
-      if (this.border != null) {
-        classes += " is-rounded";
-      } else if (this.noBorder != null) {
-        classes += " has-not-border"
+      if (this.noBorder != null) {
+        classes += " has-no-border"
       }
-
       return classes;
-    },
-    colorStyle() {
-      return this.color == null ? "var(--pallete-color-main-1)" : this.color;
-    },
-    sidePaddingStyle() {
-      return this.sidePadding == null ? 'initial' : this.sidePadding + 'px';
     }
   }
 }
@@ -90,49 +72,43 @@ export default {
 <style scoped>
 .button {
   gap: 8px;
-  border-radius: var(--border-radius-item);
   border: none;
-  cursor: pointer;
+  cursor: default;
   width: fit-content;
   position: relative;
   overflow: hidden;
-  background-color: v-bind(colorStyle);
   white-space: nowrap;
+
+  background-color: v-bind(color);
+  border-radius: var(--border-radius-item);
+  font-size: var(--text-size-normal);
+  color: var(--pallete-text-main);
+  padding: 0 var(--action-side-padding);
+  height: var(--action-height);
 }
 
-.button.has-not-border {
+.button.has-no-border {
   border-radius: 0;
 }
 
 .button__icon {
-  width: v-bind(iconRatioStyle);
-  height: v-bind(iconRatioStyle);
+  width: v-bind(iconRatio);
+  height: v-bind(iconRatio);
 }
 
-.button.is-filled {
-  color: var(--pallete-text-main);
-  height: var(--action-ratio-1);
-  padding: var(--action-padding-1);
+.button.is-icon {
+  padding: 0;
+  height: var(--action-height);
+  width: var(--action-height);
 }
 
-.button.is-transparent {
-  background-color: transparent;
-  color: var(--pallete-text-main);
-  height: var(--action-ratio-1);
-  padding: var(--action-padding-1);
+.button.is-height-adjust {
+  height: 100%;
 }
 
-.button.is-navigation {
-  height: var(--action-ratio-1);
-  padding: 0 var(--ratio-3);
-  background-color: transparent;
-  color: var(--pallete-text-main);
-  border-bottom: 1px solid var(--pallete-color-black-1);
-  border-radius: 0;
-}
-
-.button.is-navigation:hover {
-  border-bottom: 1px solid var(--pallete-text-main);
+.button.side-padding {
+  padding-left: v-bind(sidePadding);
+  padding-right: v-bind(sidePadding);
 }
 
 .button-background {
@@ -145,25 +121,6 @@ export default {
 
 .button-background:hover {
   background-color: rgba(255, 255, 255, 0.08);
-}
-
-.button.is-rounded {
-  border-radius: var(--border-radius-total);
-}
-
-.button.is-icon {
-  padding: 0;
-  height: var(--action-ratio-1);
-  width: var(--action-ratio-1);
-}
-
-.button.is-adjust {
-  height: 100%;
-}
-
-.button.side-padding {
-  padding-left: v-bind(sidePaddingStyle);
-  padding-right: v-bind(sidePaddingStyle);
 }
 
 </style>

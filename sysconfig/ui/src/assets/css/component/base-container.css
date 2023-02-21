@@ -4,5 +4,4 @@
     border: var(--border-trace);
     border-radius: var(--border-radius-container);
     position: relative;
-    filter: drop-shadow(var(--shadow-item-1));
 }

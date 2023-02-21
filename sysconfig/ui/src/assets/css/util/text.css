@@ -6,11 +6,11 @@
     font-size: var(--text-size-normal);
 }
 
-.is-small {
+.is-little {
     font-size: var(--text-size-little);
 }
 
-.is-big {
+.is-headline {
     font-size: var(--text-size-headline);
 }
 
