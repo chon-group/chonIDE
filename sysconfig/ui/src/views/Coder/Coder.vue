@@ -7,7 +7,6 @@
         </div>
       </template>
     </Popup>
-
     <div class="coder__header u-row u-justify-i-between u-align-i-center">
       <div class="u-row u-align-i-center u-height-cover u-gap-3">
         <h2 class="coder__header__logo u-row">chonIDE</h2>
@@ -55,12 +54,59 @@
             Parar SMA
           </template>
         </Button>
-        <Button icon="reset.svg" color="transparent" no-border height-adjust side-padding="10px" icon-ratio="13px"
-                @click="resetSystem"/>
-        <Button icon="turn-off.svg" color="transparent" no-border height-adjust side-padding="10px" icon-ratio="13.5px"
-                @click="turnOffSystem"/>
-        <Button icon="logout.svg" color="transparent" no-border height-adjust side-padding="10px" icon-ratio="12px"
-                @click="logout"/>
+        <Button color="transparent" no-border height-adjust side-padding="10px">
+          <template v-slot:content>
+            Sistema
+            <Toggle parent-position>
+              <template v-slot:options>
+                <button @click="logout">Sair</button>
+                <hr>
+                <button>
+                  Reiniciar sistema
+                  <Popup is-children title="Reiniciar sistema">
+                    <template v-slot:content>
+                      Reiniciar o sistema implicará no procedimento padrão de reinicialização do sistema onde está
+                      alocado o sistema operacional chonOS.
+                    </template>
+                    <template v-slot:action>
+                      <Button role="pop-up-closer">
+                        <template v-slot:content>
+                          Cancelar
+                        </template>
+                      </Button>
+                      <Button main-color @click="resetSystem">
+                        <template v-slot:content>
+                          Sim, reiniciar sistema.
+                        </template>
+                      </Button>
+                    </template>
+                  </Popup>
+                </button>
+                <button class="severe">
+                  Desligar sistema
+                  <Popup is-children title="Desligar sistema">
+                    <template v-slot:content>
+                      Desligar o sistema implicará no procedimento padrão de desligar do sistema onde está
+                      alocado o sistema operacional chonOS.
+                    </template>
+                    <template v-slot:action>
+                      <Button role="pop-up-closer">
+                        <template v-slot:content>
+                          Cancelar
+                        </template>
+                      </Button>
+                      <Button color="var(--pallete-color-red-1)" @click="turnOffSystem">
+                        <template v-slot:content>
+                          Sim, desligar sistema.
+                        </template>
+                      </Button>
+                    </template>
+                  </Popup>
+                </button>
+              </template>
+            </Toggle>
+          </template>
+        </Button>
       </div>
     </div>
 
@@ -69,150 +115,45 @@
         <div class="coder__header-bar coder__explorer__project-name u-row">
           <input type="text" v-model="projectName" placeholder="Nome do projeto">
           <div class="coder__project-status is-aside">
-            <div v-if="savingProject" class="u-row u-gap-3">
-              <Loading border-width="1" ratio="14" main-color="var(--pallete-text-main)"/>
-              Salvando projeto
-            </div>
-            <div v-else class="u-row u-gap-3">
-              <img src="@/assets/media/icon/check.svg" style="width: 13px">
-              Projeto salvo
-            </div>
+            <Loading v-if="savingProject" border-width="1" ratio="13" main-color="var(--pallete-text-main)"/>
+            <img v-else src="@/assets/media/icon/check.svg" style="width: 13px">
           </div>
         </div>
         <div class="coder__explorer__main">
-          <span class="coder__explorer__item first-level u-row u-align-i-center" @click="masOpen = !masOpen">
-            <img src="@/assets/media/icon/toggle.svg" class="coder__explorer__item__toggle"
-                 :class="masOpen ? 'open' : ''">
-            Sistema multiagente
-          </span>
-          <div class="u-column" v-show="masOpen">
-            <div class="coder__explorer__item second-level u-row u-align-i-center">
-              <div class="u-height-cover u-width-cover u-row u-align-i-center" @click="agentsOpen = !agentsOpen">
-                <img src="@/assets/media/icon/toggle.svg" class="coder__explorer__item__toggle" :class="agentsOpen ?
-                  'open' : ''">
-                <span>Agentes</span>
-              </div>
-              <button class="coder__action is-add" @click="addAgentFile"></button>
-            </div>
-            <div v-for="(agent,index) in agents" :key="index"
-                 class="coder__explorer__item third-level u-row u-align-i-center u-gap-3" v-show="agentsOpen">
-              <div class="u-height-cover u-width-cover u-row u-align-i-center u-gap-3"
-                   @click="showAgentFile(agent)">
-                <span class="coder__explorer__item__icon">Ag</span>
-                <select class="is-agent-type coder__action" v-model="agent.archClass">
-                  <option v-for="(type, index) in agentTypes" :key="index" :value="type"
-                          :selected="agent.archClass === type">
-                    {{ type }}
-                  </option>
-                </select>
-                <input type="text" class="coder__explorer__item__name" v-model="agent.name" ref="input" readonly/>
-              </div>
-              <Toggle type="contextmenu" direction="right">
-                <template v-slot:options>
-                  <button
-                      @click="editFileName($refs.input[index])">Renomear
-                  </button>
-                  <hr/>
-                  <button class="severe agent-delete-button">
-                    Excluir
-                    <Popup for="agent-delete-button" :title="'Excluir arquivo ' + agent.name" ref="delete-agent-popup"
-                           :can-close="false">
-                      <template v-slot:content>
-                        Você tem certeza que deseja deletar esse arquivo? Não será possível recupera-lo.
-                      </template>
-                      <template v-slot:action>
-                        <Button color="var(--pallete-color-black-4)"
-                                @click="$refs['delete-agent-popup'][index].close()">
-                          <template v-slot:content>
-                            Cancelar
-                          </template>
-                        </Button>
-                        <Button color="var(--pallete-color-red-1)"
-                                @click="() => {
-                                  removeFile(index, agents);
-                                  $refs['delete-agent-popup'][index].close()
-                                }">
-                          <template v-slot:content>
-                            Sim, deletar arquivo
-                          </template>
-                        </Button>
-                      </template>
-                    </Popup>
-                  </button>
+          <ExplorerFolder name="Sistema multiagente">
+            <template v-slot:content>
+              <ExplorerFolder name="Agentes" @add="addAgentFileAction">
+                <template v-slot:content>
+                  <ExplorerFile v-for="(agent, index) in agents"
+                                :key="index" :file="agent" icon="Ag"
+                                @delete="removeFileAction(index, agents)"
+                                @edit="(editedAgent) => agent = editedAgent"
+                                @show="
+                                  currentFile = agent;
+                                  firmwareFileIsOpen = false
+                                "/>
                 </template>
-              </Toggle>
-            </div>
-          </div>
-          <div class="coder__explorer__item first-level u-row u-align-i-center">
-            <div class="u-height-cover u-width-cover u-row u-align-i-center" @click="firmwaresOpen = !firmwaresOpen">
-              <img src="@/assets/media/icon/toggle.svg" class="coder__explorer__item__toggle" :class="firmwaresOpen ?
-          'open' : ''">
-              <span>Firmwares</span>
-            </div>
-            <button class="coder__action is-add" @click="addFirmwareFile"></button>
-          </div>
-          <div v-for="(firmware,index) in firmwares" :key="index"
-               class="coder__explorer__item second-level u-row u-align-i-center u-gap-3" v-show="firmwaresOpen">
-            <div class="u-height-cover u-width-cover u-row u-align-i-center u-gap-3"
-                 @click="showFirmwareFile(firmware)">
-              <span class="coder__explorer__item__icon">C++</span>
-              <span class="coder__explorer__item__name">{{ firmware.name }}</span>
-            </div>
-            <Toggle type="contextmenu" direction="right">
-              <template v-slot:options>
-                <button @click="editFileName($refs.input[index])">
-                  Renomear
-                </button>
-                <hr/>
-                <button class="severe firmware-delete-button">
-                  Excluir
-                  <Popup for="firmware-delete-button" :title="'Deletar ' + firmware.name" ref="delete-firmware-popup"
-                         :can-close="false">
+              </ExplorerFolder>
+              <ExplorerFolder name="Firmwares" @add="addFirmwareFileAction">
+                <template v-slot:content>
+                  <ExplorerFile v-for="(firmware, index) in firmwares"
+                                :key="index" :file="firmware" icon="C++"
+                                @delete="removeFileAction(index, firmwares)"
+                                @edit="(editedFirmware) => firmware = editedFirmware"
+                                @show="
+                                  currentFile = firmware;
+                                  firmwareFileIsOpen = true
+                                "/>
+                  <ExplorerFolder name="Bibliotecas" @add="importLibrary" has-refresh @refresh="loadLibraries(true)">
                     <template v-slot:content>
-                      Você tem certeza que deseja deletar esse arquivo? Não será possível recupera-lo.
+                      <ExplorerFile v-for="(library, index) in libraries"
+                                    :key="index" :file="library" icon="L" :can-rename="false"/>
                     </template>
-                    <template v-slot:action>
-                      <Button color="var(--pallete-color-black-4)"
-                              @click="$refs['delete-firmware-popup'][index].close()">
-                        <template v-slot:content>
-                          Cancelar
-                        </template>
-                      </Button>
-                      <Button color="var(--pallete-color-red-1)"
-                              @click="() => {
-                                  removeFile(index, firmwares);
-                                  $refs['delete-firmware-popup'][index].close()
-                                }">
-                        <template v-slot:content>
-                          Sim, deletar arquivo.
-                        </template>
-                      </Button>
-                    </template>
-                  </Popup>
-                </button>
-              </template>
-            </Toggle>
-          </div>
-        </div>
-        <div class="coder__explorer__libraries">
-          <div class="coder__header-bar u-row u-justify-i-between">
-            <span class="coder__header-bar__title">
-              Bibliotecas
-            </span>
-            <div class="u-row u-width-fit u-height-cover">
-              <input type="file" style="display: none" id="add-library" @change="importLibrary($event)" accept=".zip">
-              <label type="file" class="coder__action is-add"
-                     for="add-library"></label>
-              <div class="coder__action is-refresh" @click="loadLibraries(true)"></div>
-            </div>
-          </div>
-          <div class="u-total-center u-height-cover u-width-cover" v-if="loadingLibraries">
-            <Loading border-width="2" main-color="var(--pallete-text-main)" ratio="25"/>
-          </div>
-          <div class="coder__explorer__item first-level u-row u-align-i-center" v-for="(library, index) in libraries"
-               :key="index">
-            <span>{{ library.name }}</span>
-          </div>
+                  </ExplorerFolder>
+                </template>
+              </ExplorerFolder>
+            </template>
+          </ExplorerFolder>
         </div>
       </div>
       <div class="coder__coding u-column">
@@ -255,20 +196,8 @@
         <div class="u-total-center u-height-cover u-width-cover" v-else-if="boards.length === 0 && !loadingBoards">
           <span class="is-aside">Não foram encontradas placas disponíveis</span>
         </div>
-        <div class="coder__board u-column u-justify-i-between"
-             v-else
-             v-for="(board, index) in boards" :key="index"
-             @click="currentBoard = board"
-        >
-          <div class="u-row u-justify-i-between">
-            <span class="u-column">
-              <span>{{ board.board }}</span>
-              <span class="is-aside">{{ board.fqbn }}</span>
-            </span>
-            <div class="coder__board__select" :class="board === currentBoard ? 'is-selected' : ''"></div>
-          </div>
-          <span class="is-aside">{{ board.port }}</span>
-        </div>
+        <Board v-else v-for="(board, index) in boards" :key="index"
+               @select="currentBoard = board;" :is-current="currentBoard == board"/>
       </div>
     </div>
 
@@ -279,22 +208,25 @@
 <script>
 import Util from "@/domain/Util";
 import Button from "@/components/Button";
-import {AgentType, Key, MessageType} from "@/domain/Enums";
+import {AgentType, AppEvent, MessageType} from "@/domain/Enums";
 import Loading from "@/components/Loading";
 import Popup from "@/components/Popup";
 import router, {Routes} from "@/router";
 import {API, EndPoints, Headers} from "@/domain/API";
-import Toggle from "@/components/Toggle";
 import defaultSourceCode from "@/domain/content/default-source-codes.json";
+import ExplorerFile from "@/views/Coder/ExplorerFile";
+import ExplorerFolder from "@/views/Coder/ExplorerFolder";
+import Board from "@/views/Coder/Board";
+import Toggle from "@/components/Toggle";
 
 const LINE_BREAK_CHAR = "\n", TAB_CHAR = "\t", POS_CHAR = "$";
 const CODER_DIFF_HEIGHT = 18;
-const AGENT_DEFAULT_FILE_NAME = "agent", FIRMWARE_DEFAULT_FILE_NAME = "sketch";
+const AGENT_DEFAULT_FILE_NAME = "newAgent", FIRMWARE_DEFAULT_FILE_NAME = "newSketch";
 const DEFAULT_LINKS_PROTOCOL = "http://";
 
 export default {
   name: "Coder",
-  components: {Toggle, Loading, Button, Popup},
+  components: {Toggle, Board, ExplorerFolder, ExplorerFile, Loading, Button, Popup},
   data() {
     return {
       projectName: "",
@@ -306,9 +238,6 @@ export default {
       firmwares: [],
       boards: [],
       libraries: [],
-      masOpen: true,
-      agentsOpen: true,
-      firmwaresOpen: true,
       agentTypes: [AgentType.ARGO, AgentType.JASON, AgentType.COMMUNICATOR],
       boardResponse: null,
       savingProject: false,
@@ -317,9 +246,7 @@ export default {
       stopingMas: false,
       compilingSketch: false,
       deployingSketch: false,
-      loadingBoards: false,
-      loadingLibraries: false,
-      showLogMonitor: false
+      loadingBoards: false
     }
   },
   watch: {
@@ -336,7 +263,7 @@ export default {
       deep: true
     },
     projectName(newValue) {
-      this.projectName = Util.removeInvalidCharacters(newValue);
+      this.projectName = Util.mantainJustRegularCharacters(newValue);
       this.saveProject();
     }
   },
@@ -387,35 +314,39 @@ export default {
         this.$refs.coder.style.height = (this.$refs.coderLines.scrollHeight - CODER_DIFF_HEIGHT) + "px";
       } else if (event.which === 219) {
         if (event.shiftKey) {
-          this.write(event, '{' + LINE_BREAK_CHAR + TAB_CHAR + POS_CHAR + LINE_BREAK_CHAR + '}', true);
+          this.writeAction(event, '{' + LINE_BREAK_CHAR + TAB_CHAR + POS_CHAR + LINE_BREAK_CHAR + '}', true);
         } else {
-          this.write(event, `[${POS_CHAR}]`, true);
+          this.writeAction(event, `[${POS_CHAR}]`, true);
         }
       } else if (event.which === 57 && event.shiftKey) {
-        this.write(event, `(${POS_CHAR})`, true);
+        this.writeAction(event, `(${POS_CHAR})`, true);
       } else if (event.which === 9) {
         event.preventDefault();
-        this.write(event, TAB_CHAR, false);
+        this.writeAction(event, TAB_CHAR, false);
       } else if (event.which === 222) {
         if (event.shiftKey) {
-          this.write(event, `"${POS_CHAR}"`, true);
+          this.writeAction(event, `"${POS_CHAR}"`, true);
         } else {
-          this.write(event, `'${POS_CHAR}'`, true);
+          this.writeAction(event, `'${POS_CHAR}'`, true);
         }
       }
     });
   },
   methods: {
     projectIsInvalid() {
+      if (this.agents.length === 0) {
+        this.$emit(AppEvent.MESSAGE, {content: "Não é possível inicar o SMA sem agentes", type: MessageType.ERROR});
+        return true;
+      }
       if (this.projectName.length === 0) {
-        this.$emit("message", {content: "O nome do projeto não pode ser vazio", type: MessageType.ERROR});
+        this.$emit(AppEvent.MESSAGE, {content: "O nome do projeto não pode ser vazio", type: MessageType.ERROR});
         return true;
       }
       return false;
     },
     compileSketch() {
       if (this.currentBoard == null) {
-        this.$emit("message", {content: "Nenhuma placa foi selecionada", type: MessageType.WARNING});
+        this.$emit(AppEvent.MESSAGE, {content: "Nenhuma placa foi selecionada", type: MessageType.WARNING});
         return;
       }
       this.compilingSketch = true;
@@ -432,7 +363,7 @@ export default {
     },
     deploySketch() {
       if (this.currentBoard == null) {
-        this.$emit("message", {content: "Não existe nenhuma placa selecionada", type: MessageType.WARNING});
+        this.$emit(AppEvent.MESSAGE, {content: "Não existe nenhuma placa selecionada", type: MessageType.WARNING});
         return;
       }
       this.deployingSketch = true;
@@ -447,34 +378,36 @@ export default {
         this.deployingSketch = false;
       });
     },
-    importLibrary(event) {
-      let files = event.target.files;
-      if (files.length === 0) {
-        return;
-      }
-      if (files[0].name.includes(" ")) {
-        this.$emit("message", {content: "O nome do arquivo não pode ter espaço", type: MessageType.ERROR});
-        return;
-      }
-
-      this.loadingLibraries = true;
-      API.post(EndPoints.LIBRARIES_IMPORT, Headers.MULTIPART_CONFIG, {file: files[0]}).then((response) => {
-        if (response.status === 200) {
-          this.$emit("message", {
-            content: response.data.data,
-            type: MessageType.SUCCESS
-          });
-          this.loadLibraries(true).then(() => {
-            this.loadingLibraries = false;
-          });
-        } else {
-          this.$emit("message", {
-            content: response.data.data,
-            type: MessageType.ERROR
-          });
-          this.loadingLibraries = false;
+    importLibrary() {
+      let libraryInput = document.createElement('input');
+      libraryInput.type = 'file';
+      libraryInput.click();
+      libraryInput.onchange = (event) => {
+        let files = event.target.files;
+        if (files.length === 0) {
+          this.$emit(AppEvent.MESSAGE, {content: "Nenhum arquivo selecionado", type: MessageType.WARNING});
+          return;
         }
-      });
+        let libraryFile = files[0];
+        if (Util.isFileInvalid(libraryFile)) {
+          this.$emit(AppEvent.MESSAGE, {content: "O nome do arquivo não pode ter espaço", type: MessageType.ERROR});
+          return;
+        }
+        API.post(EndPoints.LIBRARIES_IMPORT, Headers.MULTIPART_CONFIG, {file: libraryFile}).then((response) => {
+          if (response.status === 200) {
+            this.$emit(AppEvent.MESSAGE, {
+              content: response.data.data,
+              type: MessageType.SUCCESS
+            });
+            this.loadLibraries(true);
+          } else {
+            this.$emit(AppEvent.MESSAGE, {
+              content: response.data.data,
+              type: MessageType.ERROR
+            });
+          }
+        });
+      }
     },
     saveProject() {
       this.savingProject = true;
@@ -493,12 +426,16 @@ export default {
         return;
       }
       this.startingMas = true;
-      API.put(EndPoints.MAS_START, {}, {
+      API.put(EndPoints.MAS, {
+        params: {
+          action: "start"
+        }
+      }, {
         name: this.projectName,
         agents: this.agents
       }).then((response) => {
-        this.$emit("message", {
-          content: response.data.data.message,
+        this.$emit(AppEvent.MESSAGE, {
+          content: response.data.message,
           type: MessageType.SUCCESS
         });
         this.startingMas = false;
@@ -506,35 +443,32 @@ export default {
     },
     stopMas() {
       this.stopingMas = true;
-      API.put(EndPoints.MAS_STOP).then((response) => {
-        if (response.data.data.includes("Encerrando SMA")) {
-          this.$emit("message", {content: response.data.data, type: MessageType.SUCCESS});
+      API.put(EndPoints.MAS, {params: {action: "stop"}}).then((response) => {
+        if (response.status == 202) {
+          this.$emit(AppEvent.MESSAGE, {content: response.data.message, type: MessageType.WARNING});
         } else {
-          this.$emit("message", {content: "SMA já foi parado", type: MessageType.WARNING});
+          this.$emit(AppEvent.MESSAGE, {content: response.data.message, type: MessageType.SUCCESS});
         }
         this.stopingMas = false;
       });
     },
     turnOffSystem() {
-      this.$emit("message", {content: "Desligando sistema", type: MessageType.WARNING});
+      this.$emit(AppEvent.MESSAGE, {content: "Desligando sistema", type: MessageType.WARNING});
       API.put(EndPoints.SYSTEM_POWEROFF);
       setTimeout(() => {
         router.push(Routes.LOGIN);
       }, 2000);
     },
     resetSystem() {
-      this.$emit("message", {content: "Reiniciando sistema", type: MessageType.WARNING});
+      this.$emit(AppEvent.MESSAGE, {content: "Reiniciando sistema", type: MessageType.WARNING});
       API.put(EndPoints.SYSTEM_REBOOT);
       setTimeout(() => {
         router.push(Routes.LOGIN);
       }, 2000);
     },
     loadLibraries(refresh = false) {
-      this.loadingLibraries = true;
       return API.get(EndPoints.LIBRARIES, refresh).then((response) => {
         this.libraries = response.data.data;
-      }).then(() => {
-        this.loadingLibraries = false;
       });
     },
     loadBoards(refresh) {
@@ -552,7 +486,7 @@ export default {
       API.delete(EndPoints.USERS);
       router.push(Routes.LOGIN);
     },
-    removeFile(index, files) {
+    removeFileAction(index, files) {
       if (this.currentFile == files[index]) {
         if (index == 0) {
           files.splice(index, 1);
@@ -567,42 +501,20 @@ export default {
         files.splice(index, 1);
       }
     },
-    addFirmwareFile() {
+    addFirmwareFileAction() {
       this.firmwares.push({
-        name: FIRMWARE_DEFAULT_FILE_NAME + (this.firmwares.length + 1),
+        name: FIRMWARE_DEFAULT_FILE_NAME,
         sourceCode: defaultSourceCode.firmware
       });
     },
-    addAgentFile() {
+    addAgentFileAction() {
       this.agents.push({
-        name: AGENT_DEFAULT_FILE_NAME + (this.agents.length + 1),
+        name: AGENT_DEFAULT_FILE_NAME,
         archClass: AgentType.JASON,
         sourceCode: defaultSourceCode.agent
       });
     },
-    showAgentFile(agent) {
-      this.currentFile = agent;
-      this.firmwareFileIsOpen = false;
-    },
-    showFirmwareFile(firmware) {
-      this.currentFile = firmware;
-      this.firmwareFileIsOpen = true;
-    },
-    editFileName(input) {
-      input.focus();
-      input.readOnly = false;
-      input.onblur = () => {
-        input.readOnly = true;
-      }
-      input.onkeydown = (event) => {
-        if (event.key == Key.ENTER) {
-          input.readOnly = true;
-          return;
-        }
-        input.value = Util.removeInvalidCharacters(input.value);
-      }
-    },
-    write(event, text, setPositionInner) {
+    writeAction(event, text, setPositionInner) {
       event.preventDefault();
       setTimeout(() => {
         let selectionStart = this.$refs.coder.selectionStart;
@@ -641,7 +553,7 @@ export default {
 .coder {
   --explorer-width: 350px;
   --base-height: 27px;
-  --file-name-selected-height: 4px;
+  --file-name-selected-height: 3px;
   --bar-height: calc(var(--base-height) + var(--file-name-selected-height));
   width: 100vw;
   height: 100vh;
@@ -742,12 +654,15 @@ export default {
 .coder__explorer {
   min-width: var(--explorer-width);
   background-color: var(--pallete-color-black-2);
-  --libraries-height: 250px;
+}
+
+.coder__explorer > * {
+  user-select: none;
 }
 
 .coder__explorer__main {
   overflow-y: auto;
-  height: calc(100vh - var(--bar-height) - var(--libraries-height));
+  height: calc(100vh - calc(2 * var(--bar-height)));
 }
 
 .coder__header-bar {
@@ -785,134 +700,12 @@ export default {
   background-color: var(--pallete-color-black-4);
 }
 
-.coder__explorer__item {
-  width: 100%;
-  height: var(--base-height);
-  flex-shrink: 0;
-  user-select: none;
-  padding-right: var(--ratio-3);
-}
-
-.coder__explorer__item__toggle {
-  height: 6px;
-  margin-right: var(--ratio-3);
-  transform: rotate(-90deg);
-}
-
-.coder__explorer__item__toggle.open {
-  transform: rotate(0deg);
-}
-
-.coder__explorer__item:hover {
-  background-color: var(--pallete-color-black-3);
-}
-
-.coder__explorer__item.first-level {
-  padding-left: 10px;
-}
-
-.coder__explorer__item.second-level {
-  padding-left: 30px;
-}
-
-.coder__explorer__item.third-level {
-  padding-left: 50px;
-}
-
-.coder__action {
-  display: grid;
-  place-items: center;
-  border: 0;
-  height: 100%;
-}
-
-.coder__action.is-agent-type {
-  text-align: left;
-  color: var(--pallete-text-main);
-  background-color: var(--pallete-color-black-3);
-  height: 100%;
-  padding: 0 var(--ratio-3);
-  text-align: center;
-}
-
-.coder__explorer__item__name {
-  white-space: nowrap;
-  overflow: hidden;
-  position: relative;
-  color: var(--pallete-text-main);
-  background-color: transparent;
-  border: none;
-  cursor: default;
-}
-
-.coder__explorer__item__icon {
-  font-weight: 1000;
-  font-size: var(--text-size-little);
-  color: var(--pallete-text-aside);
-  width: 15px;
-}
-
-.coder__action.is-remove {
-  opacity: 0;
-  margin-left: auto;
-  background: url("@/assets/media/icon/remove.svg") center transparent no-repeat;
-  background-size: 40%;
-  aspect-ratio: 1/1;
-}
-
-.coder__explorer__item:hover > .is-remove {
-  opacity: 1;
-}
-
-.coder__action.is-add {
-  background: url("@/assets/media/icon/add.svg") center transparent no-repeat;
-  background-size: 50%;
-  aspect-ratio: 1/1;
-}
-
-.coder__action.is-refresh {
-  background: url("@/assets/media/icon/refresh.svg") center transparent no-repeat;
-  background-size: 50%;
-  aspect-ratio: 1/1;
-}
-
-.coder__action:hover {
-  background-color: var(--pallete-color-black-4);
-}
-
-.coder__explorer__libraries {
-  border-top: 1px solid var(--pallete-color-black-1);
-  height: calc(var(--libraries-height) - calc(2 * var(--bar-height)));
-}
-
-/** Placas */
-
 .coder__boards {
   width: 350px;
   background-color: var(--pallete-color-black-2);
   border-left: 1px solid var(--pallete-color-black-1);
   height: calc(100vh - var(--bar-height));
   overflow-y: auto;
-}
-
-.coder__board {
-  height: 75px;
-  padding: var(--ratio-3);
-}
-
-.coder__board:hover {
-  background-color: var(--pallete-color-black-3);
-}
-
-.coder__board__select {
-  height: 15px;
-  aspect-ratio: 1/1;
-  border-radius: var(--border-radius-total);
-  border: 2px solid var(--pallete-color-black-4);
-}
-
-.coder__board__select.is-selected {
-  background-color: var(--pallete-color-main-1);
 }
 
 </style>

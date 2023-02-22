@@ -6,8 +6,12 @@ export default class Util {
         document.title = name + this.TITLE_SUFFIX;
     }
 
-    public static removeInvalidCharacters(string: string) {
+    public static mantainJustRegularCharacters(string: string) {
         return string.replace(/[^a-zA-Z0-9]/g, "");
+    }
+
+    public static isFileInvalid(file: any) {
+        return file.name.includes(" ");
     }
 
 }

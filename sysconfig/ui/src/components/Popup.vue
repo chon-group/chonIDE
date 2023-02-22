@@ -21,10 +21,8 @@ export default {
     title: String,
     type: String,
     for: String,
-    canClose: {
-      type: Boolean,
-      default: true
-    }
+    canClose: Boolean,
+    isChildren: Boolean
   },
   data() {
     return {
@@ -47,7 +45,11 @@ export default {
     }
   },
   mounted() {
-    this.triggerElement = document.querySelector(`.${this.for}`);
+    if(this.isChildren) {
+      this.triggerElement = this.$el.parentElement;
+    } else {
+      this.triggerElement = document.querySelector(`.${this.for}`);
+    }
     if (this.triggerElement == null) {
       return;
     }
@@ -56,6 +58,11 @@ export default {
       this.showing(true);
       document.body.appendChild(this.$el);
     }
+    this.$el.parentElement.querySelectorAll("[role='pop-up-closer']").forEach((closer) => {
+      closer.addEventListener("click", () => {
+        this.close();
+      });
+    });
   }
 }
 
@@ -81,7 +88,7 @@ export default {
 }
 
 .pop-up__title {
-  font-size: var(--text-size-title);
+  font-size: var(--text-size-headline);
   color: var(--pallete-text-main);
 }
 

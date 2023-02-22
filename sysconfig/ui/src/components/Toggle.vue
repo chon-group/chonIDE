@@ -1,12 +1,15 @@
 <template>
   <div class="toggle">
-    <div class="toggle__options u-column">
+    <div class="u-width-cover u-column">
       <slot name="options"></slot>
     </div>
   </div>
 </template>
 
 <script>
+
+const DISTANCE_TO_PARENT_ELEMENT = 5;
+
 export default {
   name: "Toggle",
   props: {
@@ -19,7 +22,9 @@ export default {
       type: String,
       default: null,
       required: false
-    }
+    },
+    clickPosition: Boolean,
+    parentPosition: Boolean
   },
   data() {
     return {
@@ -29,7 +34,6 @@ export default {
   },
   mounted() {
     this.triggerElement = this.$el.parentElement;
-    document.body.append(this.$el);
     document.body.addEventListener(this.type, (event) => {
       if (this.type == "contextmenu") {
         event.preventDefault();
@@ -38,7 +42,7 @@ export default {
         if (this.isOpen) {
           this.close();
         } else {
-          this.open();
+          this.open(event);
         }
       } else {
         if (this.isOpen) {
@@ -48,23 +52,38 @@ export default {
     });
     if (this.type == "contextmenu") {
       document.body.addEventListener("click", (event) => {
-        if (!this.triggerElement.contains(event.target) && event.target != this.triggerElement) {
-          if (this.isOpen) {
-            this.close();
-          }
+        if (this.isOpen) {
+          this.close();
         }
       });
     }
   },
   methods: {
     close() {
+      this.triggerElement.append(this.$el);
       this.isOpen = false;
       this.$el.classList.remove("is-open");
     },
-    open() {
+    open(event) {
+      document.body.append(this.$el);
       this.isOpen = true;
       this.$el.classList.add("is-open");
-      this.adjustToRelative();
+      if (this.parentPosition) {
+        this.adjustToRelative();
+      } else if (this.clickPosition) {
+        this.adjustToEvent(event);
+      }
+      this.adjustToWindow();
+    },
+    adjustToWindow() {
+      let elementClientRect = this.$el.getBoundingClientRect();
+      if (elementClientRect.right == window.innerWidth) {
+        this.$el.style.left = elementClientRect.left - DISTANCE_TO_PARENT_ELEMENT + "px";
+      }
+    },
+    adjustToEvent(event) {
+      this.$el.style.left = event.clientX + "px";
+      this.$el.style.top = event.clientY + "px";
     },
     adjustToRelative() {
       let relativeElementClientRect = this.triggerElement.getBoundingClientRect();
@@ -86,9 +105,10 @@ export default {
       // Ajustando a direção vertical do menu.
       if (relativeElementClientRect.top + relativeElementClientRect.height + elementClientRect.height >=
           window.innerHeight) {
-        this.$el.style.top = relativeElementClientRect.top - elementClientRect.height + "px";
+        this.$el.style.top = relativeElementClientRect.top - DISTANCE_TO_PARENT_ELEMENT
+            - elementClientRect.height + "px";
       } else {
-        this.$el.style.top = relativeElementClientRect.top + relativeElementClientRect.height + "px";
+        this.$el.style.top = relativeElementClientRect.top + relativeElementClientRect.height + DISTANCE_TO_PARENT_ELEMENT + "px";
       }
     }
   }
@@ -110,10 +130,6 @@ export default {
 
 .toggle.is-open {
   display: flex;
-}
-
-.toggle__options {
-  width: 100%;
 }
 
 :slotted(span) {

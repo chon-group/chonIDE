@@ -14,3 +14,7 @@ export enum AgentType {
     COMMUNICATOR = "Communicator"
 }
 
+export enum AppEvent {
+    MESSAGE = "message"
+}
+

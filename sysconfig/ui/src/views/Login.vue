@@ -51,7 +51,7 @@ import RoundedButton from "@/components/RoundedButton";
 import Util from "@/domain/Util";
 import Trace from "@/components/Trace";
 import router, {Routes} from "@/router";
-import {MessageType} from "@/domain/Enums"
+import {AppEvent, MessageType} from "@/domain/Enums"
 import Popup from "@/components/Popup";
 import Loading from "@/components/Loading";
 import {API, EndPoints} from "@/domain/API";
@@ -95,12 +95,6 @@ export default {
           }
         }, 1000);
       });
-    } else {
-      // API.get(EndPoints.USERS).then((response) => {
-      //   if (response.status == 200) {
-      //     router.push("/coder");
-      //   }
-      // });
     }
 
     this.keyPressListener = (event) => {
@@ -113,7 +107,7 @@ export default {
   methods: {
     submit() {
       if (this.username.length === 0 || this.password.length === 0) {
-        this.$emit("message", {content: "O usuário e/ou a senha não podem ser vazios", type: MessageType.ERROR});
+        this.$emit(AppEvent.MESSAGE, {content: "O usuário e/ou a senha não podem ser vazios", type: MessageType.ERROR});
         return;
       }
 
@@ -129,7 +123,7 @@ export default {
           });
         } else {
           this.loading = false;
-          this.$emit("message", {content: "Não foi possível conectar ao sistema", type: MessageType.ERROR});
+          this.$emit(AppEvent.MESSAGE, {content: "Não foi possível conectar ao sistema", type: MessageType.ERROR});
         }
       })
     }

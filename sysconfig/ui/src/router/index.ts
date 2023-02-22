@@ -2,7 +2,7 @@ import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
 import Login from "@/views/Login.vue";
 import Connect from "@/views/Connect.vue";
 import Domain from "@/views/Domain.vue";
-import Coder from "@/views/Coder.vue";
+import Coder from "@/views/Coder/Coder.vue";
 
 export class Routes {
     public static LOGIN = "/login";

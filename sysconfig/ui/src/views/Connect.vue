@@ -125,7 +125,7 @@ import Input from "@/components/Input";
 import Util from "@/domain/Util";
 import Loading from "@/components/Loading";
 import router, {Routes} from "@/router";
-import {MessageType} from "@/domain/Enums"
+import {AppEvent, MessageType} from "@/domain/Enums"
 import {API, EndPoints} from "@/domain/API";
 
 export default {
@@ -171,7 +171,7 @@ export default {
       let password = this.$refs['customized-network-password-input'].$refs.input.value;
 
       if (password.length < 8) {
-        this.$emit("message", {
+        this.$emit(AppEvent.MESSAGE, {
           content: "A senha da rede precisa ser igual ou mais que 8 caracteres", type:
           MessageType.ERROR
         });

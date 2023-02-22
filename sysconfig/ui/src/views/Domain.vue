@@ -14,7 +14,7 @@
             Voltar para codador
           </template>
         </Button>
-        <Button @click="submit" :isLoading="loading">
+        <Button @click="submit" :isLoading="loading" main-color>
           <template v-slot:content>
             Salvar nome
           </template>
@@ -29,7 +29,7 @@
 import Util from "@/domain/Util";
 import Button from "@/components/Button";
 import router, {Routes} from "@/router";
-import {MessageType} from "@/domain/Enums"
+import {AppEvent, MessageType} from "@/domain/Enums"
 import {API, EndPoints} from "@/domain/API";
 
 
@@ -54,7 +54,7 @@ export default {
   },
   watch: {
     domain(newValue) {
-      this.domain = Util.removeInvalidCharacters(newValue).toLowerCase();
+      this.domain = Util.mantainJustRegularCharacters(newValue).toLowerCase();
     }
   },
   setup() {
@@ -72,12 +72,12 @@ export default {
     },
     submit() {
       if (this.domain === '' || this.domain.length === 0) {
-        this.$emit("message", {content: "O nome não pode ser vazio", type: MessageType.ERROR});
+        this.$emit(AppEvent.MESSAGE, {content: "O nome não pode ser vazio", type: MessageType.ERROR});
         return;
       }
       this.loading = true;
       API.post(EndPoints.DOMAINS, {params: {domain: this.domain}}).then(() => {
-        this.$emit("message", {content: "O nome do seu bot foi salvo com sucesso", type: MessageType.SUCCESS});
+        this.$emit(AppEvent.MESSAGE, {content: "O nome do seu bot foi salvo com sucesso", type: MessageType.SUCCESS});
         router.push(Routes.CONNECT);
       });
     }

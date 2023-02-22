@@ -1,22 +1,16 @@
 <template>
   <a v-if="link != null" :href="link != null ? link : ''" :target="link != null ? '_blank' : ''" class="button"
      :class="[skinClasses,'u-row u-align-i-center u-justify-i-center']">
-    <div class="button-background"></div>
     <Loading v-if="isLoading" ratio="14" border-width="1" aside-color="rgba(255,255,255,0.2)"
              main-color="white"/>
     <img v-else-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)" class="button__icon">
-    <span v-if="$slots.content != null">
-      <slot name="content"></slot>
-    </span>
+    <slot name="content"></slot>
   </a>
-  <button type="button" v-else class="button" :class="[skinClasses,'u-row u-align-i-center u-justify-i-center']">
-    <div class="button-background"></div>
+  <button v-else type="button" class="button" :class="[skinClasses,'u-row u-align-i-center u-justify-i-center']">
     <Loading v-if="isLoading" ratio="14" border-width="1" aside-color="rgba(255,255,255,0.2)"
              main-color="white"/>
     <img v-else-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)" class="button__icon">
-    <span v-if="$slots.content != null">
-      <slot name="content"></slot>
-    </span>
+    <slot name="content"></slot>
   </button>
 </template>
 
@@ -33,8 +27,9 @@ export default {
       type: String,
       required: false
     },
+    mainColor: Boolean,
     color: {
-      default: "var(--pallete-color-black-2)",
+      default: "var(--pallete-color-black-3)",
       required: false,
       type: String
     },
@@ -45,6 +40,12 @@ export default {
     link: String
   },
   computed: {
+    colorSytle() {
+      if (this.mainColor) {
+        return "var(--pallete-color-main-1)";
+      }
+      return this.color;
+    },
     skinClasses() {
       let classes = "";
       if (this.heightAdjust != null) {
@@ -79,12 +80,25 @@ export default {
   overflow: hidden;
   white-space: nowrap;
 
-  background-color: v-bind(color);
+  background-color: v-bind(colorSytle);
   border-radius: var(--border-radius-item);
   font-size: var(--text-size-normal);
   color: var(--pallete-text-main);
   padding: 0 var(--action-side-padding);
   height: var(--action-height);
+  position: relative;
+}
+
+.button::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.button:hover::before {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .button.has-no-border {
@@ -109,18 +123,6 @@ export default {
 .button.side-padding {
   padding-left: v-bind(sidePadding);
   padding-right: v-bind(sidePadding);
-}
-
-.button-background {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.button-background:hover {
-  background-color: rgba(255, 255, 255, 0.08);
 }
 
 </style>

@@ -90,8 +90,7 @@ export class EndPoints {
     public static LIBRARIES_IMPORT = API_URL + "/libraries/import";
     public static SYSTEM_REBOOT = API_URL + "/system/reboot";
     public static SYSTEM_POWEROFF = API_URL + "/system/poweroff";
-    public static MAS_STOP = API_URL + "/mas/stop";
-    public static MAS_START = API_URL + "/mas/start";
+    public static MAS = API_URL + "/mas";
     public static SKETCH_DEPLOY = API_URL + "/sketchs/deploy";
     public static SKETCH_COMPILE = API_URL + "/sketchs/compile";
     public static NETWORKS = API_URL + "/networks";
