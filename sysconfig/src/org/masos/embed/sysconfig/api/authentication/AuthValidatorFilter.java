@@ -80,7 +80,7 @@ public class AuthValidatorFilter implements Filter {
         long expirationTime = authenticatedUser.getExpirationDate().getTime();
         if (date.getTime() >= expirationTime) {
             long lastRequisitionTime = authenticatedUser.getLastRequisitionDate().getTime();
-            if (lastRequisitionTime + LAST_REQUISITION_SAFE_TIME >= expirationTime) {
+            if (expirationTime - LAST_REQUISITION_SAFE_TIME <= lastRequisitionTime) {
                 resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 responseEntity.status(HttpServletResponse.SC_FORBIDDEN).message("Sessão terminou.").date(date);
                 writer.write(JsonManager.get().toJson(responseEntity));
