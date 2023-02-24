@@ -10,17 +10,16 @@
     <div class="coder__header u-row u-justify-i-between u-align-i-center">
       <div class="u-row u-align-i-center u-height-cover u-gap-3">
         <h2 class="coder__header__logo u-row">chonIDE</h2>
-        <div class="u-row u-height-cover">
+        <div class="u-row u-align-i-center u-height-cover">
           <router-link to="/connect" class="u-height-cover">
-            <Button color="transparent" no-border height-adjust side-padding="10px" icon-ratio="12px"
-                    icon="wifi-quality-4.svg">
+            <Button height="100%" icon-ratio="12px" no-border icon="wifi-quality-4.svg">
               <template v-slot:content>
                 Redes
               </template>
             </Button>
           </router-link>
           <router-link to="/domain" class="u-height-cover">
-            <Button color="transparent" no-border height-adjust side-padding="10px" icon-ratio="12px" icon="domain.svg">
+            <Button height="100%" icon-ratio="12px" no-border icon="domain.svg">
               <template v-slot:content>
                 Nome do bot
               </template>
@@ -28,41 +27,36 @@
           </router-link>
         </div>
       </div>
-      <div class="u-row u-height-cover">
-        <Button color="transparent" no-border height-adjust side-padding="10px" v-if="domain != null"
-                :link="mindInspectorUrl">
+      <div class="u-row u-align-i-center u-height-cover">
+        <Button icon="start.svg" icon-ratio="11px" width="35px" height="100%" @click="startMas"
+                :is-loading="startingMas"/>
+        <Button icon="stop.svg" icon-ratio="10px" width="35px" height="100%" @click="stopMas"
+                :is-loading="stopingMas"/>
+        <Button icon="download.svg" icon-ratio="12px" width="35px" height="100%" @click="downloadMas"
+                :is-loading="downloadingMas"/>
+        <hr class="coder__header__hr">
+        <Button height="100%" no-border
+        v-if="domain != null" :link="mindInspectorUrl">
           <template v-slot:content>
             Mind Inspector
           </template>
         </Button>
-        <Button color="transparent" no-border height-adjust side-padding="10px" v-if="domain != null" :link="logsUrl">
+        <Button height="100%" no-border
+        v-if="domain != null" :link="logsUrl">
           <template v-slot:content>
             Logs do SMA
           </template>
         </Button>
-        <Button icon="start.svg" color="transparent" no-border height-adjust side-padding="10px" icon-ratio="12px"
-                @click="startMas"
-                :is-loading="startingMas">
+        <hr class="coder__header__hr">
+        <Button no-border height="100%" width="35px" icon="dots.svg">
           <template v-slot:content>
-            Iniciar SMA
-          </template>
-        </Button>
-        <Button icon="stop.svg" color="transparent" no-border height-adjust side-padding="10px" icon-ratio="12px"
-                @click="stopMas"
-                :is-loading="stopingMas">
-          <template v-slot:content>
-            Parar SMA
-          </template>
-        </Button>
-        <Button color="transparent" no-border height-adjust side-padding="10px">
-          <template v-slot:content>
-            Sistema
             <Toggle parent-position>
               <template v-slot:options>
                 <button @click="logout">Sair</button>
                 <hr>
+                <span>Sistema</span>
                 <button>
-                  Reiniciar sistema
+                  Reiniciar
                   <Popup is-children title="Reiniciar sistema">
                     <template v-slot:content>
                       Reiniciar o sistema implicará no procedimento padrão de reinicialização do sistema onde está
@@ -83,7 +77,7 @@
                   </Popup>
                 </button>
                 <button class="severe">
-                  Desligar sistema
+                  Desligar
                   <Popup is-children title="Desligar sistema">
                     <template v-slot:content>
                       Desligar o sistema implicará no procedimento padrão de desligar do sistema onde está
@@ -115,12 +109,12 @@
         <div class="coder__header-bar coder__explorer__project-name u-row">
           <input type="text" v-model="projectName" placeholder="Nome do projeto">
           <div class="coder__project-status is-aside">
-            <Loading v-if="savingProject" border-width="1" ratio="13" main-color="var(--pallete-text-main)"/>
-            <img v-else src="@/assets/media/icon/check.svg" style="width: 13px">
+            <Loading v-if="savingProject" border-width="1px" ratio="12px" main-color="var(--pallete-text-main)"/>
+            <img v-else src="@/assets/media/icon/check.svg" style="width: 12px">
           </div>
         </div>
         <div class="coder__explorer__main">
-          <ExplorerFolder name="Sistema multiagente">
+          <ExplorerFolder name="Sistema multiagente" :has-add="false">
             <template v-slot:content>
               <ExplorerFolder name="Agentes" @add="addAgentFileAction">
                 <template v-slot:content>
@@ -134,22 +128,23 @@
                                 "/>
                 </template>
               </ExplorerFolder>
-              <ExplorerFolder name="Firmwares" @add="addFirmwareFileAction">
-                <template v-slot:content>
-                  <ExplorerFile v-for="(firmware, index) in firmwares"
-                                :key="index" :file="firmware" icon="C++"
-                                @delete="removeFileAction(index, firmwares)"
-                                @edit="(editedFirmware) => firmware = editedFirmware"
-                                @show="
+            </template>
+          </ExplorerFolder>
+          <ExplorerFolder name="Firmwares" @add="addFirmwareFileAction">
+            <template v-slot:content>
+              <ExplorerFile v-for="(firmware, index) in firmwares"
+                            :key="index" :file="firmware" icon="C++"
+                            @delete="removeFileAction(index, firmwares)"
+                            @edit="(editedFirmware) => firmware = editedFirmware"
+                            @show="
                                   currentFile = firmware;
                                   firmwareFileIsOpen = true
                                 "/>
-                  <ExplorerFolder name="Bibliotecas" @add="importLibrary" has-refresh @refresh="loadLibraries(true)">
-                    <template v-slot:content>
-                      <ExplorerFile v-for="(library, index) in libraries"
-                                    :key="index" :file="library" icon="L" :can-rename="false"/>
-                    </template>
-                  </ExplorerFolder>
+              <ExplorerFolder name="Bibliotecas" @add="importLibrary"
+                              add-message="Nova biblioteca" has-refresh @refresh="loadLibraries(true)">
+                <template v-slot:content>
+                  <ExplorerFile v-for="(library, index) in libraries"
+                                :key="index" :file="library" icon="L" :can-rename="false"/>
                 </template>
               </ExplorerFolder>
             </template>
@@ -162,14 +157,14 @@
             {{ currentFile != null ? currentFile.name : "Nenhum arquivo" }}
           </span>
           <div class="u-row">
-            <Button v-if="firmwareFileIsOpen" icon="upload.svg" transparent height-adjust icon-ratio="12px"
-                    no-border side-padding="10px" @click="compileSketch" :is-loading="compilingSketch">
+            <Button v-if="firmwareFileIsOpen" icon="upload.svg" height="100%" icon-ratio="11px"
+                    no-border @click="compileSketch" :is-loading="compilingSketch">
               <template v-slot:content>
                 Compilar
               </template>
             </Button>
-            <Button v-if="firmwareFileIsOpen" icon="white-circle.svg" transparent height-adjust icon-ratio="12px"
-                    no-border side-padding="10px" @click="deploySketch" :is-loading="deployingSketch">
+            <Button v-if="firmwareFileIsOpen" icon="white-check.svg" height="100%" icon-ratio="12px"
+                    no-border @click="deploySketch" :is-loading="deployingSketch">
               <template v-slot:content>
                 Deploy
               </template>
@@ -188,10 +183,10 @@
       <div class="coder__boards u-column" v-if="firmwareFileIsOpen">
         <div class="coder__header-bar u-row u-justify-i-between">
           <span class="coder__header-bar__title">Placas disponíveis</span>
-          <div class="coder__action is-refresh" @click="loadBoards(true)" style="background-size: 45%"></div>
+          <Button icon="refresh.svg" icon-ratio="13px" side-padding="12px" height="100%" @click="loadBoards(true)"/>
         </div>
         <div class="u-total-center u-height-cover u-width-cover" v-if="loadingBoards">
-          <Loading border-width="2" main-color="var(--pallete-text-main)" ratio="25"/>
+          <Loading border-width="2px" main-color="var(--pallete-text-main)" ratio="25px"/>
         </div>
         <div class="u-total-center u-height-cover u-width-cover" v-else-if="boards.length === 0 && !loadingBoards">
           <span class="is-aside">Não foram encontradas placas disponíveis</span>
@@ -574,6 +569,14 @@ export default {
   background-color: var(--pallete-color-black-3);
   border-bottom: 1px solid var(--pallete-color-black-1);
   height: var(--bar-height);
+}
+
+.coder__header__hr{
+  height: 100%;
+  width: 1px;
+  background-color: var(--pallete-color-black-4);
+  border: none;
+  margin: 0 var(--ratio-4);
 }
 
 .coder__header__logo {

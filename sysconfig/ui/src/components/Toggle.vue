@@ -135,6 +135,8 @@ export default {
 :slotted(span) {
   color: var(--pallete-text-aside);
   padding: var(--ratio-4) var(--ratio-3);
+  user-select: none;
+  cursor: default;
 }
 
 :slotted(button) {

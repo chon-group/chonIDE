@@ -81,6 +81,11 @@
     height: 100% !important;
 }
 
+.u-all-cover {
+    height: 100% !important;
+    width: 100% !important;
+}
+
 .u-width-fit {
     width: fit-content !important;
 }

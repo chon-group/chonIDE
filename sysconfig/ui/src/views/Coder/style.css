@@ -9,26 +9,3 @@
 .coder__explorer__item:hover {
     background-color: var(--pallete-color-black-3);
 }
-
-.coder__action {
-    display: grid;
-    place-items: center;
-    border: 0;
-    height: 100%;
-}
-
-.coder__action.is-add {
-    background: url("@/assets/media/icon/add.svg") center transparent no-repeat;
-    background-size: 45%;
-    aspect-ratio: 1/1;
-}
-
-.coder__action.is-refresh {
-    background: url("@/assets/media/icon/refresh.svg") center transparent no-repeat;
-    background-size: 50%;
-    aspect-ratio: 1/1;
-}
-
-.coder__action:hover {
-    background-color: var(--pallete-color-black-4);
-}

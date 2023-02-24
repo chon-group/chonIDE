@@ -1,13 +1,13 @@
 <template>
   <a v-if="link != null" :href="link != null ? link : ''" :target="link != null ? '_blank' : ''" class="button"
      :class="[skinClasses,'u-row u-align-i-center u-justify-i-center']">
-    <Loading v-if="isLoading" ratio="14" border-width="1" aside-color="rgba(255,255,255,0.2)"
+    <Loading v-if="isLoading" ratio="14px" border-width="1px" aside-color="rgba(255,255,255,0.2)"
              main-color="white"/>
     <img v-else-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)" class="button__icon">
     <slot name="content"></slot>
   </a>
   <button v-else type="button" class="button" :class="[skinClasses,'u-row u-align-i-center u-justify-i-center']">
-    <Loading v-if="isLoading" ratio="14" border-width="1" aside-color="rgba(255,255,255,0.2)"
+    <Loading v-if="isLoading" ratio="14px" border-width="1px" aside-color="rgba(255,255,255,0.2)"
              main-color="white"/>
     <img v-else-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)" class="button__icon">
     <slot name="content"></slot>
@@ -35,8 +35,9 @@ export default {
     },
     noBorder: String,
     isLoading: Boolean,
-    heightAdjust: String,
     sidePadding: String,
+    height: String,
+    width: String,
     link: String
   },
   computed: {
@@ -48,18 +49,15 @@ export default {
     },
     skinClasses() {
       let classes = "";
-      if (this.heightAdjust != null) {
-        classes += " is-height-adjust";
+      if (this.height != null) {
+        classes += " custom-height";
       }
+      if (this.width != null) {
+        classes += " custom-width";
+      }
+
       if (this.sidePadding != null) {
         classes += " side-padding";
-      }
-      if (this.icon != null) {
-        if (this.$slots.content != null) {
-          classes += " has-icon";
-        } else {
-          classes += " is-icon";
-        }
       }
       if (this.noBorder != null) {
         classes += " has-no-border"
@@ -89,6 +87,18 @@ export default {
   position: relative;
 }
 
+.button.custom-height {
+  height: v-bind(height);
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.button.custom-width {
+  width: v-bind(width);
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .button::before {
   content: "";
   display: block;
@@ -108,16 +118,6 @@ export default {
 .button__icon {
   width: v-bind(iconRatio);
   height: v-bind(iconRatio);
-}
-
-.button.is-icon {
-  padding: 0;
-  height: var(--action-height);
-  width: var(--action-height);
-}
-
-.button.is-height-adjust {
-  height: 100%;
 }
 
 .button.side-padding {

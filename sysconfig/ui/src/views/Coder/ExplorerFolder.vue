@@ -6,10 +6,10 @@
              ${folderOpen ? 'open' : ''}`">
         <span>{{ name }}</span>
       </div>
-      <Toggle click-position type="contextmenu">
+      <Toggle click-position type="contextmenu" v-if="hasAdd || hasRefresh">
         <template v-slot:options>
-          <button v-if="hasAdd != null" @click="addFile">Criar arquivo</button>
-          <button v-if="hasRefresh != null" @click="refresh">Atualizar</button>
+          <button v-if="hasAdd" @click="addFile">{{ addMessage }}</button>
+          <button v-if="hasRefresh" @click="refresh">Atualizar</button>
         </template>
       </Toggle>
     </div>
@@ -29,7 +29,10 @@ export default {
     hasAdd: {
       default: true
     },
-    hasRefresh: String
+    hasRefresh: Boolean,
+    addMessage: {
+      default: "Novo arquivo"
+    }
   },
   data() {
     return {
@@ -92,6 +95,5 @@ export default {
 .coder__explorer__item__toggle.open {
   transform: rotate(0deg);
 }
-
 
 </style>

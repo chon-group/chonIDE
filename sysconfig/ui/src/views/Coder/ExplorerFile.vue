@@ -25,7 +25,7 @@
               </Button>
               <Button color="var(--pallete-color-red-1)" @click="deleteFile">
                 <template v-slot:content>
-                  Sim, excluir.
+                  Sim, excluir
                 </template>
               </Button>
             </template>

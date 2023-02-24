@@ -6,17 +6,17 @@
 export default {
   name: "Loading",
   props: {
-    mainColor: String,
-    asideColor: String,
-    ratio: String,
-    borderWidth: String
-  },
-  data() {
-    return {
-      asideColorStyle: this.asideColor == null ? "var(--pallete-color-black-3)" : this.asideColor,
-      mainColorStyle: this.mainColor == null ? "var(--pallete-color-main-2)" : this.mainColor,
-      ratioStyle: this.ratio == null ? "30px" : this.ratio + "px",
-      borderWidthStyle: this.borderWidth == null ? "4px" : this.borderWidth + "px"
+    mainColor: {
+      default: "var(--pallete-color-main-2)"
+    },
+    asideColor: {
+      default: "var(--pallete-color-black-3)"
+    },
+    ratio: {
+      default: "30px"
+    },
+    borderWidth: {
+      default: "4px"
     }
   }
 }
@@ -25,13 +25,13 @@ export default {
 <style scoped>
 
 .loading {
-  border-width: v-bind(borderWidthStyle);
+  border-width: v-bind(borderWidth);
   border-style: solid;
-  border-color: v-bind(asideColorStyle);
-  border-top-color: v-bind(mainColorStyle);
+  border-color: v-bind(asideColor);
+  border-top-color: v-bind(mainColor);
   border-radius: 50%;
-  width: v-bind(ratioStyle);
-  height: v-bind(ratioStyle);
+  width: v-bind(ratio);
+  height: v-bind(ratio);
   animation: loading 0.9s cubic-bezier(.17, .67, .83, .67) infinite;
 }
 
