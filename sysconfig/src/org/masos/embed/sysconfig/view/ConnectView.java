@@ -14,12 +14,7 @@ public class ConnectView extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Executor executor = (Executor) req.getSession().getAttribute("executor");
-        if (executor != null) {
-            req.getRequestDispatcher("/connect.html").forward(req, resp);
-        } else {
-            resp.sendRedirect("/chonide/login");
-        }
+        req.getRequestDispatcher("/connect.html").forward(req, resp);
     }
 
 }
