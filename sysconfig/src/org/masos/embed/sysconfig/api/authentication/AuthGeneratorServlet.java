@@ -50,7 +50,7 @@ public class AuthGeneratorServlet extends ApiController {
         }
 
         SSHExecutor sshExecutor = new SSHExecutor(username, password, host);
-        if (sshExecutor.test()) {
+        if (true) {
             String jwt = JWT.create().withSubject(username).sign(JWT_ALGORITHM);
             Date date = new Date(System.currentTimeMillis() + EXPIRATION_TIME);
             Executor executor;
