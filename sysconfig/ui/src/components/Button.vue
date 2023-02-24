@@ -1,17 +1,13 @@
 <template>
-  <a v-if="link != null" :href="link != null ? link : ''" :target="link != null ? '_blank' : ''" class="button"
-     :class="[skinClasses,'u-row u-align-i-center u-justify-i-center']">
-    <Loading v-if="isLoading" ratio="14px" border-width="1px" aside-color="rgba(255,255,255,0.2)"
-             main-color="white"/>
-    <img v-else-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)" class="button__icon">
-    <slot name="content"></slot>
-  </a>
-  <button v-else type="button" class="button" :class="[skinClasses,'u-row u-align-i-center u-justify-i-center']">
-    <Loading v-if="isLoading" ratio="14px" border-width="1px" aside-color="rgba(255,255,255,0.2)"
-             main-color="white"/>
-    <img v-else-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)" class="button__icon">
-    <slot name="content"></slot>
-  </button>
+  <div :class="['button-container', buttonContainerClasses]">
+    <component :class="[buttonClasses,'button u-align-i-center u-justify-i-center u-all-cover']"
+               :is="element" :href="link" target="_blank">
+      <Loading v-if="isLoading" ratio="14px" border-width="1px" aside-color="rgba(255,255,255,0.2)"
+               main-color="white"/>
+      <img v-else-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)" class="button__icon">
+      <slot name="content"></slot>
+    </component>
+  </div>
 </template>
 
 <script>
@@ -27,6 +23,9 @@ export default {
       type: String,
       required: false
     },
+    iconSense: {
+      default: "left"
+    },
     mainColor: Boolean,
     color: {
       default: "var(--pallete-color-black-3)",
@@ -38,16 +37,22 @@ export default {
     sidePadding: String,
     height: String,
     width: String,
-    link: String
+    link: String,
+    margin: {
+      default: "0px"
+    }
   },
   computed: {
+    element() {
+      return this.link != null ? "a" : "span";
+    },
     colorSytle() {
       if (this.mainColor) {
         return "var(--pallete-color-main-1)";
       }
       return this.color;
     },
-    skinClasses() {
+    buttonContainerClasses() {
       let classes = "";
       if (this.height != null) {
         classes += " custom-height";
@@ -55,7 +60,15 @@ export default {
       if (this.width != null) {
         classes += " custom-width";
       }
-
+      return classes;
+    },
+    buttonClasses() {
+      let classes = "";
+      if (this.iconSense == "left") {
+        classes += "u-row";
+      } else if (this.iconSense == "right") {
+        classes += "u-row-reverse";
+      }
       if (this.sidePadding != null) {
         classes += " side-padding";
       }
@@ -69,7 +82,27 @@ export default {
 </script>
 
 <style scoped>
+
+.button-container {
+  padding: v-bind(margin);
+}
+
+.custom-height {
+  height: v-bind(height);
+}
+
+.custom-width {
+  width: v-bind(width);
+}
+
 .button {
+  background-color: v-bind(colorSytle);
+  border-radius: var(--border-radius-item);
+  font-size: var(--text-size-normal);
+  color: var(--pallete-text-main);
+  padding: 0 var(--action-side-padding);
+  height: var(--action-height);
+
   gap: 8px;
   border: none;
   cursor: default;
@@ -77,26 +110,11 @@ export default {
   position: relative;
   overflow: hidden;
   white-space: nowrap;
-
-  background-color: v-bind(colorSytle);
-  border-radius: var(--border-radius-item);
-  font-size: var(--text-size-normal);
-  color: var(--pallete-text-main);
-  padding: 0 var(--action-side-padding);
-  height: var(--action-height);
-  position: relative;
 }
 
-.button.custom-height {
-  height: v-bind(height);
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-.button.custom-width {
-  width: v-bind(width);
-  padding-left: 0;
-  padding-right: 0;
+.side-padding {
+  padding-left: v-bind(sidePadding);
+  padding-right: v-bind(sidePadding);
 }
 
 .button::before {
@@ -118,11 +136,6 @@ export default {
 .button__icon {
   width: v-bind(iconRatio);
   height: v-bind(iconRatio);
-}
-
-.button.side-padding {
-  padding-left: v-bind(sidePadding);
-  padding-right: v-bind(sidePadding);
 }
 
 </style>

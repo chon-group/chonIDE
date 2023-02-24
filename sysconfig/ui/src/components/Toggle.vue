@@ -10,6 +10,8 @@
 
 const DISTANCE_TO_PARENT_ELEMENT = 5;
 
+import checkImage from '@/assets/media/icon/check.svg';
+
 export default {
   name: "Toggle",
   props: {
@@ -23,42 +25,80 @@ export default {
       default: null,
       required: false
     },
+    select: Boolean,
+    selected: String,
     clickPosition: Boolean,
     parentPosition: Boolean
   },
   data() {
     return {
       isOpen: false,
-      triggerElement: null
+      triggerElement: null,
+      buttons: [],
+      check: null
     }
   },
-  mounted() {
-    this.triggerElement = this.$el.parentElement;
-    document.body.addEventListener(this.type, (event) => {
-      if (this.type == "contextmenu") {
-        event.preventDefault();
-      }
-      if (this.triggerElement.contains(event.target) || event.target == this.triggerElement) {
-        if (this.isOpen) {
-          this.close();
-        } else {
-          this.open(event);
-        }
-      } else {
-        if (this.isOpen) {
-          this.close();
-        }
-      }
-    });
-    if (this.type == "contextmenu") {
-      document.body.addEventListener("click", (event) => {
-        if (this.isOpen) {
-          this.close();
+  watch: {
+    selected(selected) {
+      this.buttons.forEach((button) => {
+        if(selected == button.textContent) {
+          button.append(this.check);
         }
       });
     }
   },
+  mounted() {
+    this.applyClickEvent();
+
+    if (this.select) {
+      this.buttons = this.$el.querySelectorAll("button");
+      this.check = this.createCheckImage();
+      this.buttons[0].append(this.check);
+      this.buttons.forEach((button) => {
+        if(this.selected == button.textContent) {
+          button.append(this.check);
+        }
+        button.addEventListener("click", () => {
+          this.$emit("select", button.textContent);
+          button.append(this.check);
+        });
+      });
+    }
+  },
   methods: {
+    createCheckImage() {
+      let check = document.createElement("img");
+      check.src = checkImage;
+      check.style.height = "12px"
+      check.style.width = "12px";
+      return check;
+    },
+    applyClickEvent() {
+      this.triggerElement = this.$el.parentElement;
+      document.body.addEventListener(this.type, (event) => {
+        if (this.type == "contextmenu") {
+          event.preventDefault();
+        }
+        if (this.triggerElement.contains(event.target) || event.target == this.triggerElement) {
+          if (this.isOpen) {
+            this.close();
+          } else {
+            this.open(event);
+          }
+        } else {
+          if (this.isOpen) {
+            this.close();
+          }
+        }
+      });
+      if (this.type == "contextmenu") {
+        document.body.addEventListener("click", () => {
+          if (this.isOpen) {
+            this.close();
+          }
+        });
+      }
+    },
     close() {
       this.triggerElement.append(this.$el);
       this.isOpen = false;
@@ -140,6 +180,10 @@ export default {
 }
 
 :slotted(button) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--ratio-3);
   border: none;
   background-color: transparent;
   color: var(--pallete-text-main);

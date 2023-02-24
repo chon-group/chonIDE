@@ -36,13 +36,13 @@
                 :is-loading="downloadingMas"/>
         <hr class="coder__header__hr">
         <Button height="100%" no-border
-        v-if="domain != null" :link="mindInspectorUrl">
+                v-if="domain != null" :link="mindInspectorUrl">
           <template v-slot:content>
             Mind Inspector
           </template>
         </Button>
         <Button height="100%" no-border
-        v-if="domain != null" :link="logsUrl">
+                v-if="domain != null" :link="logsUrl">
           <template v-slot:content>
             Logs do SMA
           </template>
@@ -124,7 +124,8 @@
                                 @edit="(editedAgent) => agent = editedAgent"
                                 @show="
                                   currentFile = agent;
-                                  firmwareFileIsOpen = false
+                                  firmwareFileIsOpen = false;
+                                  agentFileIsOpen = true;
                                 "/>
                 </template>
               </ExplorerFolder>
@@ -138,7 +139,8 @@
                             @edit="(editedFirmware) => firmware = editedFirmware"
                             @show="
                                   currentFile = firmware;
-                                  firmwareFileIsOpen = true
+                                  firmwareFileIsOpen = true;
+                                  agentFileIsOpen = false;
                                 "/>
               <ExplorerFolder name="Bibliotecas" @add="importLibrary"
                               add-message="Nova biblioteca" has-refresh @refresh="loadLibraries(true)">
@@ -152,18 +154,36 @@
         </div>
       </div>
       <div class="coder__coding u-column">
-        <div class="coder__coding__controller u-row u-justify-i-between">
-          <span type="text" class="coder__coding__file-name">
-            {{ currentFile != null ? currentFile.name : "Nenhum arquivo" }}
-          </span>
-          <div class="u-row">
-            <Button v-if="firmwareFileIsOpen" icon="upload.svg" height="100%" icon-ratio="11px"
+        <div class="coder__coding__controller u-row u-align-i-center u-justify-i-between">
+          <div type="text" class="u-row u-height-cover u-align-i-center">
+            <span class="coder__coding__file-name">
+              {{ currentFile != null ? currentFile.name : "Nenhum arquivo" }}
+            </span>
+            <Button icon="toggle.svg" icon-ratio="8px" side-padding="8px"
+                    height="100%" icon-sense="right" v-if="agentFileIsOpen" margin="4px 5px">
+              <template v-slot:content>
+                {{ this.currentFile.archClass }}
+                <Toggle parent-position select
+                        @select="(selected) => this.currentFile.archClass = selected"
+                        :selected="this.currentFile.archClass">
+                  <template v-slot:options>
+                    <button v-for="(agentType, index) in this.agentTypes"
+                            :key="index">
+                      {{ agentType }}
+                    </button>
+                  </template>
+                </Toggle>
+              </template>
+            </Button>
+          </div>
+          <div class="u-row u-height-cover" v-if="firmwareFileIsOpen">
+            <Button icon="upload.svg" height="100%" icon-ratio="10px"
                     no-border @click="compileSketch" :is-loading="compilingSketch">
               <template v-slot:content>
                 Compilar
               </template>
             </Button>
-            <Button v-if="firmwareFileIsOpen" icon="white-check.svg" height="100%" icon-ratio="12px"
+            <Button icon="white-check.svg" height="100%" icon-ratio="12px"
                     no-border @click="deploySketch" :is-loading="deployingSketch">
               <template v-slot:content>
                 Deploy
@@ -203,7 +223,7 @@
 <script>
 import Util from "@/domain/Util";
 import Button from "@/components/Button";
-import {AgentType, AppEvent, MessageType} from "@/domain/Enums";
+import {AgentType, AgentTypes, AppEvent, MessageType} from "@/domain/Enums";
 import Loading from "@/components/Loading";
 import Popup from "@/components/Popup";
 import router, {Routes} from "@/router";
@@ -228,12 +248,13 @@ export default {
       currentFile: null,
       currentBoard: null,
       firmwareFileIsOpen: false,
+      agentFileIsOpen: false,
       domain: null,
       agents: [],
       firmwares: [],
       boards: [],
       libraries: [],
-      agentTypes: [AgentType.ARGO, AgentType.JASON, AgentType.COMMUNICATOR],
+      agentTypes: AgentTypes,
       boardResponse: null,
       savingProject: false,
       importingMas: false,
@@ -290,6 +311,7 @@ export default {
       this.firmwares = response.data.data.firmwares;
       this.projectName = response.data.data.name;
       this.currentFile = this.agents[0];
+      this.agentFileIsOpen = true;
     });
 
     this.$refs.coder.style.height = (this.$refs.coderLines.scrollHeight + (2 * CODER_DIFF_HEIGHT)) + "px";
@@ -547,9 +569,7 @@ export default {
 
 .coder {
   --explorer-width: 350px;
-  --base-height: 27px;
-  --file-name-selected-height: 3px;
-  --bar-height: calc(var(--base-height) + var(--file-name-selected-height));
+  --bar-height: 30px;
   width: 100vw;
   height: 100vh;
 }
@@ -571,7 +591,7 @@ export default {
   height: var(--bar-height);
 }
 
-.coder__header__hr{
+.coder__header__hr {
   height: 100%;
   width: 1px;
   background-color: var(--pallete-color-black-4);
@@ -591,7 +611,7 @@ export default {
 
 .coder__coding__controller {
   width: 100%;
-  height: calc(var(--base-height) + var(--file-name-selected-height));
+  height: var(--bar-height);
   background-color: var(--pallete-color-black-2);
   border-bottom: 1px solid var(--pallete-color-black-1);
 }
@@ -602,16 +622,20 @@ export default {
 }
 
 .coder__coding__file-name {
-  border: 0;
-  padding: var(--ratio-4) var(--ratio-3);
-  color: var(--pallete-text-main);
-  height: calc(var(--base-height) + var(--file-name-selected-height) - 1px);
-  width: 125px;
+  height: calc(var(--bar-height) - 1px);
+  max-width: 125px;
   background-color: var(--pallete-color-black-3);
-  border-bottom: var(--file-name-selected-height) solid var(--pallete-color-main-2);
+  padding: var(--ratio-4) var(--ratio-3);
+  padding-top: 6px;
+  color: var(--pallete-text-main);
   white-space: nowrap;
-  overflow: hidden !important;
   text-overflow: ellipsis;
+  overflow: hidden !important;
+  box-shadow: inset 0 -2px 0 var(--pallete-color-main-2);
+}
+
+.coder__coding__agent-type {
+  padding: ;
 }
 
 .coder__writer {
@@ -657,10 +681,6 @@ export default {
 .coder__explorer {
   min-width: var(--explorer-width);
   background-color: var(--pallete-color-black-2);
-}
-
-.coder__explorer > * {
-  user-select: none;
 }
 
 .coder__explorer__main {

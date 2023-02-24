@@ -14,6 +14,8 @@ export enum AgentType {
     COMMUNICATOR = "Communicator"
 }
 
+export const AgentTypes = [AgentType.ARGO, AgentType.JASON, AgentType.COMMUNICATOR];
+
 export enum AppEvent {
     MESSAGE = "message"
 }

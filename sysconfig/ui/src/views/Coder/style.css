@@ -1,6 +1,6 @@
 .coder__explorer__item {
     width: 100%;
-    height: var(--base-height);
+    height: var(--bar-height);
     flex-shrink: 0;
     user-select: none;
     padding-right: var(--ratio-3);

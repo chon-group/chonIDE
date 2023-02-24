@@ -87,7 +87,8 @@ export default {
 }
 
 .coder__explorer__item__toggle {
-  height: 5px;
+  height: 8px;
+  width: 8px;
   margin-right: var(--ratio-3);
   transform: rotate(-90deg);
 }
