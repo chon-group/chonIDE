@@ -29,10 +29,9 @@ public class AuthValidatorFilter implements Filter {
     /** Tempo seguro da última requisição em relação ao tempo de expiração. */
     private static final long LAST_REQUISITION_SAFE_TIME = 300000;
 
-    public AuthValidatorFilter() {
-    }
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
 
-    public void init(FilterConfig filterConfig) {
     }
 
     @Override
