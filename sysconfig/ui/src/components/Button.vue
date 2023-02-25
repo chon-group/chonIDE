@@ -32,7 +32,7 @@ export default {
       required: false,
       type: String
     },
-    noBorder: String,
+    noBorder: Boolean,
     isLoading: Boolean,
     sidePadding: String,
     height: String,
@@ -72,7 +72,7 @@ export default {
       if (this.sidePadding != null) {
         classes += " side-padding";
       }
-      if (this.noBorder != null) {
+      if (this.noBorder) {
         classes += " has-no-border"
       }
       return classes;
@@ -85,6 +85,7 @@ export default {
 
 .button-container {
   padding: v-bind(margin);
+  height: var(--action-height);
 }
 
 .custom-height {
@@ -101,7 +102,6 @@ export default {
   font-size: var(--text-size-normal);
   color: var(--pallete-text-main);
   padding: 0 var(--action-side-padding);
-  height: var(--action-height);
 
   gap: 8px;
   border: none;

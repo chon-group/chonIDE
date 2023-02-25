@@ -121,11 +121,16 @@ export default {
               router.push(Routes.CODER);
             }
           });
-        } else {
-          this.loading = false;
-          this.$emit(AppEvent.MESSAGE, {content: "Não foi possível conectar ao sistema", type: MessageType.ERROR});
         }
-      })
+      }).catch((error) => {
+        if (error.response.status == 401) {
+          this.$emit(AppEvent.MESSAGE, {content: error.response.data.message, type: MessageType.ERROR});
+        } else {
+          this.$emit(AppEvent.MESSAGE, {content: "Não foi possível acessar o sistema", type: MessageType.ERROR});
+        }
+      }).finally(() => {
+        this.loading = false;
+      });
     }
   }
 }

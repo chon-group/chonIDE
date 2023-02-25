@@ -34,20 +34,12 @@
                 :is-loading="stopingMas"/>
         <Button icon="download.svg" icon-ratio="12px" width="35px" height="100%" @click="downloadMas"
                 :is-loading="downloadingMas"/>
-        <hr class="coder__header__hr">
         <Button height="100%" no-border
                 v-if="domain != null" :link="mindInspectorUrl">
           <template v-slot:content>
             Mind Inspector
           </template>
         </Button>
-        <Button height="100%" no-border
-                v-if="domain != null" :link="logsUrl">
-          <template v-slot:content>
-            Logs do SMA
-          </template>
-        </Button>
-        <hr class="coder__header__hr">
         <Button no-border height="100%" width="35px" icon="dots.svg">
           <template v-slot:content>
             <Toggle parent-position>
@@ -107,8 +99,8 @@
     <div class="u-row">
       <div class="coder__explorer u-column">
         <div class="coder__header-bar coder__explorer__project-name u-row">
-          <input type="text" v-model="projectName" placeholder="Nome do projeto">
-          <div class="coder__project-status is-aside">
+          <input type="text" v-model="projectName" placeholder="Nome do projeto" spellcheck="false">
+          <div class="coder__project-status">
             <Loading v-if="savingProject" border-width="1px" ratio="12px" main-color="var(--pallete-text-main)"/>
             <img v-else src="@/assets/media/icon/check.svg" style="width: 12px">
           </div>
@@ -177,7 +169,7 @@
             </Button>
           </div>
           <div class="u-row u-height-cover" v-if="firmwareFileIsOpen">
-            <Button icon="upload.svg" height="100%" icon-ratio="10px"
+            <Button icon="upload.svg" height="100%" icon-ratio="11px"
                     no-border @click="compileSketch" :is-loading="compilingSketch">
               <template v-slot:content>
                 Compilar
@@ -238,6 +230,7 @@ const LINE_BREAK_CHAR = "\n", TAB_CHAR = "\t", POS_CHAR = "$";
 const CODER_DIFF_HEIGHT = 18;
 const AGENT_DEFAULT_FILE_NAME = "newAgent", FIRMWARE_DEFAULT_FILE_NAME = "newSketch";
 const DEFAULT_LINKS_PROTOCOL = "http://";
+const MIND_INSPECTOR_PORT = ":3272", SMA_PORT_PORT = ":3271";
 
 export default {
   name: "Coder",
@@ -262,7 +255,8 @@ export default {
       stopingMas: false,
       compilingSketch: false,
       deployingSketch: false,
-      loadingBoards: false
+      loadingBoards: false,
+      terminalIsOpen: true
     }
   },
   watch: {
@@ -285,10 +279,10 @@ export default {
   },
   computed: {
     mindInspectorUrl() {
-      return DEFAULT_LINKS_PROTOCOL + this.domain.domain + ":3272";
+      return DEFAULT_LINKS_PROTOCOL + this.domain.domain + MIND_INSPECTOR_PORT;
     },
     logsUrl() {
-      return DEFAULT_LINKS_PROTOCOL + this.domain.domain + ":3271";
+      return DEFAULT_LINKS_PROTOCOL + this.domain.domain + SMA_PORT_PORT;
     },
     lineQuantity() {
       try {
@@ -374,8 +368,9 @@ export default {
         }
       }).then((response) => {
         this.boardResponse = response.data.data;
-        this.compilingSketch = false;
         this.$refs.boardResponse.showing(true);
+      }).finally(() => {
+        this.compilingSketch = false;
       });
     },
     deploySketch() {
@@ -392,6 +387,7 @@ export default {
       }).then((response) => {
         this.$refs.boardResponse.showing(true);
         this.boardResponse = response.data.data;
+      }).finally(() => {
         this.deployingSketch = false;
       });
     },
@@ -455,6 +451,7 @@ export default {
           content: response.data.message,
           type: MessageType.SUCCESS
         });
+      }).finally(() => {
         this.startingMas = false;
       });
     },
@@ -466,6 +463,7 @@ export default {
         } else {
           this.$emit(AppEvent.MESSAGE, {content: response.data.message, type: MessageType.SUCCESS});
         }
+      }).finally(() => {
         this.stopingMas = false;
       });
     },
@@ -484,7 +482,7 @@ export default {
       }, 2000);
     },
     loadLibraries(refresh = false) {
-      return API.get(EndPoints.LIBRARIES, refresh).then((response) => {
+      API.get(EndPoints.LIBRARIES, refresh).then((response) => {
         this.libraries = response.data.data;
       });
     },
@@ -493,15 +491,17 @@ export default {
       this.loadingBoards = true;
       API.get(EndPoints.BOARDS, refresh).then((response) => {
         this.boards = response.data.data;
-        this.loadingBoards = false;
         if (this.boards.length != 0) {
           this.currentBoard = this.boards[0];
         }
+      }).finally(() => {
+        this.loadingBoards = false;
       });
     },
     logout() {
-      API.delete(EndPoints.USERS);
-      router.push(Routes.LOGIN);
+      API.delete(EndPoints.USERS).then(() => {
+        router.push(Routes.LOGIN);
+      });
     },
     removeFileAction(index, files) {
       if (this.currentFile == files[index]) {
@@ -557,21 +557,14 @@ export default {
 
 <style scoped>
 
-::-moz-selection {
-  background: var(--pallete-color-main-2);
-}
-
-::selection {
-  background: var(--pallete-color-main-2);
-}
-
 /* Codador */
 
 .coder {
-  --explorer-width: 350px;
+  --explorer-width: 300px;
   --bar-height: 30px;
   width: 100vw;
   height: 100vh;
+  overflow-y: hidden;
 }
 
 .coder__compiled-response {
@@ -591,12 +584,9 @@ export default {
   height: var(--bar-height);
 }
 
-.coder__header__hr {
-  height: 100%;
-  width: 1px;
-  background-color: var(--pallete-color-black-4);
-  border: none;
-  margin: 0 var(--ratio-4);
+.coder__project-status {
+  margin: auto 0 auto auto;
+  user-select: none;
 }
 
 .coder__header__logo {
@@ -616,11 +606,6 @@ export default {
   border-bottom: 1px solid var(--pallete-color-black-1);
 }
 
-.coder__project-status {
-  margin: auto 0 auto auto;
-  user-select: none;
-}
-
 .coder__coding__file-name {
   height: calc(var(--bar-height) - 1px);
   max-width: 125px;
@@ -631,17 +616,12 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden !important;
-  box-shadow: inset 0 -2px 0 var(--pallete-color-main-2);
-}
-
-.coder__coding__agent-type {
-  padding: ;
+  box-shadow: inset 0 -2px 0 var(--pallete-color-main-1);
 }
 
 .coder__writer {
-  width: 100%;
-  height: calc(100vh - calc(2 * var(--bar-height)));
   overflow-y: scroll;
+  height: calc(100vh - calc(2 * var(--bar-height)) - 160px);
   --writer-font-size: var(--text-size-normal);
 }
 
@@ -674,6 +654,21 @@ export default {
   font-weight: 1000;
   overflow-y: hidden;
   font-size: var(--writer-font-size);
+}
+
+.coder__bottom__controller {
+  height: var(--bar-height);
+  border-top: 1px solid var(--pallete-color-black-1);
+  background-color: var(--pallete-color-black-2);
+}
+
+.coder__bottom__terminal {
+  padding-left: var(--ratio-3);
+  height: 170px;
+}
+
+.coder__bottom__terminal > iframe {
+  border: none;
 }
 
 /* Lateral */

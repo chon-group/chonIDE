@@ -50,7 +50,7 @@ public class AuthGeneratorServlet extends ApiController {
         }
 
         SSHExecutor sshExecutor = new SSHExecutor(username, password, host);
-        if (true) {
+        if (sshExecutor.test()) {
             String jwt = JWT.create().withSubject(username).sign(JWT_ALGORITHM);
             Date date = new Date(System.currentTimeMillis() + EXPIRATION_TIME);
             Executor executor;
@@ -63,10 +63,10 @@ public class AuthGeneratorServlet extends ApiController {
             newAuthenticatedUser.setExpirationDate(date);
             newAuthenticatedUser.setLastRequisitionDate(date);
             SecurityContextHolder.get().getAuthenticatedUsersByToken().put(jwt, newAuthenticatedUser);
-            return responseEntity.status(HttpServletResponse.SC_OK).message("Usuário autenticado.").data(jwt);
+            return responseEntity.status(HttpServletResponse.SC_OK).message("Usuário autenticado").data(jwt);
         } else {
             return responseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).message(
-                    "Não foi possível autenticar seu usuário.");
+                    "Não foi possível autenticar seu usuário");
         }
     }
 }

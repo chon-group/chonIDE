@@ -7,7 +7,7 @@ export default {
   name: "Loading",
   props: {
     mainColor: {
-      default: "var(--pallete-color-main-2)"
+      default: "var(--pallete-color-main-1)"
     },
     asideColor: {
       default: "var(--pallete-color-black-3)"
@@ -33,6 +33,7 @@ export default {
   width: v-bind(ratio);
   height: v-bind(ratio);
   animation: loading 0.9s cubic-bezier(.17, .67, .83, .67) infinite;
+  flex-shrink: 0;
 }
 
 @keyframes loading {
