@@ -1,5 +1,5 @@
 <template>
-  <div class="u-row u-gap-3 input" :class="[readonly ===
+  <div class="flex gap-2.5 input" :class="[readonly ===
     'true' ?
     'ready-only' : '', type === 'file' ? 'is-file' : '']">
     <input v-if="type !== 'file'" :readonly="readonly" :value="modelValue" @input="$emit('update:modelValue',
@@ -7,8 +7,8 @@
            :type="type"
            :name="name"
            :placeholder="placeholder"
-           class="u-width-cover" ref="input" autocomplete="off">
-    <label v-else class="input__file-label u-total-center">
+           class="w-full" ref="input" autocomplete="off">
+    <label v-else class="input__file-label flex items-center justify-center">
       <input type="file" :name="name" @change="mountFileName($event)" ref="input" :accept="accept">
       <span class="input__file-label__fileName">{{ fileName }}</span>
     </label>
@@ -47,55 +47,31 @@ export default {
 
 <style scoped>
 .input {
-  width: 100%;
-  padding: var(--action-side-padding);
   height: var(--action-height);
   border: 1px solid var(--pallete-color-black-3);
   background-color: var(--pallete-color-black-1);
-  border-radius: var(--border-radius-item);
-  position: relative;
+  @apply w-full relative rounded-sm p-3;
 }
 
 .input > input {
-  border: none;
-  background: transparent;
   color: var(--pallete-text-main);
+  @apply border-none bg-transparent;
 }
 
 .input.ready-only > input {
-  cursor: default;
+  @apply cursor-default;
 }
 
 .input.ready-only {
   background-color: var(--pallete-color-black-2);
 }
 
-.input__show {
-  position: absolute;
-  right: 0;
-  background-color: transparent;
-  padding: var(--ratio-4);
-  color: var(--pallete-text-main);
-  border: none;
-  border-radius: var(--border-radius-item);
-  cursor: pointer;
-  top: 50%;
-  transform: translateY(-50%);
-  margin-right: var(--ratio-4);
-}
-
-.input__show:hover {
-  background-color: var(--pallete-color-black-3);
+.input__file-label {
+  @apply cursor-pointer h-full w-full;
 }
 
 .input__file-label > input {
   display: none;
-}
-
-.input__file-label {
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
 }
 
 .input__file-label__fileName {

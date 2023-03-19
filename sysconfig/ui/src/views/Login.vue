@@ -1,12 +1,12 @@
 <template>
-  <div class="login u-column u-align-i-center u-justify-i-center u-gap-1">
-    <h1 class="logo u-column u-align-i-center u-gap-2">
+  <div class="h-full flex flex-col items-center justify-center gap-10">
+    <h1 class="logo flex flex-col items-center gap-5">
       <span class="logo__systemname">
-        <span class="is-bold">chonIDE</span>
+        <span class="font-black">chonIDE</span>
       </span>
     </h1>
-    <div class="u-column u-gap-2 u-align-i-center">
-      <div class="c-base-container login__form u-column u-gap-3">
+    <div class="flex flex-col gap-5">
+      <div class="c-base-container login__form flex flex-col gap-2.5">
         <input type="text" name="user" placeholder="Usuário" class="login__input" v-model="username"
                autocomplete="off"/>
         <Trace/>
@@ -15,10 +15,14 @@
         <Trace v-if="!useLocalHost"/>
         <input type="text" v-model="currentHost" v-if="!useLocalHost" placeholder="Hostname" class="login__input"/>
       </div>
-      <RoundedButton @click="submit" :is-loading="loading"/>
+      <Button @click="submit" :is-loading="loading" class="self-end">
+        <template v-slot:content>
+          Entrar
+        </template>
+      </Button>
     </div>
-    <div class="u-row u-gap-3 u-align-i-center u-justify-i-center">
-      <span class="is-aside">
+    <div class="flex gap-2.5 items-center justify-center">
+      <span class="text-aside">
         Usar host local
       </span>
       <input type="checkbox" class="login__check-box" v-model="useLocalHost">
@@ -26,14 +30,14 @@
 
     <Popup :title="'Conectando à rede'" :can-close="false" ref="conecting">
       <template v-slot:content>
-        <div class="u-column u-gap-2 u-align-i-center" v-if="awaitConnectionCounter != 0">
+        <div class="flex flex-col gap-5 items-center" v-if="awaitConnectionCounter != 0">
           <span>
             Por favor, aguarde...
             <span v-if="currentDomain != null">{{ awaitConnectionCounter }}</span>
           </span>
           <Loading/>
         </div>
-        <div v-else class="u-column u-gap-3 u-align-i-center is-headline">
+        <div v-else class="flex flex-col gap-2.5 items-center text-base">
           Seu novo link de acesso à chonide
           <a :href="'https://' + currentDomain + ':3270/chonide/login'" target="_blank"
              class="login__new-link">{{
@@ -47,7 +51,6 @@
 </template>
 
 <script>
-import RoundedButton from "@/components/RoundedButton";
 import Util from "@/domain/Util";
 import Trace from "@/components/Trace";
 import router, {Routes} from "@/router";
@@ -55,11 +58,12 @@ import {AppEvent, MessageType} from "@/domain/Enums"
 import Popup from "@/components/Popup";
 import Loading from "@/components/Loading";
 import {API, EndPoints} from "@/domain/API";
+import Button from "@/components/Button";
 
 
 export default {
   name: "Login",
-  components: {Loading, Popup, Trace, RoundedButton},
+  components: {Button, Loading, Popup, Trace},
   data() {
     return {
       username: '',
@@ -137,14 +141,9 @@ export default {
 </script>
 
 <style scoped>
-.login {
-  height: 100%;
-}
-
 .logo {
-  user-select: none;
   line-height: 1;
-  white-space: nowrap;
+  @apply select-none whitespace-nowrap;
 }
 
 .logo__systemname {
@@ -158,14 +157,8 @@ export default {
 }
 
 .login__input {
-  padding: var(--ratio-3);
-  border: none;
-  background-color: transparent;
-  cursor: default;
-  border-radius: var(--border-radius-item);
-  cursor: default;
-  text-align: center;
   color: var(--pallete-text-main);
+  @apply p-2.5 border-none bg-transparent cursor-default text-center rounded-sm;
 }
 
 .login__input:hover {
@@ -173,17 +166,14 @@ export default {
 }
 
 .login__check-box {
-  cursor: pointer;
   accent-color: var(--pallete-text-aside);
+  @apply cursor-pointer;
 }
 
 .login__new-link {
   color: var(--pallete-text-main);
-  padding: var(--ratio-3) 0;
-  width: 100%;
   border: var(--border-trace);
-  border-radius: var(--border-radius-item);
-  text-align: center;
+  @apply text-center rounded-sm w-full py-2.5;
 }
 
 .login__new-link:hover {

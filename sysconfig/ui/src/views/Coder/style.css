@@ -1,9 +1,6 @@
 .coder__explorer__item {
-    width: 100%;
     height: var(--bar-height);
-    flex-shrink: 0;
-    user-select: none;
-    padding-right: var(--ratio-3);
+    @apply w-full shrink-0 pr-2.5 select-none;
 }
 
 .coder__explorer__item:hover {

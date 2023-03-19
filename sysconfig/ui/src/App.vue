@@ -1,6 +1,6 @@
 <template>
-  <div class="u-total-center page">
-    <div class="response u-column u-gap-3" ref="response">
+  <div class="page flex items-center justify-center">
+    <div class="response flex flex-col gap-2.5 top-5" ref="response">
       <Message v-for="(message, index) in messages" :key="index" :message="message"/>
     </div>
     <router-view @message="(event) => message(event)" @removeMessage="(event) => removeMessage(event)"/>
@@ -64,10 +64,11 @@ export default {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  top: var(--ratio-2);
 }
 
 .page {
   background-color: var(--pallete-color-black-1);
+  min-height: 100vh;
+  width: 100vw;
 }
 </style>

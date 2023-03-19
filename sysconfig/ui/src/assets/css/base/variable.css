@@ -3,35 +3,19 @@
     --pallete-color-black-2: rgb(39, 42, 45);
     --pallete-color-black-3: rgb(49, 54, 58);
     --pallete-color-black-4: rgb(55, 61, 66);
-
     --pallete-color-main-1: rgb(35, 52, 187);
-
     --pallete-color-green-1: #0c8a0c;
     --pallete-color-green-2: #0da40d;
     --pallete-color-red-1: #e11f1f;
     --pallete-color-red-2: #f63e3e;
     --pallete-color-yellow-1: #d59312;
     --pallete-color-yellow-2: #e7a10d;
-
     --pallete-text-main: rgb(200, 200, 200);
     --pallete-text-aside: rgb(131, 131, 131);
 
-    --ratio-1: 40px;
-    --ratio-2: 20px;
-    --ratio-3: 10px;
-    --ratio-4: 5px;
-
-    --border-radius-container: 3px;
-    --border-radius-item: 2px;
-    --border-radius-total: 999px;
-
     --border-trace: 1px solid var(--pallete-color-black-3);
 
-    --action-side-padding: 15px;
     --action-height: 35px;
-
-    --shadow-item-1: 0 2px 1px rgba(0, 0, 0, 0.15);
-    --shadow-item-2: 0 2px 1px rgba(0, 0, 0, 1);
 
     --container-width-1: 800px;
     --container-width-2: 500px;

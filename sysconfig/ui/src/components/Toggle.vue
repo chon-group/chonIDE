@@ -1,6 +1,6 @@
 <template>
   <div class="toggle">
-    <div class="u-width-cover u-column">
+    <div class="w-full flex flex-col">
       <slot name="options"></slot>
     </div>
   </div>
@@ -41,7 +41,7 @@ export default {
   watch: {
     selected(selected) {
       this.buttons.forEach((button) => {
-        if(selected == button.textContent) {
+        if (selected == button.textContent) {
           button.append(this.check);
         }
       });
@@ -55,7 +55,7 @@ export default {
       this.check = this.createCheckImage();
       this.buttons[0].append(this.check);
       this.buttons.forEach((button) => {
-        if(this.selected == button.textContent) {
+        if (this.selected == button.textContent) {
           button.append(this.check);
         }
         button.addEventListener("click", () => {
@@ -159,36 +159,25 @@ export default {
 
 .toggle {
   display: none;
-  position: absolute;
-  border-radius: var(--border-radius-container);
-  padding: var(--ratio-4) 0;
   min-width: 125px;
   background-color: var(--pallete-color-black-2);
   font-size: var(--text-size-normal);
   border: 1px solid var(--pallete-color-black-3);
+  @apply absolute rounded-md py-1.5;
 }
 
 .toggle.is-open {
-  display: flex;
+  @apply flex;
 }
 
 :slotted(span) {
   color: var(--pallete-text-aside);
-  padding: var(--ratio-4) var(--ratio-3);
-  user-select: none;
-  cursor: default;
+  @apply px-2.5 py-1.5 cursor-default select-none;
 }
 
 :slotted(button) {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--ratio-3);
-  border: none;
-  background-color: transparent;
   color: var(--pallete-text-main);
-  padding: var(--ratio-4) var(--ratio-3);
-  text-align: left;
+  @apply flex justify-between items-center gap-2.5 bg-transparent px-2.5 py-1.5 border-none;
 }
 
 :slotted(button.severe) {
@@ -196,16 +185,13 @@ export default {
 }
 
 :slotted(hr) {
-  width: 100%;
-  height: 1px;
-  border: 0;
   background-color: var(--pallete-color-black-4);
-  margin: var(--ratio-4) 0;
+  @apply w-full border-none mx-1.5;
 }
 
 :slotted(button):hover {
   background-color: var(--pallete-color-black-3);
-  width: 100%;
+  @apply w-full;
 }
 
 </style>

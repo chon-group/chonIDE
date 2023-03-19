@@ -1,7 +1,5 @@
 .c-base-container {
-    padding: var(--ratio-2);
     background: var(--pallete-color-black-2);
     border: var(--border-trace);
-    border-radius: var(--border-radius-container);
-    position: relative;
+    @apply p-5 rounded-lg relative;
 }

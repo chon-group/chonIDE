@@ -1,5 +1,5 @@
 <template>
-  <div class="coder u-column">
+  <div class="coder flex flex-col">
     <Popup title="Resposta da placa" ref="boardResponse">
       <template v-slot:content>
         <div class="coder__compiled-response">
@@ -7,18 +7,18 @@
         </div>
       </template>
     </Popup>
-    <div class="coder__header u-row u-justify-i-between u-align-i-center">
-      <div class="u-row u-align-i-center u-height-cover u-gap-3">
-        <h2 class="coder__header__logo u-row">chonIDE</h2>
-        <div class="u-row u-align-i-center u-height-cover">
-          <router-link to="/connect" class="u-height-cover">
+    <div class="coder__header shrink-0 flex justify-between items-center w-full">
+      <div class="flex items-center h-full gap-2.5">
+        <h2 class="coder__header__logo flex">chonIDE</h2>
+        <div class="flex items-center h-full">
+          <router-link to="/connect" class="h-full">
             <Button height="100%" icon-ratio="12px" no-border icon="wifi-quality-4.svg">
               <template v-slot:content>
                 Redes
               </template>
             </Button>
           </router-link>
-          <router-link to="/domain" class="u-height-cover">
+          <router-link to="/domain" class="h-full">
             <Button height="100%" icon-ratio="12px" no-border icon="domain.svg">
               <template v-slot:content>
                 Nome do bot
@@ -27,7 +27,7 @@
           </router-link>
         </div>
       </div>
-      <div class="u-row u-align-i-center u-height-cover">
+      <div class="flex items-center h-full">
         <Button icon="start.svg" icon-ratio="11px" width="35px" height="100%" @click="startMas"
                 :is-loading="startingMas"/>
         <Button icon="stop.svg" icon-ratio="10px" width="35px" height="100%" @click="stopMas"
@@ -40,7 +40,7 @@
             Mind Inspector
           </template>
         </Button>
-        <Button no-border height="100%" width="35px" icon="dots.svg">
+        <Button no-border height="100%" icon="dots.svg">
           <template v-slot:content>
             <Toggle parent-position>
               <template v-slot:options>
@@ -96,9 +96,9 @@
       </div>
     </div>
 
-    <div class="u-row">
-      <div class="coder__explorer u-column">
-        <div class="coder__header-bar coder__explorer__project-name u-row">
+    <div class="flex">
+      <div class="coder__explorer flex flex-col">
+        <div class="coder__header-bar coder__explorer__project-name flex">
           <input type="text" v-model="projectName" placeholder="Nome do projeto" spellcheck="false">
           <div class="coder__project-status">
             <Loading v-if="savingProject" border-width="1px" ratio="12px" main-color="var(--pallete-text-main)"/>
@@ -145,9 +145,9 @@
           </ExplorerFolder>
         </div>
       </div>
-      <div class="coder__coding u-column">
-        <div class="coder__coding__controller u-row u-align-i-center u-justify-i-between">
-          <div type="text" class="u-row u-height-cover u-align-i-center">
+      <div class="coder__coding flex flex-col">
+        <div class="coder__coding__controller flex items-center justify-between">
+          <div type="text" class="flex h-full items-center">
             <span class="coder__coding__file-name">
               {{ currentFile != null ? currentFile.name : "Nenhum arquivo" }}
             </span>
@@ -168,7 +168,7 @@
               </template>
             </Button>
           </div>
-          <div class="u-row u-height-cover" v-if="firmwareFileIsOpen">
+          <div class="flex h-full" v-if="firmwareFileIsOpen">
             <Button icon="upload.svg" height="100%" icon-ratio="11px"
                     no-border @click="compileSketch" :is-loading="compilingSketch">
               <template v-slot:content>
@@ -183,25 +183,26 @@
             </Button>
           </div>
         </div>
-        <div class="coder__writer u-row">
-          <div class="coder__writer__lines u-column" ref="coderLines">
-            <div v-for="index in lineQuantity" :key="index" class="coder__writer__line">{{ index }}</div>
+        <div class="coder__writer flex">
+          <div class="coder__writer__lines flex flex-col py-5" ref="coderLines">
+            <div v-for="index in lineQuantity" :key="index" class="coder__writer__line pl-5">{{ index }}</div>
           </div>
-          <textarea v-if="currentFile != null" class="coder__writer__text" ref="coder" v-model="currentFile.sourceCode"
+          <textarea v-if="currentFile != null" class="coder__writer__text p-5" ref="coder"
+                    v-model="currentFile.sourceCode"
                     spellcheck="false" :readonly="currentFile != null ? false : true"></textarea>
-          <textarea v-else class="coder__writer__text" ref="coder" readonly></textarea>
+          <textarea v-else class="coder__writer__text p-5" ref="coder" readonly></textarea>
         </div>
       </div>
-      <div class="coder__boards u-column" v-if="firmwareFileIsOpen">
-        <div class="coder__header-bar u-row u-justify-i-between">
+      <div class="coder__boards flex flex-col" v-if="firmwareFileIsOpen">
+        <div class="coder__header-bar flex justify-between">
           <span class="coder__header-bar__title">Placas disponíveis</span>
           <Button icon="refresh.svg" icon-ratio="13px" side-padding="12px" height="100%" @click="loadBoards(true)"/>
         </div>
-        <div class="u-total-center u-height-cover u-width-cover" v-if="loadingBoards">
+        <div class="flex items-center justify-center h-full w-full" v-if="loadingBoards">
           <Loading border-width="2px" main-color="var(--pallete-text-main)" ratio="25px"/>
         </div>
-        <div class="u-total-center u-height-cover u-width-cover" v-else-if="boards.length === 0 && !loadingBoards">
-          <span class="is-aside">Não foram encontradas placas disponíveis</span>
+        <div class="flex items-center justify-center h-full w-full" v-else-if="boards.length === 0 && !loadingBoards">
+          <span class="text-aside">Não foram encontradas placas disponíveis</span>
         </div>
         <Board v-else v-for="(board, index) in boards" :key="index"
                @select="currentBoard = board;" :is-current="currentBoard == board"/>
@@ -562,20 +563,18 @@ export default {
 .coder {
   --explorer-width: 300px;
   --bar-height: 30px;
-  width: 100vw;
   height: 100vh;
-  overflow-y: hidden;
+  @apply overflow-y-hidden;
 }
 
 .coder__compiled-response {
-  padding: var(--ratio-3);
   background-color: var(--pallete-color-black-3);
-  border-radius: var(--border-radius-item);
   line-height: 1.7;
+  @apply p-2.5 rounded-sm;
 }
 
 .coder *:not(input, textarea) {
-  cursor: default;
+  @apply cursor-default;
 }
 
 .coder__header {
@@ -586,12 +585,12 @@ export default {
 
 .coder__project-status {
   margin: auto 0 auto auto;
-  user-select: none;
+  @apply select-none;
 }
 
 .coder__header__logo {
   font-size: 14px;
-  margin-left: var(--ratio-3);
+  @apply ml-2.5;
 }
 
 .coder__coding {
@@ -610,65 +609,39 @@ export default {
   height: calc(var(--bar-height) - 1px);
   max-width: 125px;
   background-color: var(--pallete-color-black-3);
-  padding: var(--ratio-4) var(--ratio-3);
   padding-top: 6px;
   color: var(--pallete-text-main);
-  white-space: nowrap;
   text-overflow: ellipsis;
-  overflow: hidden !important;
   box-shadow: inset 0 -2px 0 var(--pallete-color-main-1);
+  @apply overflow-hidden whitespace-nowrap py-1.5 px-2.5;
 }
 
 .coder__writer {
-  overflow-y: scroll;
-  height: calc(100vh - calc(2 * var(--bar-height)) - 160px);
+  height: calc(100vh - calc(2 * var(--bar-height)));
   --writer-font-size: var(--text-size-normal);
+  @apply overflow-y-scroll;
 }
 
 .coder__writer__lines {
-  min-height: 100%;
-  height: fit-content;
   min-width: 68px;
   background-color: var(--pallete-color-black-2);
-  padding: var(--ratio-2) 0;
   color: var(--pallete-text-aside);
-  border-right: var(--ratio-4) solid var(--pallete-color-black-3);
+  border-right: 5px solid var(--pallete-color-black-3);
+  @apply min-h-full h-fit;
 }
 
 .coder__writer__line {
   font-size: var(--writer-font-size);
-  text-align: left;
-  padding-left: var(--ratio-2);
 }
 
 .coder__writer__text {
-  height: 100%;
-  width: 100%;
-  border: none;
   background-color: var(--pallete-color-black-1);
   color: var(--pallete-text-main);
-  resize: none;
-  padding: var(--ratio-2);
   word-spacing: 2px;
   letter-spacing: 1px;
   font-weight: 1000;
-  overflow-y: hidden;
   font-size: var(--writer-font-size);
-}
-
-.coder__bottom__controller {
-  height: var(--bar-height);
-  border-top: 1px solid var(--pallete-color-black-1);
-  background-color: var(--pallete-color-black-2);
-}
-
-.coder__bottom__terminal {
-  padding-left: var(--ratio-3);
-  height: 170px;
-}
-
-.coder__bottom__terminal > iframe {
-  border: none;
+  @apply h-full w-full border-none resize-none overflow-y-hidden;
 }
 
 /* Lateral */
@@ -679,8 +652,8 @@ export default {
 }
 
 .coder__explorer__main {
-  overflow-y: auto;
   height: calc(100vh - calc(2 * var(--bar-height)));
+  @apply overflow-y-auto;
 }
 
 .coder__header-bar {
@@ -691,19 +664,16 @@ export default {
 }
 
 .coder__header-bar__title {
-  margin: auto auto auto var(--ratio-3);
+  @apply m-auto ml-2.5;
 }
 
 .coder__explorer__project-name {
-  padding-right: var(--ratio-3);
+  @apply pr-2.5;
 }
 
 .coder__explorer__project-name > input {
-  background-color: transparent;
-  border: 0;
-  padding: 0 var(--ratio-3);
   color: var(--pallete-text-main);
-  flex-grow: 1;
+  @apply grow px-2.5 border-none bg-transparent;
 }
 
 .coder__explorer__project-name:hover {
@@ -723,7 +693,7 @@ export default {
   background-color: var(--pallete-color-black-2);
   border-left: 1px solid var(--pallete-color-black-1);
   height: calc(100vh - var(--bar-height));
-  overflow-y: auto;
+  @apply overflow-y-auto;
 }
 
 </style>

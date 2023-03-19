@@ -1,18 +1,18 @@
 <template>
-  <div class="u-column u-align-i-center u-gap-2">
+  <div class="flex flex-col items-center gap-5">
     <h2 class="connect__message">Conecte à uma rede wifi para acesso à internet</h2>
 
-    <div class="u-row u-gap-3 u-justify-i-center">
+    <div class="flex gap-2.5 justify-center">
       <Popup title="Levantar uma rede própria AP" for="network-customized" ref="customized-network-pop-up">
         <template v-slot:content>
-          <div class="u-column u-gap-3">
+          <div class="flex flex-col gap-2.5">
             <Input placeholder="Nome da rede (SSID)" type="text" name="essid" ref="customized-network-essid-input"/>
             <Input placeholder="Senha da rede (Mínimo 8 caracteres)" type="password" name="password"
                    ref="customized-network-password-input"/>
           </div>
         </template>
         <template v-slot:action>
-          <div class="u-row u-gap-2 u-align-i-center">
+          <div class="flex gap-5 items-center">
             <Button @click="createNetwork" :is-loading="isConnecting">
               <template v-slot:content>
                 Criar rede
@@ -23,14 +23,14 @@
       </Popup>
       <Popup title="Conectar manualmente" for="network-manual" ref="manual-network-pop-up">
         <template v-slot:content>
-          <div class="u-column u-gap-3">
+          <div class="flex flex-col gap-2.5">
             <Input placeholder="Nome da rede (SSID)" type="text" name="essid" ref="manual-network-essid-input"/>
             <Input placeholder="Senha da rede" type="password" name="password"
                    ref="manual-network-password-input"/>
           </div>
         </template>
         <template v-slot:action>
-          <div class="u-row u-gap-2 u-align-i-center">
+          <div class="flex gap-5 items-center">
             <Button @click="connectManualNetwork" :is-loading="isConnecting">
               <template v-slot:content>
                 Conectar à rede
@@ -58,18 +58,18 @@
 
     <Loading v-if="isSearching"/>
 
-    <span v-if="networks == null" class="is-aside is-headline">
+    <span v-if="networks == null" class="text-aside text-base">
       Procurando redes disponíveis...
     </span>
 
-    <div v-else class="networks u-column u-align-i-center u-gap-3">
-      <span v-if="networks.length === 0" class="is-aside is-headline">
+    <div v-else class="networks flex flex-col items-center gap-2.5">
+      <span v-if="networks.length === 0" class="text-aside text-base">
         Não foram encontradas redes disponíveis
       </span>
-      <div class="c-base-container network u-row u-justify-i-between u-align-i-center"
+      <div class="c-base-container network flex justify-between items-center"
            v-for="(network, index) in networks" :key="index" :class="'network-'+index" @click="networkPopUpIsOpen =
            true">
-        <div class="u-row u-gap-2 u-align-i-center">
+        <div class="flex gap-5 items-center">
           <div style="position: relative">
             <img v-if="network.quality < 15" class="network__quality-indicator"
                  src="@/assets/media/icon/wifi-quality-1.svg">
@@ -83,13 +83,13 @@
           </div>
           <span class="network__essid">{{ network.essid }}</span>
         </div>
-        <span class="network__connected is-bold"
+        <span class="network__connected font-black"
               v-if="connectedNetwork.essid == network.essid && connectedNetwork.frequency == network.frequency">
           Conectado
         </span>
         <Popup title="Conectar-se à rede" :for="'network-'+index" ref="network">
           <template v-slot:content>
-            <div class="u-column u-gap-3">
+            <div class="flex flex-col gap-2.5">
               <Input type="text" readonly="true"
                      :model-value="network.essid" name="essid"/>
               <Input v-show="network.encryption === true" :model-value="network.password" placeholder="Senha da rede"
@@ -98,7 +98,7 @@
             </div>
           </template>
           <template v-slot:action>
-            <div class="u-row u-gap-2 u-align-i-center">
+            <div class="flex gap-5 items-center">
               <Button @click="connectNetwork(index)" :is-loading="isConnecting">
                 <template v-slot:content>
                   Conectar à rede
@@ -239,14 +239,14 @@ export default {
   overflow: auto;
   max-height: calc(100vh / 1.5);
   min-height: 100px;
-  padding: var(--ratio-4);
   min-width: var(--container-width-2);
+  @apply overflow-auto p-1.5;
 }
 
 .network {
   width: var(--container-width-2);
-  cursor: pointer;
   transition: var(--background-hover-transition), transform 0.2s;
+  @apply cursor-pointer;
 }
 
 .network:hover {

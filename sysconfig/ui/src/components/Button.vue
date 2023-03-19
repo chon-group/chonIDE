@@ -1,6 +1,6 @@
 <template>
   <div :class="['button-container', buttonContainerClasses]">
-    <component :class="[buttonClasses,'button u-align-i-center u-justify-i-center u-all-cover']"
+    <component :class="[buttonClasses,'button items-center justify-center w-full h-full']"
                :is="element" :href="link" target="_blank">
       <Loading v-if="isLoading" ratio="14px" border-width="1px" aside-color="rgba(255,255,255,0.2)"
                main-color="white"/>
@@ -65,9 +65,9 @@ export default {
     buttonClasses() {
       let classes = "";
       if (this.iconSense == "left") {
-        classes += "u-row";
+        classes += "flex";
       } else if (this.iconSense == "right") {
-        classes += "u-row-reverse";
+        classes += "flex flex-row-reverse";
       }
       if (this.sidePadding != null) {
         classes += " side-padding";
@@ -88,28 +88,22 @@ export default {
   height: var(--action-height);
 }
 
+.button {
+  background-color: v-bind(colorSytle);
+  font-size: var(--text-size-normal);
+  color: var(--pallete-text-main);
+
+  gap: 8px;
+  @apply whitespace-nowrap overflow-hidden relative w-fit cursor-default border-none gap-2 rounded-sm py-0 px-3;
+}
+
 .custom-height {
   height: v-bind(height);
 }
 
 .custom-width {
   width: v-bind(width);
-}
-
-.button {
-  background-color: v-bind(colorSytle);
-  border-radius: var(--border-radius-item);
-  font-size: var(--text-size-normal);
-  color: var(--pallete-text-main);
-  padding: 0 var(--action-side-padding);
-
-  gap: 8px;
-  border: none;
-  cursor: default;
-  width: fit-content;
-  position: relative;
-  overflow: hidden;
-  white-space: nowrap;
+  padding: 0;
 }
 
 .side-padding {
@@ -119,10 +113,7 @@ export default {
 
 .button::before {
   content: "";
-  display: block;
-  width: 100%;
-  height: 100%;
-  position: absolute;
+  @apply absolute w-full h-full block;
 }
 
 .button:hover::before {
@@ -130,7 +121,7 @@ export default {
 }
 
 .button.has-no-border {
-  border-radius: 0;
+  @apply border-none;
 }
 
 .button__icon {

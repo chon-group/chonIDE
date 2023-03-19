@@ -1,5 +1,5 @@
 <template>
-  <div class="message u-total-center" :class="mountResponseClasses()">
+  <div class="message flex items-center justify-center drop-shadow-sm p-2.5" :class="mountResponseClasses()">
     {{ message.content }}
   </div>
 </template>
@@ -38,12 +38,8 @@ export default {
 <style scoped>
 
 .message {
-  border-radius: var(--border-radius-item);
-  filter: drop-shadow(var(--shadow-item-1));
   font-weight: 600;
-  white-space: nowrap;
-  padding: var(--ratio-3) var(--ratio-3);
-  position: relative;
+  @apply relative whitespace-nowrap rounded-sm;
 }
 
 .message.is-error {

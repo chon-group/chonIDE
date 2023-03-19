@@ -1,12 +1,12 @@
 <template>
-  <div style='display: none' class="pop-up-background u-total-center">
-    <div class="c-base-container pop-up u-column u-gap-2">
-      <div class="u-row u-align-i-center u-justify-i-between">
+  <div style='display: none' class="pop-up-background flex items-center justify-center">
+    <div class="c-base-container pop-up flex flex-col gap-5">
+      <div class="flex items-center justify-between">
         <span class="pop-up__title">{{ title }}</span>
         <div class="pop-up__close-action" @click="close" v-if="canClose"></div>
       </div>
       <slot name="content"></slot>
-      <div class="u-row u-gap-3 u-justify-i-end">
+      <div class="flex gap-2.5 justify-end">
         <slot name="action"></slot>
       </div>
     </div>
@@ -97,8 +97,7 @@ export default {
   height: var(--action-height);
   background: url("@/assets/media/icon/close-action.svg") center no-repeat;
   background-size: 40%;
-  cursor: pointer;
-  border-radius: var(--border-radius-total);
+  @apply cursor-pointer rounded-full;
 }
 
 .pop-up__close-action:hover {

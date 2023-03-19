@@ -1,13 +1,13 @@
 <template>
-  <div class="coder__board u-column u-justify-i-between" @click="select">
-    <div class="u-row u-justify-i-between">
-            <span class="u-column">
+  <div class="coder__board flex flex-col justify-between" @click="select">
+    <div class="flex justify-between">
+            <span class="flex flex-col">
               <span>{{ board.board }}</span>
-              <span class="is-aside">{{ board.fqbn }}</span>
+              <span class="text-aside">{{ board.fqbn }}</span>
             </span>
       <div class="coder__board__select" :class="isCurrent ? 'is-selected' : ''"></div>
     </div>
-    <span class="is-aside">{{ board.port }}</span>
+    <span class="text-aside">{{ board.port }}</span>
   </div>
 </template>
 
@@ -31,7 +31,7 @@ export default {
 
 .coder__board {
   height: 75px;
-  padding: var(--ratio-3);
+  @apply p-2.5;
 }
 
 .coder__board:hover {
@@ -41,8 +41,8 @@ export default {
 .coder__board__select {
   height: 15px;
   aspect-ratio: 1/1;
-  border-radius: var(--border-radius-total);
   border: 2px solid var(--pallete-color-black-4);
+  @apply rounded-full;
 }
 
 .coder__board__select.is-selected {

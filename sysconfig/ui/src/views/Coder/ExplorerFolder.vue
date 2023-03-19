@@ -1,7 +1,7 @@
 <template>
-  <div class="coder__explorer__folder u-column">
-    <div class="coder__explorer__folder-name coder__explorer__item u-row u-align-i-center">
-      <div class="u-height-cover u-width-cover u-row u-align-i-center" @click="folderOpen = !folderOpen">
+  <div class="coder__explorer__folder flex flex-col">
+    <div class="coder__explorer__folder-name coder__explorer__item flex items-center">
+      <div class="h-full w-full flex items-center" @click="folderOpen = !folderOpen">
         <img src="@/assets/media/icon/toggle.svg" :class="`coder__explorer__item__toggle
              ${folderOpen ? 'open' : ''}`">
         <span>{{ name }}</span>
@@ -75,7 +75,7 @@ export default {
 @import "@/views/Coder/style.css";
 
 .coder__explorer__folder-name {
-  padding-left: var(--ratio-3);
+  @apply pl-2.5;
 }
 
 :slotted(.coder__explorer__file) {
@@ -89,8 +89,8 @@ export default {
 .coder__explorer__item__toggle {
   height: 8px;
   width: 8px;
-  margin-right: var(--ratio-3);
   transform: rotate(-90deg);
+  @apply mr-2.5;
 }
 
 .coder__explorer__item__toggle.open {

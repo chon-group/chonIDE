@@ -1,8 +1,8 @@
 <template>
-  <h1 class="logo u-column u-align-i-center u-gap-2">
-    <span class="u-row u-gap-3 u-align-i-center">
-      <a href="http://chonos.sf.net/" target="_blank" class="logo__chonos is-bold">chonos</a>
-      <span class="is-aside is-light">{{ name }}</span>
+  <h1 class="logo flex flex-col items-center gap-5">
+    <span class="flex gap-2.5 items-center">
+      <a href="http://chonos.sf.net/" target="_blank" class="logo__chonos font-black">chonos</a>
+      <span class="text-aside font-thin">{{ name }}</span>
     </span>
   </h1>
 </template>

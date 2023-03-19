@@ -1,8 +1,8 @@
 <template>
   <div class="coder__explorer__file coder__explorer__item" @click="showFile" ref="item">
-    <div class="u-height-cover u-width-cover u-row u-align-i-center u-gap-3">
+    <div class="h-full w-full flex items-center gap-2.5">
       <span class="coder__explorer__item__icon">{{ icon }}</span>
-      <input type="text" class="coder__explorer__item__name u-width-cover" :value="file.name" @change="editFile"
+      <input type="text" class="coder__explorer__item__name w-full" :value="file.name" @change="editFile"
              ref="filename"
              readonly/>
     </div>
@@ -107,13 +107,8 @@ export default {
 }
 
 .coder__explorer__item__name {
-  white-space: nowrap;
-  overflow: hidden;
-  position: relative;
   color: var(--pallete-text-main);
-  background-color: transparent;
-  border: none;
-  cursor: default;
+  @apply border-none cursor-default bg-transparent relative overflow-hidden whitespace-nowrap;
 }
 
 .coder__explorer__item.editing {

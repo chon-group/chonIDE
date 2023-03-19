@@ -14,24 +14,20 @@ export default {
 
 <style>
 .trace {
-  width: 100%;
   height: 1px;
   background-color: var(--pallete-color-black-3);
-  border: none;
+  @apply w-full border-none;
 }
 
 .trace.is-vertical {
-  height: 100%;
   width: 1px;
+  @apply h-full;
 }
 
 .trace.is-entire::after {
   content: "";
-  width: 100%;
   height: 1px;
   background-color: var(--pallete-color-black-3);
-  border: none;
-  position: absolute;
-  left: 0;
+  @apply w-full border-none absolute left-0;
 }
 </style>
