@@ -1,7 +1,6 @@
 <template>
   <div class="flex flex-col items-center gap-5">
     <h2 class="connect__message">Conecte à uma rede wifi para acesso à internet</h2>
-
     <div class="flex gap-2.5 justify-center">
       <Popup title="Levantar uma rede própria AP" for="network-customized" ref="customized-network-pop-up">
         <template v-slot:content>
@@ -111,7 +110,7 @@
     </div>
     <Button @click="backToCoder" v-if="!isFirstAccess">
       <template v-slot:content>
-        Voltar para codador
+        Voltar
       </template>
     </Button>
   </div>
@@ -157,7 +156,7 @@ export default {
   },
   methods: {
     backToCoder() {
-      router.push(Routes.CODER);
+      router.push(Routes.HOME);
     },
     getNetworks() {
       this.isSearching = true;

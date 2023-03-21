@@ -21,9 +21,13 @@ export default {
   name: "Input",
   props: {
     name: String,
-    type: String,
+    type: {
+      default: "text"
+    },
     placeholder: String,
-    readonly: String,
+    readonly: {
+      default: false
+    },
     modelValue: String,
     accept: String
   },
@@ -50,12 +54,12 @@ export default {
   height: var(--action-height);
   border: 1px solid var(--pallete-color-black-3);
   background-color: var(--pallete-color-black-1);
-  @apply w-full relative rounded-sm p-3;
+  @apply w-full relative rounded-sm;
 }
 
 .input > input {
   color: var(--pallete-text-main);
-  @apply border-none bg-transparent;
+  @apply border-none bg-transparent px-3;
 }
 
 .input.ready-only > input {

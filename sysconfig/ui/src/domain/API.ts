@@ -32,7 +32,7 @@ export class API {
         axios.defaults.headers.common["Authorization"] = "Bearer " + token;
     }
 
-    public static get(url: string, update = true) {
+    public static get(url: string, update = true, config = {}) {
         const urlKey = uuid.v5(url, API.NAMESPACE);
         const cacheResponse = localStorage.getItem(urlKey);
         if (cacheResponse != null && !update) {
@@ -40,7 +40,7 @@ export class API {
             response.data.data = JSON.parse(cacheResponse);
             return Promise.resolve(response);
         }
-        return this.validate(axios.get(url)).then((response) => {
+        return this.validate(axios.get(url, config)).then((response) => {
             if (response.status >= 200 && response.status < 300) {
                 try {
                     response.data.data = JSON.parse(response.data.data);
@@ -61,8 +61,8 @@ export class API {
         return this.validate(axios.put(url, data, config));
     }
 
-    public static delete(url: string) {
-        return this.validate(axios.delete(url));
+    public static delete(url: string, config = {}) {
+        return this.validate(axios.delete(url, config));
     }
 
     private static validate(requisition: Promise<any>): Promise<any> {

@@ -27,7 +27,7 @@ export default {
 </script>
 
 <style scoped>
-@import "@/views/Coder/style.css";
+@import "@/views/Project/style.css";
 
 .coder__board {
   height: 75px;

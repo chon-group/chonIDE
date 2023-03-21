@@ -122,8 +122,8 @@ export default {
       }
     },
     adjustToEvent(event) {
-      this.$el.style.left = event.clientX + "px";
-      this.$el.style.top = event.clientY + "px";
+      this.$el.style.left = event.pageX + "px";
+      this.$el.style.top = event.pageY + "px";
     },
     adjustToRelative() {
       let relativeElementClientRect = this.triggerElement.getBoundingClientRect();
@@ -163,7 +163,7 @@ export default {
   background-color: var(--pallete-color-black-2);
   font-size: var(--text-size-normal);
   border: 1px solid var(--pallete-color-black-3);
-  @apply absolute rounded-md py-1.5;
+  @apply absolute rounded-sm py-1.5;
 }
 
 .toggle.is-open {

@@ -1,5 +1,5 @@
 .c-base-container {
     background: var(--pallete-color-black-2);
     border: var(--border-trace);
-    @apply p-5 rounded-lg relative;
+    @apply p-5 rounded-sm relative;
 }

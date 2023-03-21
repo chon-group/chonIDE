@@ -1,5 +1,5 @@
 <template>
-  <div class="message flex items-center justify-center drop-shadow-sm p-2.5" :class="mountResponseClasses()">
+  <div class="message" :class="mountResponseClasses()">
     {{ message.content }}
   </div>
 </template>
@@ -39,7 +39,7 @@ export default {
 
 .message {
   font-weight: 600;
-  @apply relative whitespace-nowrap rounded-sm;
+  @apply flex items-center justify-center drop-shadow-sm px-2.5 py-2 text-sm relative whitespace-nowrap rounded-md;
 }
 
 .message.is-error {

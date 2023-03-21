@@ -122,7 +122,7 @@ export default {
             if (response.data.data == true) {
               router.push(Routes.DOMAIN);
             } else {
-              router.push(Routes.CODER);
+              router.push(Routes.HOME);
             }
           });
         }

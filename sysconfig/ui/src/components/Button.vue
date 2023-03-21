@@ -121,7 +121,7 @@ export default {
 }
 
 .button.has-no-border {
-  @apply border-none;
+  border-radius: 0;
 }
 
 .button__icon {

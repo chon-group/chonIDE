@@ -67,7 +67,7 @@ export default {
 }
 
 .page {
-  background-color: var(--pallete-color-black-1);
+  background-color: var(--pallete-color-black-2);
   min-height: 100vh;
   width: 100vw;
 }

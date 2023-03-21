@@ -97,7 +97,7 @@ export default {
 </script>
 
 <style scoped>
-@import "@/views/Coder/style.css";
+@import "@/views/Project/style.css";
 
 .coder__explorer__item__icon {
   font-weight: 1000;

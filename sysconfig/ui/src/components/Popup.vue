@@ -1,6 +1,6 @@
 <template>
-  <div style='display: none' class="pop-up-background flex items-center justify-center">
-    <div class="c-base-container pop-up flex flex-col gap-5">
+  <div style='display: none' class="pop-up-background">
+    <div class="c-base-container pop-up flex flex-col gap-5" ref="popup">
       <div class="flex items-center justify-between">
         <span class="pop-up__title">{{ title }}</span>
         <div class="pop-up__close-action" @click="close" v-if="canClose"></div>
@@ -39,8 +39,10 @@ export default {
     showing(isShowing) {
       if (isShowing) {
         this.$el.removeAttribute("style");
+        document.body.style.overflow = "hidden";
       } else {
         this.$el.style.display = "none";
+        document.body.removeAttribute("style");
       }
     }
   },
@@ -76,15 +78,17 @@ export default {
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
-  position: absolute;
+  position: fixed;
   z-index: 5;
   overflow-y: hidden;
+  @apply flex items-center justify-center;
 }
 
 .pop-up {
   width: var(--container-width-2);
   z-index: 10;
   font-size: var(--text-size-normal);
+  @apply m-auto;
 }
 
 .pop-up__title {
@@ -97,7 +101,7 @@ export default {
   height: var(--action-height);
   background: url("@/assets/media/icon/close-action.svg") center no-repeat;
   background-size: 40%;
-  @apply cursor-pointer rounded-full;
+  @apply cursor-pointer rounded-sm;
 }
 
 .pop-up__close-action:hover {

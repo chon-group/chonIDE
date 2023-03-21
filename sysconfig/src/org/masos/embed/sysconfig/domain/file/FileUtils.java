@@ -5,9 +5,13 @@ import org.masos.embed.sysconfig.domain.file.exception.*;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.nio.file.Files.delete;
 
 public class FileUtils {
 
@@ -20,6 +24,22 @@ public class FileUtils {
     private static final int FOLDER_MAX_ATTEMPT_TO_CREATE = 3;
 
     private static final int FILE_MAX_ATTEMPT_TO_DELETE = 3;
+
+    public static void deleteAll(Path directory) {
+        try {
+            List<Path> directoryPaths = Files.list(directory).collect(Collectors.toList());
+            for (Path directoryPath : directoryPaths) {
+                if (Files.isDirectory(directoryPath)) {
+                    deleteAll(directoryPath);
+                } else {
+                    delete(directoryPath);
+                }
+            }
+            delete(directory);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static boolean createFolder(File folder) {
         int createFolderAttempt = 0;

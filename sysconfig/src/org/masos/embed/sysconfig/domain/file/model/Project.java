@@ -4,11 +4,20 @@ import java.util.List;
 
 public class Project {
 
+    private Long id;
+
     private String name;
 
     private List<Agent> agents;
 
     private List<Firmware> firmwares;
+
+    public Project(Long id, String name, List<Agent> agents, List<Firmware> firmwares) {
+        this.id = id;
+        this.name = name;
+        this.agents = agents;
+        this.firmwares = firmwares;
+    }
 
     public Project(String name, List<Agent> agents, List<Firmware> firmwares) {
         this.name = name;
@@ -56,5 +65,19 @@ public class Project {
      */
     public void setFirmwares(List<Firmware> firmwares) {
         this.firmwares = firmwares;
+    }
+
+    /**
+     * @return {@link #id}
+     */
+    public Long getId() {
+        return this.id;
+    }
+
+    /**
+     * @param id {@link #id}
+     */
+    public void setId(Long id) {
+        this.id = id;
     }
 }

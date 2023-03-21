@@ -30,11 +30,17 @@ module.exports = defineConfig({
             template: "public/index.html",
             chunks: ['chunk-vendors', 'chunk-common', 'domain']
         },
-        coder: {
+        project: {
             entry: "src/main.ts",
-            filename: "coder.html",
+            filename: "project.html",
             template: "public/index.html",
-            chunks: ['chunk-vendors', 'chunk-common', 'coder']
+            chunks: ['chunk-vendors', 'chunk-common', 'project']
+        },
+        home: {
+            entry: "src/main.ts",
+            filename: "home.html",
+            template: "public/index.html",
+            chunks: ['chunk-vendors', 'chunk-common', 'home']
         }
     }
 })

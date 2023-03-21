@@ -2,13 +2,15 @@ import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
 import Login from "@/views/Login.vue";
 import Connect from "@/views/Connect.vue";
 import Domain from "@/views/Domain.vue";
-import Coder from "@/views/Coder/Coder.vue";
+import Project from "@/views/Project/Project.vue";
+import Home from "@/views/Home.vue";
 
 export class Routes {
     public static LOGIN = "/login";
     public static CONNECT = "/connect";
-    public static CODER = "/coder";
     public static DOMAIN = "/domain";
+    public static HOME = "/home";
+    public static PROJECT = "/projects/";
 }
 
 const routes: Array<RouteRecordRaw> = [
@@ -28,9 +30,14 @@ const routes: Array<RouteRecordRaw> = [
         component: Domain
     },
     {
-        path: Routes.CODER,
-        name: 'Coder',
-        component: Coder
+        path: Routes.HOME,
+        name: 'Home',
+        component: Home
+    },
+    {
+        path: Routes.PROJECT + ":id",
+        name: 'Project',
+        component: Project
     }
 ]
 

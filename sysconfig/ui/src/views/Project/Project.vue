@@ -1,111 +1,50 @@
 <template>
-  <div class="coder flex flex-col">
+  <div class="project flex flex-col h-screen">
     <Popup title="Resposta da placa" ref="boardResponse">
       <template v-slot:content>
-        <div class="coder__compiled-response">
+        <div class="project__compiled-response">
           {{ boardResponse }}
         </div>
       </template>
     </Popup>
-    <div class="coder__header shrink-0 flex justify-between items-center w-full">
-      <div class="flex items-center h-full gap-2.5">
-        <h2 class="coder__header__logo flex">chonIDE</h2>
+    <Header>
+      <template v-slot:left>
+        <router-link to="/home" class="h-full">
+          <Button height="100%" icon-ratio="12px" no-border>
+            <template v-slot:content>
+              Home
+            </template>
+          </Button>
+        </router-link>
+      </template>
+      <template v-slot:right>
         <div class="flex items-center h-full">
-          <router-link to="/connect" class="h-full">
-            <Button height="100%" icon-ratio="12px" no-border icon="wifi-quality-4.svg">
-              <template v-slot:content>
-                Redes
-              </template>
-            </Button>
-          </router-link>
-          <router-link to="/domain" class="h-full">
-            <Button height="100%" icon-ratio="12px" no-border icon="domain.svg">
-              <template v-slot:content>
-                Nome do bot
-              </template>
-            </Button>
-          </router-link>
+          <Button icon="start.svg" icon-ratio="11px" width="35px" height="100%" @click="startMas"
+                  :is-loading="startingMas"/>
+          <Button icon="stop.svg" icon-ratio="10px" width="35px" height="100%" @click="stopMas"
+                  :is-loading="stopingMas"/>
+          <Button icon="download.svg" icon-ratio="12px" width="35px" height="100%" @click="downloadMas"
+                  :is-loading="downloadingMas"/>
+          <Button height="100%" no-border
+                  v-if="domain != null" :link="mindInspectorUrl">
+            <template v-slot:content>
+              Mind Inspector
+            </template>
+          </Button>
         </div>
-      </div>
-      <div class="flex items-center h-full">
-        <Button icon="start.svg" icon-ratio="11px" width="35px" height="100%" @click="startMas"
-                :is-loading="startingMas"/>
-        <Button icon="stop.svg" icon-ratio="10px" width="35px" height="100%" @click="stopMas"
-                :is-loading="stopingMas"/>
-        <Button icon="download.svg" icon-ratio="12px" width="35px" height="100%" @click="downloadMas"
-                :is-loading="downloadingMas"/>
-        <Button height="100%" no-border
-                v-if="domain != null" :link="mindInspectorUrl">
-          <template v-slot:content>
-            Mind Inspector
-          </template>
-        </Button>
-        <Button no-border height="100%" icon="dots.svg">
-          <template v-slot:content>
-            <Toggle parent-position>
-              <template v-slot:options>
-                <button @click="logout">Sair</button>
-                <hr>
-                <span>Sistema</span>
-                <button>
-                  Reiniciar
-                  <Popup is-children title="Reiniciar sistema">
-                    <template v-slot:content>
-                      Reiniciar o sistema implicará no procedimento padrão de reinicialização do sistema onde está
-                      alocado o sistema operacional chonOS.
-                    </template>
-                    <template v-slot:action>
-                      <Button role="pop-up-closer">
-                        <template v-slot:content>
-                          Cancelar
-                        </template>
-                      </Button>
-                      <Button main-color @click="resetSystem">
-                        <template v-slot:content>
-                          Sim, reiniciar sistema.
-                        </template>
-                      </Button>
-                    </template>
-                  </Popup>
-                </button>
-                <button class="severe">
-                  Desligar
-                  <Popup is-children title="Desligar sistema">
-                    <template v-slot:content>
-                      Desligar o sistema implicará no procedimento padrão de desligar do sistema onde está
-                      alocado o sistema operacional chonOS.
-                    </template>
-                    <template v-slot:action>
-                      <Button role="pop-up-closer">
-                        <template v-slot:content>
-                          Cancelar
-                        </template>
-                      </Button>
-                      <Button color="var(--pallete-color-red-1)" @click="turnOffSystem">
-                        <template v-slot:content>
-                          Sim, desligar sistema.
-                        </template>
-                      </Button>
-                    </template>
-                  </Popup>
-                </button>
-              </template>
-            </Toggle>
-          </template>
-        </Button>
-      </div>
-    </div>
+      </template>
+    </Header>
 
     <div class="flex">
-      <div class="coder__explorer flex flex-col">
-        <div class="coder__header-bar coder__explorer__project-name flex">
-          <input type="text" v-model="projectName" placeholder="Nome do projeto" spellcheck="false">
-          <div class="coder__project-status">
+      <div class="project__explorer">
+        <div class="project__header-bar">
+          <span class="project__header-bar__title">{{projectName}}</span>
+          <div class="project__project-status">
             <Loading v-if="savingProject" border-width="1px" ratio="12px" main-color="var(--pallete-text-main)"/>
             <img v-else src="@/assets/media/icon/check.svg" style="width: 12px">
           </div>
         </div>
-        <div class="coder__explorer__main">
+        <div class="project__explorer__main">
           <ExplorerFolder name="Sistema multiagente" :has-add="false">
             <template v-slot:content>
               <ExplorerFolder name="Agentes" @add="addAgentFileAction">
@@ -145,11 +84,11 @@
           </ExplorerFolder>
         </div>
       </div>
-      <div class="coder__coding flex flex-col">
-        <div class="coder__coding__controller flex items-center justify-between">
+      <div class="project__coding flex flex-col">
+        <div class="project__coding__controller">
           <div type="text" class="flex h-full items-center">
-            <span class="coder__coding__file-name">
-              {{ currentFile != null ? currentFile.name : "Nenhum arquivo" }}
+            <span class="project__coding__file-name">
+              {{ currentFile.name }}
             </span>
             <Button icon="toggle.svg" icon-ratio="8px" side-padding="8px"
                     height="100%" icon-sense="right" v-if="agentFileIsOpen" margin="4px 5px">
@@ -169,13 +108,13 @@
             </Button>
           </div>
           <div class="flex h-full" v-if="firmwareFileIsOpen">
-            <Button icon="upload.svg" height="100%" icon-ratio="11px"
+            <Button icon="white-check.svg" height="100%" icon-ratio="11px"
                     no-border @click="compileSketch" :is-loading="compilingSketch">
               <template v-slot:content>
                 Compilar
               </template>
             </Button>
-            <Button icon="white-check.svg" height="100%" icon-ratio="12px"
+            <Button icon="upload.svg" height="100%" icon-ratio="12px"
                     no-border @click="deploySketch" :is-loading="deployingSketch">
               <template v-slot:content>
                 Deploy
@@ -183,19 +122,17 @@
             </Button>
           </div>
         </div>
-        <div class="coder__writer flex">
-          <div class="coder__writer__lines flex flex-col py-5" ref="coderLines">
-            <div v-for="index in lineQuantity" :key="index" class="coder__writer__line pl-5">{{ index }}</div>
+        <div class="project__coder">
+          <div class="project__coder__lines flex flex-col py-5" ref="coderLines">
+            <div v-for="index in lineQuantity" :key="index" class="project__coder__line pl-5">{{ index }}</div>
           </div>
-          <textarea v-if="currentFile != null" class="coder__writer__text p-5" ref="coder"
-                    v-model="currentFile.sourceCode"
-                    spellcheck="false" :readonly="currentFile != null ? false : true"></textarea>
-          <textarea v-else class="coder__writer__text p-5" ref="coder" readonly></textarea>
+          <textarea class="project__coder__text p-5" ref="coder" v-model="currentFile.sourceCode"
+                    spellcheck="false"></textarea>
         </div>
       </div>
-      <div class="coder__boards flex flex-col" v-if="firmwareFileIsOpen">
-        <div class="coder__header-bar flex justify-between">
-          <span class="coder__header-bar__title">Placas disponíveis</span>
+      <div class="project__boards flex flex-col" v-if="firmwareFileIsOpen">
+        <div class="project__header-bar justify-between">
+          <span class="project__header-bar__title">Placas disponíveis</span>
           <Button icon="refresh.svg" icon-ratio="13px" side-padding="12px" height="100%" @click="loadBoards(true)"/>
         </div>
         <div class="flex items-center justify-center h-full w-full" v-if="loadingBoards">
@@ -216,30 +153,30 @@
 <script>
 import Util from "@/domain/Util";
 import Button from "@/components/Button";
-import {AgentType, AgentTypes, AppEvent, MessageType} from "@/domain/Enums";
+import {AgentType, AgentTypes, AppEvent, Key, MessageType} from "@/domain/Enums";
 import Loading from "@/components/Loading";
 import Popup from "@/components/Popup";
-import router, {Routes} from "@/router";
 import {API, EndPoints, Headers} from "@/domain/API";
 import defaultSourceCode from "@/domain/content/default-source-codes.json";
-import ExplorerFile from "@/views/Coder/ExplorerFile";
-import ExplorerFolder from "@/views/Coder/ExplorerFolder";
-import Board from "@/views/Coder/Board";
+import ExplorerFile from "@/views/Project/ExplorerFile";
+import ExplorerFolder from "@/views/Project/ExplorerFolder";
+import Board from "@/views/Project/Board";
 import Toggle from "@/components/Toggle";
+import Header from "@/layout/Header";
 
 const LINE_BREAK_CHAR = "\n", TAB_CHAR = "\t", POS_CHAR = "$";
-const CODER_DIFF_HEIGHT = 18;
+const project_DIFF_HEIGHT = 18;
 const AGENT_DEFAULT_FILE_NAME = "newAgent", FIRMWARE_DEFAULT_FILE_NAME = "newSketch";
 const DEFAULT_LINKS_PROTOCOL = "http://";
 const MIND_INSPECTOR_PORT = ":3272", SMA_PORT_PORT = ":3271";
 
 export default {
-  name: "Coder",
-  components: {Toggle, Board, ExplorerFolder, ExplorerFile, Loading, Button, Popup},
+  name: "Project",
+  components: {Header, Toggle, Board, ExplorerFolder, ExplorerFile, Loading, Button, Popup},
   data() {
     return {
       projectName: "",
-      currentFile: null,
+      currentFile: {name: "Nenhum arquivo", sourceCode: ""},
       currentBoard: null,
       firmwareFileIsOpen: false,
       agentFileIsOpen: false,
@@ -297,19 +234,22 @@ export default {
     }
   },
   setup() {
-    Util.setTitle("Criando SMA");
+    Util.setTitle("SMA");
     API.loadToken();
   },
   mounted() {
-    API.get(EndPoints.PROJECTS).then((response) => {
+    API.get(EndPoints.PROJECTS, true, {params: {projectId: this.$route.params.id}}).then((response) => {
       this.agents = response.data.data.agents;
       this.firmwares = response.data.data.firmwares;
       this.projectName = response.data.data.name;
-      this.currentFile = this.agents[0];
-      this.agentFileIsOpen = true;
+      Util.setTitle(this.projectName);
+      if (this.agents.length > 0) {
+        this.currentFile = this.agents[0];
+        this.agentFileIsOpen = true;
+      }
     });
 
-    this.$refs.coder.style.height = (this.$refs.coderLines.scrollHeight + (2 * CODER_DIFF_HEIGHT)) + "px";
+    this.$refs.coder.style.height = this.$refs.coderLines.scrollHeight + "px";
 
     API.get(EndPoints.DOMAINS).then((response) => {
       this.domain = response.data.data;
@@ -320,10 +260,10 @@ export default {
 
     // Implementação do codador.
     this.$refs.coder.addEventListener("keydown", (event) => {
-      if (event.which === 13) {
-        this.$refs.coder.style.height = (this.$refs.coderLines.scrollHeight + CODER_DIFF_HEIGHT) + "px";
+      if (event.code == Key.ENTER) {
+        this.$refs.coder.style.height = (this.$refs.coderLines.scrollHeight + project_DIFF_HEIGHT) + "px";
       } else if (event.which === 8) {
-        this.$refs.coder.style.height = (this.$refs.coderLines.scrollHeight - CODER_DIFF_HEIGHT) + "px";
+        this.$refs.coder.style.height = (this.$refs.coderLines.scrollHeight - project_DIFF_HEIGHT) + "px";
       } else if (event.which === 219) {
         if (event.shiftKey) {
           this.writeAction(event, '{' + LINE_BREAK_CHAR + TAB_CHAR + POS_CHAR + LINE_BREAK_CHAR + '}', true);
@@ -426,6 +366,7 @@ export default {
     saveProject() {
       this.savingProject = true;
       return API.put(EndPoints.PROJECTS, {}, {
+        id: this.$route.params.id,
         name: this.projectName,
         agents: this.agents,
         firmwares: this.firmwares
@@ -468,20 +409,6 @@ export default {
         this.stopingMas = false;
       });
     },
-    turnOffSystem() {
-      this.$emit(AppEvent.MESSAGE, {content: "Desligando sistema", type: MessageType.WARNING});
-      API.put(EndPoints.SYSTEM_POWEROFF);
-      setTimeout(() => {
-        router.push(Routes.LOGIN);
-      }, 2000);
-    },
-    resetSystem() {
-      this.$emit(AppEvent.MESSAGE, {content: "Reiniciando sistema", type: MessageType.WARNING});
-      API.put(EndPoints.SYSTEM_REBOOT);
-      setTimeout(() => {
-        router.push(Routes.LOGIN);
-      }, 2000);
-    },
     loadLibraries(refresh = false) {
       API.get(EndPoints.LIBRARIES, refresh).then((response) => {
         this.libraries = response.data.data;
@@ -497,11 +424,6 @@ export default {
         }
       }).finally(() => {
         this.loadingBoards = false;
-      });
-    },
-    logout() {
-      API.delete(EndPoints.USERS).then(() => {
-        router.push(Routes.LOGIN);
       });
     },
     removeFileAction(index, files) {
@@ -560,52 +482,40 @@ export default {
 
 /* Codador */
 
-.coder {
+.project {
   --explorer-width: 300px;
   --bar-height: 30px;
-  height: 100vh;
   @apply overflow-y-hidden;
 }
 
-.coder__compiled-response {
+.project *:not(input, textarea) {
+  @apply cursor-default;
+}
+
+.project__compiled-response {
   background-color: var(--pallete-color-black-3);
   line-height: 1.7;
   @apply p-2.5 rounded-sm;
 }
 
-.coder *:not(input, textarea) {
-  @apply cursor-default;
+.project__project-status {
+  @apply select-none m-auto mr-2.5;
 }
 
-.coder__header {
-  background-color: var(--pallete-color-black-3);
-  border-bottom: 1px solid var(--pallete-color-black-1);
-  height: var(--bar-height);
-}
-
-.coder__project-status {
-  margin: auto 0 auto auto;
-  @apply select-none;
-}
-
-.coder__header__logo {
-  font-size: 14px;
-  @apply ml-2.5;
-}
-
-.coder__coding {
+.project__coding {
   width: calc(100vw - var(--explorer-width));
   border-left: 1px solid var(--pallete-color-black-1);
 }
 
-.coder__coding__controller {
+.project__coding__controller {
   width: 100%;
   height: var(--bar-height);
   background-color: var(--pallete-color-black-2);
   border-bottom: 1px solid var(--pallete-color-black-1);
+  @apply flex items-center justify-between;
 }
 
-.coder__coding__file-name {
+.project__coding__file-name {
   height: calc(var(--bar-height) - 1px);
   max-width: 125px;
   background-color: var(--pallete-color-black-3);
@@ -616,13 +526,13 @@ export default {
   @apply overflow-hidden whitespace-nowrap py-1.5 px-2.5;
 }
 
-.coder__writer {
+.project__coder {
   height: calc(100vh - calc(2 * var(--bar-height)));
   --writer-font-size: var(--text-size-normal);
-  @apply overflow-y-scroll;
+  @apply flex overflow-y-scroll;
 }
 
-.coder__writer__lines {
+.project__coder__lines {
   min-width: 68px;
   background-color: var(--pallete-color-black-2);
   color: var(--pallete-text-aside);
@@ -630,65 +540,51 @@ export default {
   @apply min-h-full h-fit;
 }
 
-.coder__writer__line {
+.project__coder__line {
   font-size: var(--writer-font-size);
 }
 
-.coder__writer__text {
+.project__coder__text {
   background-color: var(--pallete-color-black-1);
   color: var(--pallete-text-main);
   word-spacing: 2px;
   letter-spacing: 1px;
   font-weight: 1000;
   font-size: var(--writer-font-size);
-  @apply h-full w-full border-none resize-none overflow-y-hidden;
+  @apply min-h-full w-full border-none resize-none overflow-y-hidden;
 }
 
 /* Lateral */
 
-.coder__explorer {
+.project__explorer {
   min-width: var(--explorer-width);
   background-color: var(--pallete-color-black-2);
+  @apply flex flex-col;
 }
 
-.coder__explorer__main {
+.project__explorer__main {
   height: calc(100vh - calc(2 * var(--bar-height)));
   @apply overflow-y-auto;
 }
 
-.coder__header-bar {
+.project__header-bar {
   background-color: var(--pallete-color-black-3);
   border-bottom: 1px solid var(--pallete-color-black-1);
   min-height: var(--bar-height);
   height: var(--bar-height);
+  @apply flex;
 }
 
-.coder__header-bar__title {
+.project__header-bar__title {
   @apply m-auto ml-2.5;
 }
 
-.coder__explorer__project-name {
-  @apply pr-2.5;
-}
-
-.coder__explorer__project-name > input {
+.project__explorer__project-name > input {
   color: var(--pallete-text-main);
   @apply grow px-2.5 border-none bg-transparent;
 }
 
-.coder__explorer__project-name:hover {
-  background-color: var(--pallete-color-black-4);
-}
-
-.coder__explorer__project-name:hover > .coder__project-status {
-  display: none;
-}
-
-.coder__explorer__project-name:focus {
-  background-color: var(--pallete-color-black-4);
-}
-
-.coder__boards {
+.project__boards {
   width: 350px;
   background-color: var(--pallete-color-black-2);
   border-left: 1px solid var(--pallete-color-black-1);

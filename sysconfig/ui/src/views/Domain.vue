@@ -9,9 +9,9 @@
         <span class="text-xl text-aside">{{domainUrl}}</span>
       </div>
       <div class="flex gap-2.5">
-        <Button @click="backToCoder" v-if="!isFirstAccess">
+        <Button @click="backToHome" v-if="!isFirstAccess">
           <template v-slot:content>
-            Voltar para codador
+            Voltar
           </template>
         </Button>
         <Button @click="submit" :isLoading="loading" main-color>
@@ -67,8 +67,8 @@ export default {
     });
   },
   methods: {
-    backToCoder() {
-      router.push(Routes.CODER);
+    backToHome() {
+      router.push(Routes.HOME);
     },
     submit() {
       if (this.domain === '' || this.domain.length === 0) {

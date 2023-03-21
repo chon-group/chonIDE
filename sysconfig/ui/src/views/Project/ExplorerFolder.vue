@@ -72,7 +72,7 @@ export default {
 </script>
 
 <style scoped>
-@import "@/views/Coder/style.css";
+@import "@/views/Project/style.css";
 
 .coder__explorer__folder-name {
   @apply pl-2.5;
