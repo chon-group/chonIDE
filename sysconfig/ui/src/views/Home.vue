@@ -3,15 +3,15 @@
     <Header>
       <template v-slot:left>
         <div class="flex items-center h-full">
-          <router-link to="/connect" class="h-full">
-            <Button height="100%" icon-ratio="12px" no-border icon="wifi-quality-4.svg">
+          <router-link to="/connect">
+            <Button icon-ratio="12px" icon="wifi-quality-4.svg">
               <template v-slot:content>
                 Redes
               </template>
             </Button>
           </router-link>
-          <router-link to="/domain" class="h-full">
-            <Button height="100%" icon-ratio="12px" no-border icon="domain.svg">
+          <router-link to="/domain">
+            <Button icon-ratio="12px" icon="domain.svg">
               <template v-slot:content>
                 Nome do bot
               </template>
@@ -20,7 +20,7 @@
         </div>
       </template>
       <template v-slot:right>
-        <Button no-border height="100%" icon="dots.svg">
+        <Button icon="dots.svg">
           <template v-slot:content>
             <Toggle parent-position>
               <template v-slot:options>
@@ -78,9 +78,8 @@
     <div class="project__list">
       <div class="project"
            v-for="(project, index) in projects" :key="project.id"
-           @click="goProject(project.id)"
       >
-        <div class="project__image" :style="getProjectColor(project.name[0].toUpperCase())">
+        <div class="project__image" :style="getProjectColor(project.name[0].toUpperCase())" ref="project" @click="goProject(project.id)">
           {{ project.name[0].toUpperCase() }}
         </div>
         <input class="project__name" v-model="project.name" @keyup="renamingProject(project, $event, index)" readonly
@@ -112,9 +111,9 @@
           </template>
         </Toggle>
       </div>
-      <div class="project" @click="selectNewProject">
-        <div class="project__image" ref="letterNewProject">+</div>
-        <input class="project__name" v-model="newProjectName" readonly
+      <div class="project">
+        <div class="project__image" ref="letterNewProject" @click="selectNewProject">+</div>
+        <input class="project__name" v-model="newProjectName" readonly="true"
                ref="inputNewProject" spellcheck="false"/>
       </div>
     </div>
@@ -131,6 +130,7 @@ import projectNamesColor from "@/assets/css/project-names-color.json";
 import Header from "@/layout/Header";
 import Button from "@/components/Button";
 import Popup from "@/components/Popup";
+import {removeRipple, useRipple} from "@/composable/Ripple";
 
 export default {
   name: "Home",
@@ -152,9 +152,20 @@ export default {
     Util.setTitle("Home");
     API.loadToken();
   },
+  beforeUnmount() {
+    removeRipple(this.$refs.letterNewProject);
+    this.$refs.project.forEach((project) => {
+      removeRipple(project);
+    });
+  },
   mounted() {
     API.get(EndPoints.PROJECTS).then((response) => {
       this.projects = response.data.data;
+    }).then(() => {
+      useRipple(this.$refs.letterNewProject);
+      this.$refs.project.forEach((project) => {
+        useRipple(project);
+      });
     });
     this.$refs.inputNewProject.onblur = () => {
       this.setDefaultNewProjet();
@@ -173,7 +184,7 @@ export default {
     setDefaultNewProjet() {
       this.newProjectName = "Novo projeto";
       this.$refs.letterNewProject.innerText = "+";
-      this.$refs.inputNewProject.readOnly = false;
+      this.$refs.inputNewProject.readOnly = true;
       this.$refs.inputNewProject.blur();
     },
     goProject(projectId) {
@@ -272,25 +283,21 @@ export default {
   width: 80px;
   background-color: var(--pallete-color-black-4);
   transition: transform 0.2s;
-  @apply flex items-center justify-center rounded-sm text-2xl font-black cursor-default;
+  @apply flex items-center justify-center rounded-lg text-2xl font-black cursor-pointer;
 }
 
 .project__image:hover {
   transform: scale(1.03);
 }
 
-.project:focus-within > .project__image {
+.project__image:focus-within {
   transform: scale(1.03);
-}
-
-.project:focus-within > .project__name {
-  background-color: var(--pallete-color-black-4);
 }
 
 .project__name {
   color: var(--pallete-text-main);
   width: 120px;
   transition: transform 0.3s;
-  @apply border-none bg-transparent cursor-default text-center p-0.5 rounded-sm;
+  @apply border-none bg-transparent cursor-default text-center p-0.5 rounded-lg;
 }
 </style>

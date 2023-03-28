@@ -5,7 +5,14 @@ export enum MessageType {
 }
 
 export enum Key {
-    ENTER = "Enter"
+    ENTER = "Enter",
+    BACKSPACE = "Backspace",
+    BRACKET_RIGHT = "{",
+    SQUARE_BRACKET_RIGHT = "[",
+    PARENTESIS_RIGHT = "(",
+    TAB = "Tab",
+    BACKQUOTE = "'",
+    DOUBLE_BACKQUOTE = "\""
 }
 
 export enum AgentType {

@@ -1,10 +1,10 @@
 <template>
-  <div class="coder__board flex flex-col justify-between" @click="select">
+  <div class="board" @click="select">
     <div class="flex justify-between">
-            <span class="flex flex-col">
-              <span>{{ board.board }}</span>
-              <span class="text-aside">{{ board.fqbn }}</span>
-            </span>
+      <span class="flex flex-col">
+        <span>{{ board.board }}</span>
+        <span class="text-aside">{{ board.fqbn }}</span>
+      </span>
       <div class="coder__board__select" :class="isCurrent ? 'is-selected' : ''"></div>
     </div>
     <span class="text-aside">{{ board.port }}</span>
@@ -12,11 +12,19 @@
 </template>
 
 <script>
+import {removeRipple, useRipple} from "@/composable/Ripple";
+
 export default {
   name: "Board",
   props: {
     board: {},
     isCurrent: Boolean
+  },
+  mounted() {
+    useRipple(this.$el);
+  },
+  beforeUnmount() {
+    removeRipple(this.$el);
   },
   methods: {
     select() {
@@ -29,12 +37,12 @@ export default {
 <style scoped>
 @import "@/views/Project/style.css";
 
-.coder__board {
-  height: 75px;
-  @apply p-2.5;
+.board {
+  height: 80px;
+  @apply flex flex-col justify-between p-1.5 rounded-lg cursor-pointer;
 }
 
-.coder__board:hover {
+.board:hover {
   background-color: var(--pallete-color-black-3);
 }
 

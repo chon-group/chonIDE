@@ -1,8 +1,9 @@
 .coder__explorer__item {
     height: var(--bar-height);
-    @apply w-full shrink-0 pr-2.5 select-none;
+    transition: background-color 0.1s;
+    @apply w-full shrink-0 select-none rounded-lg;
 }
 
-.coder__explorer__item:hover {
+.coder__explorer__item:hover{
     background-color: var(--pallete-color-black-3);
 }

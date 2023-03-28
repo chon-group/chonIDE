@@ -1,6 +1,6 @@
 <template>
   <div class="project flex flex-col h-screen">
-    <Popup title="Resposta da placa" ref="boardResponse">
+    <Popup title="Resposta da placa" ref="boardResponse" can-close>
       <template v-slot:content>
         <div class="project__compiled-response">
           {{ boardResponse }}
@@ -9,36 +9,38 @@
     </Popup>
     <Header>
       <template v-slot:left>
-        <router-link to="/home" class="h-full">
-          <Button height="100%" icon-ratio="12px" no-border>
-            <template v-slot:content>
-              Home
-            </template>
-          </Button>
+        <router-link to="/home">
+          <Button icon-ratio="12px" icon="back.svg"/>
         </router-link>
       </template>
-      <template v-slot:right>
-        <div class="flex items-center h-full">
-          <Button icon="start.svg" icon-ratio="11px" width="35px" height="100%" @click="startMas"
-                  :is-loading="startingMas"/>
-          <Button icon="stop.svg" icon-ratio="10px" width="35px" height="100%" @click="stopMas"
-                  :is-loading="stopingMas"/>
-          <Button icon="download.svg" icon-ratio="12px" width="35px" height="100%" @click="downloadMas"
-                  :is-loading="downloadingMas"/>
-          <Button height="100%" no-border
-                  v-if="domain != null" :link="mindInspectorUrl">
+      <template v-slot:center>
+        <div class="flex gap-1.5 items-center">
+          <Button icon="start.svg" icon-ratio="12px" @click="startMas"
+                  :is-loading="startingMas" color="var(--pallete-color-green-1)">
             <template v-slot:content>
-              Mind Inspector
+              Iniciar
+            </template>
+          </Button>
+          <Button icon="stop.svg" icon-ratio="12px" @click="stopMas"
+                  :is-loading="stopingMas" color="var(--pallete-color-red-1)">
+            <template v-slot:content>
+              Parar
             </template>
           </Button>
         </div>
       </template>
+      <template v-slot:right>
+        <div class="flex items-center gap-1.5 h-full">
+          <Button icon="download.svg" icon-ratio="12px" @click="downloadMas" :is-loading="downloadingMas"/>
+          <Button v-if="domain != null" :link="mindInspectorUrl" icon="mindinspector.svg" icon-ratio="15px"/>
+          <Button v-if="domain != null" :link="logsUrl" icon="terminal.svg" icon-ratio="12px"/>
+        </div>
+      </template>
     </Header>
-
     <div class="flex">
       <div class="project__explorer">
         <div class="project__header-bar">
-          <span class="project__header-bar__title">{{projectName}}</span>
+          <span class="project__header-bar__title">{{ project.name }}</span>
           <div class="project__project-status">
             <Loading v-if="savingProject" border-width="1px" ratio="12px" main-color="var(--pallete-text-main)"/>
             <img v-else src="@/assets/media/icon/check.svg" style="width: 12px">
@@ -47,12 +49,13 @@
         <div class="project__explorer__main">
           <ExplorerFolder name="Sistema multiagente" :has-add="false">
             <template v-slot:content>
-              <ExplorerFolder name="Agentes" @add="addAgentFileAction">
+              <ExplorerFolder name="Agentes" @add="addAgentFileAction" add-message="Novo agente">
                 <template v-slot:content>
-                  <ExplorerFile v-for="(agent, index) in agents"
+                  <ExplorerFile v-for="(agent, index) in project.agents"
                                 :key="index" :file="agent" icon="Ag"
-                                @delete="removeFileAction(index, agents)"
+                                @delete="removeFileAction(index, project.agents)"
                                 @edit="(editedAgent) => agent = editedAgent"
+                                ref="agents"
                                 @show="
                                   currentFile = agent;
                                   firmwareFileIsOpen = false;
@@ -62,12 +65,13 @@
               </ExplorerFolder>
             </template>
           </ExplorerFolder>
-          <ExplorerFolder name="Firmwares" @add="addFirmwareFileAction">
+          <ExplorerFolder name="Firmwares" @add="addFirmwareFileAction" add-message="Novo firmware">
             <template v-slot:content>
-              <ExplorerFile v-for="(firmware, index) in firmwares"
+              <ExplorerFile v-for="(firmware, index) in project.firmwares"
                             :key="index" :file="firmware" icon="C++"
-                            @delete="removeFileAction(index, firmwares)"
+                            @delete="removeFileAction(index, project.firmwares)"
                             @edit="(editedFirmware) => firmware = editedFirmware"
+                            ref="firmwares"
                             @show="
                                   currentFile = firmware;
                                   firmwareFileIsOpen = true;
@@ -86,12 +90,13 @@
       </div>
       <div class="project__coding flex flex-col">
         <div class="project__coding__controller">
-          <div type="text" class="flex h-full items-center">
-            <span class="project__coding__file-name">
+          <div type="text" class="project__coding__file">
+            <div class="project__coding__file__selected"></div>
+            <span class="project__coding__file__name">
               {{ currentFile.name }}
             </span>
-            <Button icon="toggle.svg" icon-ratio="8px" side-padding="8px"
-                    height="100%" icon-sense="right" v-if="agentFileIsOpen" margin="4px 5px">
+            <div class="project__coding__controller__separator" v-if="currentFile.name != 'Nenhum arquivo'"></div>
+            <Button icon="toggle.svg" icon-ratio="8px" icon-sense="right" v-if="agentFileIsOpen">
               <template v-slot:content>
                 {{ this.currentFile.archClass }}
                 <Toggle parent-position select
@@ -106,34 +111,32 @@
                 </Toggle>
               </template>
             </Button>
-          </div>
-          <div class="flex h-full" v-if="firmwareFileIsOpen">
-            <Button icon="white-check.svg" height="100%" icon-ratio="11px"
-                    no-border @click="compileSketch" :is-loading="compilingSketch">
-              <template v-slot:content>
-                Compilar
-              </template>
-            </Button>
-            <Button icon="upload.svg" height="100%" icon-ratio="12px"
-                    no-border @click="deploySketch" :is-loading="deployingSketch">
-              <template v-slot:content>
-                Deploy
-              </template>
-            </Button>
+            <div class="flex" v-if="firmwareFileIsOpen">
+              <Button icon="white-check.svg" icon-ratio="11px" @click="compileSketch" :is-loading="compilingSketch">
+                <template v-slot:content>
+                  Compilar
+                </template>
+              </Button>
+              <Button icon="upload.svg" icon-ratio="11px" @click="deploySketch" :is-loading="deployingSketch">
+                <template v-slot:content>
+                  Deploy
+                </template>
+              </Button>
+            </div>
           </div>
         </div>
         <div class="project__coder">
-          <div class="project__coder__lines flex flex-col py-5" ref="coderLines">
+          <div class="project__coder__lines" ref="coderLines">
             <div v-for="index in lineQuantity" :key="index" class="project__coder__line pl-5">{{ index }}</div>
           </div>
           <textarea class="project__coder__text p-5" ref="coder" v-model="currentFile.sourceCode"
                     spellcheck="false"></textarea>
         </div>
       </div>
-      <div class="project__boards flex flex-col" v-if="firmwareFileIsOpen">
-        <div class="project__header-bar justify-between">
+      <div class="project__boards" v-if="firmwareFileIsOpen">
+        <div class="project__header-bar">
           <span class="project__header-bar__title">Placas disponíveis</span>
-          <Button icon="refresh.svg" icon-ratio="13px" side-padding="12px" height="100%" @click="loadBoards(true)"/>
+          <Button icon="refresh.svg" icon-ratio="13px" side-padding="12px" @click="loadBoards(true)"/>
         </div>
         <div class="flex items-center justify-center h-full w-full" v-if="loadingBoards">
           <Loading border-width="2px" main-color="var(--pallete-text-main)" ratio="25px"/>
@@ -141,8 +144,10 @@
         <div class="flex items-center justify-center h-full w-full" v-else-if="boards.length === 0 && !loadingBoards">
           <span class="text-aside">Não foram encontradas placas disponíveis</span>
         </div>
-        <Board v-else v-for="(board, index) in boards" :key="index"
-               @select="currentBoard = board;" :is-current="currentBoard == board"/>
+        <div v-else class="flex flex-col gap-1.5 p-1.5">
+          <Board v-for="(board, index) in boards" :key="index"
+                 @select="currentBoard = board;" :is-current="currentBoard == board" :board="board"/>
+        </div>
       </div>
     </div>
 
@@ -175,17 +180,15 @@ export default {
   components: {Header, Toggle, Board, ExplorerFolder, ExplorerFile, Loading, Button, Popup},
   data() {
     return {
-      projectName: "",
+      project: {name: "", agents: [], firmwares: []},
       currentFile: {name: "Nenhum arquivo", sourceCode: ""},
+      boards: [{board:"Placa1", fqbn:"Arduino", port:"COM123"}],
       currentBoard: null,
+      libraries: [],
+      domain: null,
+      agentTypes: AgentTypes,
       firmwareFileIsOpen: false,
       agentFileIsOpen: false,
-      domain: null,
-      agents: [],
-      firmwares: [],
-      boards: [],
-      libraries: [],
-      agentTypes: AgentTypes,
       boardResponse: null,
       savingProject: false,
       importingMas: false,
@@ -198,21 +201,12 @@ export default {
     }
   },
   watch: {
-    agents: {
-      handler() {
+    project: {
+      handler(projectValue) {
+        this.project.name = Util.mantainJustRegularCharacters(projectValue.name);
         this.saveProject();
       },
       deep: true
-    },
-    firmwares: {
-      handler() {
-        this.saveProject();
-      },
-      deep: true
-    },
-    projectName(newValue) {
-      this.projectName = Util.mantainJustRegularCharacters(newValue);
-      this.saveProject();
     }
   },
   computed: {
@@ -239,58 +233,57 @@ export default {
   },
   mounted() {
     API.get(EndPoints.PROJECTS, true, {params: {projectId: this.$route.params.id}}).then((response) => {
-      this.agents = response.data.data.agents;
-      this.firmwares = response.data.data.firmwares;
-      this.projectName = response.data.data.name;
-      Util.setTitle(this.projectName);
-      if (this.agents.length > 0) {
-        this.currentFile = this.agents[0];
+      if (response.status == 200) {
+        this.project = response.data.data;
+        this.project.id = this.$route.params.id;
+      }
+    }).then(() => {
+      Util.setTitle(this.project.name);
+    }).then(() => {
+      if (this.project.agents.length > 0) {
+        this.currentFile = this.project.agents[0];
         this.agentFileIsOpen = true;
       }
+    }).then(() => {
+      this.$refs.coder.style.height = this.$refs.coderLines.scrollHeight + "px";
     });
-
-    this.$refs.coder.style.height = this.$refs.coderLines.scrollHeight + "px";
 
     API.get(EndPoints.DOMAINS).then((response) => {
       this.domain = response.data.data;
     });
 
-    this.loadBoards();
+    // this.loadBoards();
     this.loadLibraries();
 
     // Implementação do codador.
     this.$refs.coder.addEventListener("keydown", (event) => {
-      if (event.code == Key.ENTER) {
-        this.$refs.coder.style.height = (this.$refs.coderLines.scrollHeight + project_DIFF_HEIGHT) + "px";
-      } else if (event.which === 8) {
+      if (event.key == Key.ENTER) {
+        this.$refs.coder.style.height = this.$refs.coderLines.scrollHeight + "px";
+      } else if (event.key == Key.BACKSPACE) {
         this.$refs.coder.style.height = (this.$refs.coderLines.scrollHeight - project_DIFF_HEIGHT) + "px";
-      } else if (event.which === 219) {
-        if (event.shiftKey) {
-          this.writeAction(event, '{' + LINE_BREAK_CHAR + TAB_CHAR + POS_CHAR + LINE_BREAK_CHAR + '}', true);
-        } else {
-          this.writeAction(event, `[${POS_CHAR}]`, true);
-        }
-      } else if (event.which === 57 && event.shiftKey) {
+      } else if (event.key == Key.BRACKET_RIGHT) {
+        this.writeAction(event, `{${POS_CHAR}}`, true);
+      } else if (event.key == Key.SQUARE_BRACKET_RIGHT) {
+        this.writeAction(event, `[${POS_CHAR}]`, true);
+      } else if (event.key == Key.PARENTESIS_RIGHT) {
         this.writeAction(event, `(${POS_CHAR})`, true);
-      } else if (event.which === 9) {
+      } else if (event.key == Key.TAB) {
         event.preventDefault();
         this.writeAction(event, TAB_CHAR, false);
-      } else if (event.which === 222) {
-        if (event.shiftKey) {
-          this.writeAction(event, `"${POS_CHAR}"`, true);
-        } else {
-          this.writeAction(event, `'${POS_CHAR}'`, true);
-        }
+      } else if (event.key == Key.DOUBLE_BACKQUOTE) {
+        this.writeAction(event, `"${POS_CHAR}"`, true);
+      } else if (event.key == Key.BACKQUOTE) {
+        this.writeAction(event, `'${POS_CHAR}'`, true);
       }
     });
   },
   methods: {
     projectIsInvalid() {
-      if (this.agents.length === 0) {
+      if (this.project.agents.length === 0) {
         this.$emit(AppEvent.MESSAGE, {content: "Não é possível inicar o SMA sem agentes", type: MessageType.ERROR});
         return true;
       }
-      if (this.projectName.length === 0) {
+      if (this.project.name.length === 0) {
         this.$emit(AppEvent.MESSAGE, {content: "O nome do projeto não pode ser vazio", type: MessageType.ERROR});
         return true;
       }
@@ -365,12 +358,7 @@ export default {
     },
     saveProject() {
       this.savingProject = true;
-      return API.put(EndPoints.PROJECTS, {}, {
-        id: this.$route.params.id,
-        name: this.projectName,
-        agents: this.agents,
-        firmwares: this.firmwares
-      }).then(() => {
+      return API.put(EndPoints.PROJECTS, {}, this.project).then(() => {
         setTimeout(() => {
           this.savingProject = false;
         }, 100);
@@ -385,10 +373,7 @@ export default {
         params: {
           action: "start"
         }
-      }, {
-        name: this.projectName,
-        agents: this.agents
-      }).then((response) => {
+      }, this.project).then((response) => {
         this.$emit(AppEvent.MESSAGE, {
           content: response.data.message,
           type: MessageType.SUCCESS
@@ -431,7 +416,9 @@ export default {
         if (index == 0) {
           files.splice(index, 1);
           if (files.length == 0) {
-            this.currentFile = null;
+            this.currentFile = {name: "Nenhum arquivo", sourceCode: ""};
+            this.agentFileIsOpen = false;
+            this.firmwareFileIsOpen = false;
           }
         } else {
           this.currentFile = files[index - 1];
@@ -442,13 +429,13 @@ export default {
       }
     },
     addFirmwareFileAction() {
-      this.firmwares.push({
+      this.project.firmwares.push({
         name: FIRMWARE_DEFAULT_FILE_NAME,
         sourceCode: defaultSourceCode.firmware
       });
     },
     addAgentFileAction() {
-      this.agents.push({
+      this.project.agents.push({
         name: AGENT_DEFAULT_FILE_NAME,
         archClass: AgentType.JASON,
         sourceCode: defaultSourceCode.agent
@@ -484,12 +471,8 @@ export default {
 
 .project {
   --explorer-width: 300px;
-  --bar-height: 30px;
+  --bar-height: 42px;
   @apply overflow-y-hidden;
-}
-
-.project *:not(input, textarea) {
-  @apply cursor-default;
 }
 
 .project__compiled-response {
@@ -499,7 +482,7 @@ export default {
 }
 
 .project__project-status {
-  @apply select-none m-auto mr-2.5;
+  @apply select-none mr-1.5;
 }
 
 .project__coding {
@@ -515,20 +498,36 @@ export default {
   @apply flex items-center justify-between;
 }
 
-.project__coding__file-name {
-  height: calc(var(--bar-height) - 1px);
+.project__coding__controller__separator {
+  height: 20px;
+  width: 1px;
+  background-color: var(--pallete-color-black-4);
+}
+
+.project__coding__file {
+  background-color: var(--pallete-color-black-3);
+  @apply flex h-full items-center p-1.5 pl-2.5 gap-1.5 rounded-r-lg;
+}
+
+.project__coding__file__selected {
+  width: 8px;
+  height: 8px;
+  background-color: var(--pallete-color-main-1);
+  @apply rounded-full mr-1.5;
+}
+
+.project__coding__file__name {
   max-width: 125px;
   background-color: var(--pallete-color-black-3);
-  padding-top: 6px;
   color: var(--pallete-text-main);
   text-overflow: ellipsis;
-  box-shadow: inset 0 -2px 0 var(--pallete-color-main-1);
-  @apply overflow-hidden whitespace-nowrap py-1.5 px-2.5;
+  @apply overflow-hidden whitespace-nowrap shrink-0 mr-2.5 select-none;
 }
 
 .project__coder {
   height: calc(100vh - calc(2 * var(--bar-height)));
   --writer-font-size: var(--text-size-normal);
+  background-color: var(--pallete-color-black-1);
   @apply flex overflow-y-scroll;
 }
 
@@ -537,7 +536,7 @@ export default {
   background-color: var(--pallete-color-black-2);
   color: var(--pallete-text-aside);
   border-right: 5px solid var(--pallete-color-black-3);
-  @apply min-h-full h-fit;
+  @apply min-h-full h-fit flex flex-col py-5;
 }
 
 .project__coder__line {
@@ -564,7 +563,7 @@ export default {
 
 .project__explorer__main {
   height: calc(100vh - calc(2 * var(--bar-height)));
-  @apply overflow-y-auto;
+  @apply overflow-y-auto p-1.5;
 }
 
 .project__header-bar {
@@ -572,16 +571,11 @@ export default {
   border-bottom: 1px solid var(--pallete-color-black-1);
   min-height: var(--bar-height);
   height: var(--bar-height);
-  @apply flex;
+  @apply flex justify-between items-center p-1.5;
 }
 
 .project__header-bar__title {
-  @apply m-auto ml-2.5;
-}
-
-.project__explorer__project-name > input {
-  color: var(--pallete-text-main);
-  @apply grow px-2.5 border-none bg-transparent;
+  @apply ml-1.5 select-none;
 }
 
 .project__boards {
@@ -589,7 +583,7 @@ export default {
   background-color: var(--pallete-color-black-2);
   border-left: 1px solid var(--pallete-color-black-1);
   height: calc(100vh - var(--bar-height));
-  @apply overflow-y-auto;
+  @apply flex flex-col overflow-y-auto;
 }
 
 </style>

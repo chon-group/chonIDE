@@ -117,6 +117,16 @@ public class FileUtils {
         return false;
     }
 
+    public static void write(Path path, String content) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(path.toString()));
+            writer.write(content);
+            writer.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static boolean writeFileContent(File file, String content) {
         FileWriter fileWriter = null;
         PrintWriter printWriter = null;

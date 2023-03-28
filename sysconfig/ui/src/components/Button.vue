@@ -1,17 +1,17 @@
 <template>
-  <div :class="['button-container', buttonContainerClasses]">
-    <component :class="[buttonClasses,'button items-center justify-center w-full h-full']"
-               :is="element" :href="link" target="_blank">
-      <Loading v-if="isLoading" ratio="14px" border-width="1px" aside-color="rgba(255,255,255,0.2)"
-               main-color="white"/>
-      <img v-else-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)" class="button__icon">
-      <slot name="content"></slot>
-    </component>
-  </div>
+  <component :class="[buttonClasses,'button items-center justify-center']"
+             :is="element" :href="link" target="_blank" draggable="false">
+    <Loading v-if="isLoading" ratio="14px" border-width="1px" aside-color="rgba(255,255,255,0.2)"
+             main-color="white"/>
+    <img v-else-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)" class="button__icon">
+    <span v-if="this.$slots.content == null && this.text != null">{{text}}</span>
+    <slot name="content"></slot>
+  </component>
 </template>
 
 <script>
 import Loading from "@/components/Loading";
+import {removeRipple, useRipple} from "@/composable/Ripple";
 
 export default {
   name: 'Button',
@@ -26,6 +26,7 @@ export default {
     iconSense: {
       default: "left"
     },
+    text: String,
     mainColor: Boolean,
     color: {
       default: "var(--pallete-color-black-3)",
@@ -34,13 +35,19 @@ export default {
     },
     noBorder: Boolean,
     isLoading: Boolean,
-    sidePadding: String,
     height: String,
-    width: String,
-    link: String,
-    margin: {
-      default: "0px"
-    }
+    link: String
+  },
+  mounted() {
+    useRipple(this.$el);
+  },
+  beforeUnmount() {
+    removeRipple(this.$el);
+  },
+  methods: {
+    hasNotText() {
+      return this.$slots.content == null && this.text == null;
+    },
   },
   computed: {
     element() {
@@ -52,15 +59,11 @@ export default {
       }
       return this.color;
     },
-    buttonContainerClasses() {
-      let classes = "";
-      if (this.height != null) {
-        classes += " custom-height";
-      }
-      if (this.width != null) {
-        classes += " custom-width";
-      }
-      return classes;
+    padding() {
+      return this.hasNotText() && this.icon != null ? "0px" : "12px";
+    },
+    width() {
+      return this.hasNotText() && this.icon != null ? "32px" : "fit-content";
     },
     buttonClasses() {
       let classes = "";
@@ -68,9 +71,6 @@ export default {
         classes += "flex";
       } else if (this.iconSense == "right") {
         classes += "flex flex-row-reverse";
-      }
-      if (this.sidePadding != null) {
-        classes += " side-padding";
       }
       if (this.noBorder) {
         classes += " has-no-border"
@@ -83,41 +83,25 @@ export default {
 
 <style scoped>
 
-.button-container {
-  padding: v-bind(margin);
-  height: var(--action-height);
-}
-
 .button {
   background-color: v-bind(colorSytle);
   font-size: var(--text-size-normal);
   color: var(--pallete-text-main);
-
+  padding: 0 v-bind(padding);
   gap: 8px;
-  @apply whitespace-nowrap overflow-hidden relative w-fit cursor-default border-none gap-2 rounded-sm py-0 px-3;
-}
-
-.custom-height {
-  height: v-bind(height);
-}
-
-.custom-width {
+  height: var(--action-height);
   width: v-bind(width);
-  padding: 0;
-}
-
-.side-padding {
-  padding-left: v-bind(sidePadding);
-  padding-right: v-bind(sidePadding);
+  @apply whitespace-nowrap overflow-hidden relative cursor-pointer border-none gap-2 rounded-lg select-none shrink-0;
 }
 
 .button::before {
   content: "";
+  transition: background-color 0.1s;
   @apply absolute w-full h-full block;
 }
 
 .button:hover::before {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.07);
 }
 
 .button.has-no-border {

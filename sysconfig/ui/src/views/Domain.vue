@@ -1,24 +1,33 @@
 <template>
-  <div class="domain flex flex-col gap-10 items-center">
-    <h2 class="text-xl">Informe o nome do seu bot</h2>
-    <div class="flex flex-col items-center gap-5">
-      <input type="text" class="domain__name" v-model="domain" placeholder="Nome do bot"
-             maxlength="30">
-      <div class="domain__new-url">
-        <span class="text-base">URL de acesso a chonIDE</span>
-        <span class="text-xl text-aside">{{domainUrl}}</span>
-      </div>
-      <div class="flex gap-2.5">
-        <Button @click="backToHome" v-if="!isFirstAccess">
-          <template v-slot:content>
-            Voltar
-          </template>
-        </Button>
-        <Button @click="submit" :isLoading="loading" main-color>
-          <template v-slot:content>
-            Salvar nome
-          </template>
-        </Button>
+  <div class="flex flex-col w-screen h-screen">
+    <Header>
+      <template v-slot:left>
+        <router-link to="/home">
+          <Button icon-ratio="12px" icon="back.svg"/>
+        </router-link>
+      </template>
+    </Header>
+    <div class="flex flex-col gap-10 items-center m-auto">
+      <h2 class="text-xl">Informe o nome do seu bot</h2>
+      <div class="flex flex-col items-center gap-5">
+        <input type="text" class="domain__name" v-model="domain" placeholder="Nome do bot"
+               maxlength="30">
+        <div class="domain__new-url">
+          <span class="text-base">URL de acesso a chonIDE</span>
+          <span class="text-xl text-aside">{{domainUrl}}</span>
+        </div>
+        <div class="flex gap-2.5">
+          <Button @click="backToHome" v-if="!isFirstAccess">
+            <template v-slot:content>
+              Voltar
+            </template>
+          </Button>
+          <Button @click="submit" :isLoading="loading" main-color>
+            <template v-slot:content>
+              Salvar nome
+            </template>
+          </Button>
+        </div>
       </div>
     </div>
   </div>
@@ -31,11 +40,12 @@ import Button from "@/components/Button";
 import router, {Routes} from "@/router";
 import {AppEvent, MessageType} from "@/domain/Enums"
 import {API, EndPoints} from "@/domain/API";
+import Header from "@/layout/Header";
 
 
 export default {
   name: "Domain",
-  components: {Button},
+  components: {Header, Button},
   data() {
     return {
       domain: '',

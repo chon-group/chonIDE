@@ -29,11 +29,17 @@ export default {
       default: false
     },
     modelValue: String,
-    accept: String
+    accept: String,
+    center: Boolean
   },
   data() {
     return {
       fileName: 'Importar arquivo...'
+    }
+  },
+  computed: {
+    align() {
+      return this.center ? "center" : "inherit";
     }
   },
   methods: {
@@ -54,11 +60,12 @@ export default {
   height: var(--action-height);
   border: 1px solid var(--pallete-color-black-3);
   background-color: var(--pallete-color-black-1);
-  @apply w-full relative rounded-sm;
+  @apply w-full relative rounded-lg text-base;
 }
 
 .input > input {
   color: var(--pallete-text-main);
+  text-align: v-bind(align);
   @apply border-none bg-transparent px-3;
 }
 

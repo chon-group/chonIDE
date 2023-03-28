@@ -1,0 +1,8 @@
+.ripple {
+    aspect-ratio: 1/1;
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s, height 0.3s;
+    height: 0;
+    @apply rounded-full absolute;
+}

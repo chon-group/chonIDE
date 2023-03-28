@@ -3,8 +3,7 @@
     <div class="h-full w-full flex items-center gap-2.5">
       <span class="coder__explorer__item__icon">{{ icon }}</span>
       <input type="text" class="coder__explorer__item__name w-full" :value="file.name" @change="editFile"
-             ref="filename"
-             readonly/>
+             ref="filename" readonly spellcheck="false"/>
     </div>
     <Toggle type="contextmenu" click-position>
       <template v-slot:options>
@@ -103,7 +102,7 @@ export default {
   font-weight: 1000;
   font-size: var(--text-size-little);
   color: var(--pallete-text-aside);
-  width: 15px;
+  min-width: 15px;
 }
 
 .coder__explorer__item__name {

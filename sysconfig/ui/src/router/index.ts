@@ -6,10 +6,10 @@ import Project from "@/views/Project/Project.vue";
 import Home from "@/views/Home.vue";
 
 export class Routes {
-    public static LOGIN = "/login";
+    public static LOGIN = "/login.html";
     public static CONNECT = "/connect";
     public static DOMAIN = "/domain";
-    public static HOME = "/home";
+    public static HOME = "/home.html";
     public static PROJECT = "/projects/";
 }
 

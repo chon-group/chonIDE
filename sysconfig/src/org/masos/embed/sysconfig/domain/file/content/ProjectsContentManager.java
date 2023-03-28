@@ -9,7 +9,6 @@ import org.masos.embed.sysconfig.domain.file.model.Project;
 import org.masos.embed.sysconfig.domain.file.model.ProjectsMapping;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,8 +41,7 @@ public class ProjectsContentManager {
             try {
                 createDirectories(PROJECTS_DIRECTORY_PATH);
                 createFile(PROJECTS_MAP_PATH);
-                write(PROJECTS_MAP_PATH,
-                        JsonManager.get().toJson(new ProjectsMapping()).getBytes(StandardCharsets.UTF_8));
+                FileUtils.write(PROJECTS_MAP_PATH, JsonManager.get().toJson(new ProjectsMapping()));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -74,7 +72,7 @@ public class ProjectsContentManager {
             throw new RuntimeException(e);
         }
         try {
-            write(projectFile, JsonManager.get().toJson(project).getBytes(StandardCharsets.UTF_8));
+            write(projectFile, JsonManager.get().toJson(project).getBytes());
             ProjectsMapping projectsMapping = getProjectMapping();
             Long id = Long.valueOf(projectsMapping.getProjects().size() + 1);
             projectsMapping.getProjects().put(id, project.getName());
@@ -109,7 +107,7 @@ public class ProjectsContentManager {
             project.setFirmwares(fileProject.getFirmwares());
         }
         try {
-            write(projectFile, JsonManager.get().toJson(project).getBytes(StandardCharsets.UTF_8));
+            FileUtils.write(projectFile, JsonManager.get().toJson(project));
             if (!projectName.equals(project.getName())) {
                 projects.remove(projectName);
                 projects.put(project.getId(), project.getName());
@@ -200,11 +198,7 @@ public class ProjectsContentManager {
      * @param projectsMapping {@link ProjectsMapping}.
      */
     private static void saveProjectMapping(ProjectsMapping projectsMapping) {
-        try {
-            write(PROJECTS_MAP_PATH, JsonManager.get().toJson(projectsMapping).getBytes(StandardCharsets.UTF_8));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        FileUtils.write(PROJECTS_MAP_PATH, JsonManager.get().toJson(projectsMapping));
     }
 
 }

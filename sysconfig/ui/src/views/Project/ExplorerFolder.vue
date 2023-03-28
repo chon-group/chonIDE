@@ -1,6 +1,6 @@
 <template>
   <div class="coder__explorer__folder flex flex-col">
-    <div class="coder__explorer__folder-name coder__explorer__item flex items-center">
+    <div class="coder__explorer__folder-name coder__explorer__item flex items-center pr-1.5">
       <div class="h-full w-full flex items-center" @click="folderOpen = !folderOpen">
         <img src="@/assets/media/icon/toggle.svg" :class="`coder__explorer__item__toggle
              ${folderOpen ? 'open' : ''}`">
@@ -21,6 +21,7 @@
 
 <script>
 import Toggle from "@/components/Toggle";
+
 export default {
   name: "ExplorerFolder",
   components: {Toggle},
@@ -82,7 +83,7 @@ export default {
   padding-left: v-bind(filesPaddingLeft);
 }
 
-:slotted(.coder__explorer__folder) > .coder__explorer__folder-name{
+:slotted(.coder__explorer__folder) > .coder__explorer__folder-name {
   padding-left: v-bind(folderNamePaddingLeft);
 }
 

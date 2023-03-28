@@ -2,7 +2,7 @@
     --pallete-color-black-1: rgb(29, 31, 33);
     --pallete-color-black-2: rgb(39, 42, 45);
     --pallete-color-black-3: rgb(49, 54, 58);
-    --pallete-color-black-4: rgb(56, 62, 66);
+    --pallete-color-black-4: rgb(62, 65, 70);
     --pallete-color-main-1: rgb(35, 52, 187);
     --pallete-color-green-1: #0c8a0c;
     --pallete-color-green-2: #0da40d;
@@ -15,15 +15,15 @@
 
     --border-trace: 1px solid var(--pallete-color-black-3);
 
-    --action-height: 35px;
+    --action-height: 32px;
 
     --container-width-1: 800px;
     --container-width-2: 500px;
 
-    --text-size-normal: 12px;
-    --text-size-little: 11px;
-    --text-size-headline: 16px;
-    --text-size-title: 20px;
+    --text-size-normal: 13px;
+    --text-size-little: 12px;
+    --text-size-headline: 17px;
+    --text-size-title: 21px;
 
     --background-hover-transition: background-color 0.1s ease-in;
 }

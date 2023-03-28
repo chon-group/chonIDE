@@ -163,7 +163,7 @@ export default {
   background-color: var(--pallete-color-black-2);
   font-size: var(--text-size-normal);
   border: 1px solid var(--pallete-color-black-3);
-  @apply absolute rounded-sm py-1.5;
+  @apply absolute rounded-lg py-1.5;
 }
 
 .toggle.is-open {

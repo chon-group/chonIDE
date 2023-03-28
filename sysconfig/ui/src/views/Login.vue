@@ -5,27 +5,21 @@
         <span class="font-black">chonIDE</span>
       </span>
     </h1>
-    <div class="flex flex-col gap-5">
-      <div class="c-base-container login__form flex flex-col gap-2.5">
-        <input type="text" name="user" placeholder="Usuário" class="login__input" v-model="username"
-               autocomplete="off"/>
-        <Trace/>
-        <input type="password" name="password" placeholder="Senha" class="login__input" v-model="password"
-               autocomplete="off"/>
-        <Trace v-if="!useLocalHost"/>
-        <input type="text" v-model="currentHost" v-if="!useLocalHost" placeholder="Hostname" class="login__input"/>
+    <div class="flex flex-col gap-5 items-center">
+      <div class="login__form">
+        <Input v-model="username" placeholder="Usuário" center/>
+        <Input v-model="password" placeholder="Senha" center type="password"/>
+        <Input v-model="currentHost" placeholder="Hostname" v-if="!useLocalHost" center/>
       </div>
-      <Button @click="submit" :is-loading="loading" class="self-end">
-        <template v-slot:content>
-          Entrar
-        </template>
-      </Button>
-    </div>
-    <div class="flex gap-2.5 items-center justify-center">
-      <span class="text-aside">
-        Usar host local
-      </span>
-      <input type="checkbox" class="login__check-box" v-model="useLocalHost">
+      <div class="flex items-center gap-5">
+        <div class="flex gap-2.5 items-center justify-center">
+        <span class="text-aside">
+          Host local
+        </span>
+          <input type="checkbox" class="login__check-box" v-model="useLocalHost">
+        </div>
+        <Button @click="submit" :is-loading="loading" text="Entrar"/>
+      </div>
     </div>
 
     <Popup :title="'Conectando à rede'" :can-close="false" ref="conecting">
@@ -52,18 +46,18 @@
 
 <script>
 import Util from "@/domain/Util";
-import Trace from "@/components/Trace";
 import router, {Routes} from "@/router";
 import {AppEvent, MessageType} from "@/domain/Enums"
 import Popup from "@/components/Popup";
 import Loading from "@/components/Loading";
 import {API, EndPoints} from "@/domain/API";
 import Button from "@/components/Button";
+import Input from "@/components/Input";
 
 
 export default {
   name: "Login",
-  components: {Button, Loading, Popup, Trace},
+  components: {Input, Button, Loading, Popup},
   data() {
     return {
       username: '',
@@ -152,17 +146,8 @@ export default {
 }
 
 .login__form {
-  width: var(--container-width-2);
-  font-size: var(--text-size-title);
-}
-
-.login__input {
-  color: var(--pallete-text-main);
-  @apply p-2.5 border-none bg-transparent cursor-default text-center rounded-sm;
-}
-
-.login__input:hover {
-  background-color: var(--pallete-color-black-3);
+  width: 400px;
+  @apply flex flex-col gap-2.5;
 }
 
 .login__check-box {
