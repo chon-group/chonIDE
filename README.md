@@ -12,7 +12,7 @@ Follow the two steps described below:
 2. Download and import the [ChonIDE Virtual Machine](https://sourceforge.net/projects/chonos/files/vms/chonIDEVM.ova)
 
 ### Debian 11 or Ubuntu 22.04
-In a terminal execute the commands bellow
+In a terminal, execute the commands below:
 ```sh
  echo "deb [trusted=yes] http://packages.chon.group/ chonos main" | sudo tee /etc/apt/sources.list.d/chonos.list
  sudo apt update; sudo apt install chonide
