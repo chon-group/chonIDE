@@ -3,7 +3,7 @@
     <Header>
       <template v-slot:left>
         <router-link to="/home">
-          <Button icon-ratio="12px" icon="back.svg"/>
+          <Button icon-ratio="11px" icon="back.svg"/>
         </router-link>
       </template>
     </Header>

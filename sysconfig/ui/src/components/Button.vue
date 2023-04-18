@@ -91,7 +91,7 @@ export default {
   gap: 8px;
   height: var(--action-height);
   width: v-bind(width);
-  @apply whitespace-nowrap overflow-hidden relative cursor-pointer border-none gap-2 rounded-lg select-none shrink-0;
+  @apply whitespace-nowrap overflow-hidden relative cursor-pointer border-none gap-2 rounded-md select-none shrink-0;
 }
 
 .button::before {

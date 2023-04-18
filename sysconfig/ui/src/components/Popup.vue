@@ -88,7 +88,7 @@ export default {
   width: var(--container-width-2);
   z-index: 10;
   background-color: var(--pallete-color-black-2);
-  @apply m-auto p-5 rounded-lg;
+  @apply m-auto p-5 rounded-md;
 }
 
 .pop-up__title {

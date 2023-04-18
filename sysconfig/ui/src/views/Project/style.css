@@ -1,9 +1,20 @@
 .coder__explorer__item {
-    height: var(--bar-height);
+    height: var(--action-height);
     transition: background-color 0.1s;
-    @apply w-full shrink-0 select-none rounded-lg;
+    @apply flex w-full shrink-0 select-none rounded-md;
 }
 
 .coder__explorer__item:hover{
     background-color: var(--pallete-color-black-3);
+}
+
+.coder__explorer__action-button {
+    height: 24px;
+    aspect-ratio: 1/1;
+    transition: opacity 0.1s;
+    @apply rounded-md border-none bg-transparent cursor-pointer shrink-0;
+}
+
+.coder__explorer__action-button:is(:focus, :hover) {
+    opacity: 100% !important;
 }

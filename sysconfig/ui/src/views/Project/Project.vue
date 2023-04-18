@@ -31,9 +31,21 @@
       </template>
       <template v-slot:right>
         <div class="flex items-center gap-1.5 h-full">
-          <Button icon="download.svg" icon-ratio="12px" @click="downloadMas" :is-loading="downloadingMas"/>
-          <Button v-if="domain != null" :link="mindInspectorUrl" icon="mindinspector.svg" icon-ratio="15px"/>
-          <Button v-if="domain != null" :link="logsUrl" icon="terminal.svg" icon-ratio="12px"/>
+          <Button icon="start.svg" icon-ratio="11px" @click="startMas"
+                  :is-loading="startingMas"/>
+          <Button icon="stop.svg" icon-ratio="11px" @click="stopMas"
+                  :is-loading="stopingMas"/>
+          <div class="project-action-separator"></div>
+          <Button v-if="domain != null"
+                  :link="mindInspectorUrl"
+                  icon="mindinspector.svg"
+                  icon-ratio="14px"
+                  text="Mind Inspector"/>
+          <Button v-if="domain != null"
+                  :link="logsUrl"
+                  icon="terminal.svg"
+                  icon-ratio="14px"
+                  text="Logs"/>
         </div>
       </template>
     </Header>
@@ -47,41 +59,51 @@
           </div>
         </div>
         <div class="project__explorer__main">
-          <ExplorerFolder name="Sistema multiagente" :has-add="false">
+          <ExplorerFolder name="Multi-Agent System" :has-add="false" icon="sma.svg" icon-ratio="13px">
             <template v-slot:content>
-              <ExplorerFolder name="Agentes" @add="addAgentFileAction" add-message="Novo agente">
+              <ExplorerFolder name="Agents" @add="addAgentFileAction" add-message="Novo agente" icon="agents.svg"
+                              icon-ratio="15px">
                 <template v-slot:content>
                   <ExplorerFile v-for="(agent, index) in project.agents"
-                                :key="index" :file="agent" icon="Ag"
+                                :key="index" :file="agent"
+                                :icon="getAgentIcon(agent.archClass)"
+                                icon-ratio="13px"
                                 @delete="removeFileAction(index, project.agents)"
                                 @edit="(editedAgent) => agent = editedAgent"
+                                :selected="currentFile == agent"
                                 ref="agents"
                                 @show="
                                   currentFile = agent;
                                   firmwareFileIsOpen = false;
                                   agentFileIsOpen = true;
                                 "/>
+
                 </template>
               </ExplorerFolder>
             </template>
           </ExplorerFolder>
-          <ExplorerFolder name="Firmwares" @add="addFirmwareFileAction" add-message="Novo firmware">
+          <ExplorerFolder name="Firmware" @add="addFirmwareFileAction" add-message="Novo firmware"
+                          icon="firmwares.svg" icon-ratio="12px">
             <template v-slot:content>
               <ExplorerFile v-for="(firmware, index) in project.firmwares"
-                            :key="index" :file="firmware" icon="C++"
+                            :key="index" :file="firmware"
                             @delete="removeFileAction(index, project.firmwares)"
                             @edit="(editedFirmware) => firmware = editedFirmware"
+                            icon="ino.svg"
+                            icon-ratio="17px"
                             ref="firmwares"
+                            :selected="currentFile == firmware"
                             @show="
                                   currentFile = firmware;
                                   firmwareFileIsOpen = true;
                                   agentFileIsOpen = false;
                                 "/>
-              <ExplorerFolder name="Bibliotecas" @add="importLibrary"
+              <ExplorerFolder name="Libraries" @add="importLibrary" icon="libraries.svg" icon-ratio="12px"
                               add-message="Nova biblioteca" has-refresh @refresh="loadLibraries(true)">
                 <template v-slot:content>
                   <ExplorerFile v-for="(library, index) in libraries"
-                                :key="index" :file="library" icon="L" :can-rename="false"/>
+                                :key="index" :file="library" :can-rename="false" icon="library.svg"
+                                icon-ratio="11px"/>
                 </template>
               </ExplorerFolder>
             </template>
@@ -95,7 +117,7 @@
             <span class="project__coding__file__name">
               {{ currentFile.name }}
             </span>
-            <div class="project__coding__controller__separator" v-if="currentFile.name != 'Nenhum arquivo'"></div>
+            <div class="project-action-separator" v-if="currentFile.name != 'Nenhum arquivo'"></div>
             <Button icon="toggle.svg" icon-ratio="8px" icon-sense="right" v-if="agentFileIsOpen">
               <template v-slot:content>
                 {{ this.currentFile.archClass }}
@@ -112,7 +134,7 @@
               </template>
             </Button>
             <div class="flex" v-if="firmwareFileIsOpen">
-              <Button icon="white-check.svg" icon-ratio="11px" @click="compileSketch" :is-loading="compilingSketch">
+              <Button icon="check.svg" icon-ratio="11px" @click="compileSketch" :is-loading="compilingSketch">
                 <template v-slot:content>
                   Compilar
                 </template>
@@ -182,7 +204,7 @@ export default {
     return {
       project: {name: "", agents: [], firmwares: []},
       currentFile: {name: "Nenhum arquivo", sourceCode: ""},
-      boards: [{board:"Placa1", fqbn:"Arduino", port:"COM123"}],
+      boards: [],
       currentBoard: null,
       libraries: [],
       domain: null,
@@ -278,7 +300,32 @@ export default {
     });
   },
   methods: {
+    getAgentIcon(agentType) {
+      if (agentType == "Argo") {
+        return "argo-agent.svg";
+      } else if (agentType == "Communicator") {
+        return "communicator-agent.svg";
+      } else {
+        return "jason-agent.svg";
+      }
+    },
     projectIsInvalid() {
+      let hasSameName = false;
+      this.project.agents.forEach((agent) => {
+        this.project.agents.forEach((anotherAgent) => {
+          if (agent.name == anotherAgent.name) {
+            hasSameName = true;
+            return;
+          }
+        });
+        if (hasSameName) {
+          return;
+        }
+      });
+      if (hasSameName) {
+        this.$emit(AppEvent.MESSAGE, {content: "Existem agentes com o mesmo nome", type: MessageType.ERROR});
+        return true;
+      }
       if (this.project.agents.length === 0) {
         this.$emit(AppEvent.MESSAGE, {content: "Não é possível inicar o SMA sem agentes", type: MessageType.ERROR});
         return true;
@@ -436,7 +483,7 @@ export default {
     },
     addAgentFileAction() {
       this.project.agents.push({
-        name: AGENT_DEFAULT_FILE_NAME,
+        name: AGENT_DEFAULT_FILE_NAME + (this.project.agents.length == 0 ? '' : this.project.agents.length + 1),
         archClass: AgentType.JASON,
         sourceCode: defaultSourceCode.agent
       });
@@ -498,7 +545,7 @@ export default {
   @apply flex items-center justify-between;
 }
 
-.project__coding__controller__separator {
+.project-action-separator {
   height: 20px;
   width: 1px;
   background-color: var(--pallete-color-black-4);
@@ -506,7 +553,7 @@ export default {
 
 .project__coding__file {
   background-color: var(--pallete-color-black-3);
-  @apply flex h-full items-center p-1.5 pl-2.5 gap-1.5 rounded-r-lg;
+  @apply flex h-full items-center p-1.5 pl-2.5 gap-1.5 rounded-r-md;
 }
 
 .project__coding__file__selected {

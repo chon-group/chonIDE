@@ -1,7 +1,9 @@
 <template>
   <div class="header">
     <div class="flex items-center h-full gap-2.5">
-      <h2 class="header__logo">chonIDE</h2>
+      <router-link to="/home">
+        <h2 class="header__logo">chonIDE</h2>
+      </router-link>
       <slot name="left"></slot>
     </div>
     <div class="header__center">
@@ -26,7 +28,8 @@ export default {
 }
 
 .header__logo {
-  @apply text-sm font-thin cursor-default ml-1.5;
+  color: var(--pallete-text-main);
+  @apply text-sm font-thin ml-1.5 cursor-pointer;
 }
 
 .header__center {

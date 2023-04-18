@@ -1,11 +1,15 @@
 <template>
   <div class="coder__explorer__folder flex flex-col">
-    <div class="coder__explorer__folder-name coder__explorer__item flex items-center pr-1.5">
-      <div class="h-full w-full flex items-center" @click="folderOpen = !folderOpen">
-        <img src="@/assets/media/icon/toggle.svg" :class="`coder__explorer__item__toggle
+    <div class="coder__explorer__folder-name coder__explorer__item flex items-center pr-1">
+      <div class="h-full w-full flex justify-between items-center" @click="folderOpen = !folderOpen">
+        <div class="flex gap-2.5 items-center w-full">
+          <img src="@/assets/media/icon/toggle.svg" :class="`coder__explorer__item__toggle
              ${folderOpen ? 'open' : ''}`">
-        <span>{{ name }}</span>
+          <img class="coder__explorer__folder__icon" v-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)"/>
+          <span>{{ name }}</span>
+        </div>
       </div>
+      <button class="coder__explorer__action-button add" ref="dotsButton" v-if="hasAdd" @click="addFile"></button>
       <Toggle click-position type="contextmenu" v-if="hasAdd || hasRefresh">
         <template v-slot:options>
           <button v-if="hasAdd" @click="addFile">{{ addMessage }}</button>
@@ -21,6 +25,7 @@
 
 <script>
 import Toggle from "@/components/Toggle";
+import {removeRipple, useRipple} from "@/composable/Ripple";
 
 export default {
   name: "ExplorerFolder",
@@ -29,6 +34,11 @@ export default {
     name: String,
     hasAdd: {
       default: true
+    },
+    icon: String,
+    iconRatio: {
+      default: "12px",
+      type: String
     },
     hasRefresh: Boolean,
     addMessage: {
@@ -42,10 +52,18 @@ export default {
     }
   },
   mounted() {
+    if(this.$refs.dotsButton != null) {
+      useRipple(this.$refs.dotsButton);
+    }
     let currentParent = this.$parent;
     while (currentParent.$options.name == "ExplorerFolder") {
       currentParent = currentParent.$parent;
       this.level++;
+    }
+  },
+  beforeUnmount() {
+    if(this.$refs.dotsButton != null) {
+      removeRipple(this.$refs.dotsButton)
     }
   },
   computed: {
@@ -79,8 +97,24 @@ export default {
   @apply pl-2.5;
 }
 
+.coder__explorer__folder__icon {
+  width: v-bind(iconRatio);
+  aspect-ratio: 1/1;
+}
+
+.coder__explorer__action-button.add {
+  background-image: url("@/assets/media/icon/add.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 44%;
+}
+
+.coder__explorer__action-button.add:hover {
+  background-color: var(--pallete-color-black-4);
+}
+
 :slotted(.coder__explorer__file) {
-  padding-left: v-bind(filesPaddingLeft);
+  padding-left: calc(v-bind(filesPaddingLeft) + 10px);
 }
 
 :slotted(.coder__explorer__folder) > .coder__explorer__folder-name {
@@ -91,7 +125,6 @@ export default {
   height: 8px;
   width: 8px;
   transform: rotate(-90deg);
-  @apply mr-2.5;
 }
 
 .coder__explorer__item__toggle.open {
