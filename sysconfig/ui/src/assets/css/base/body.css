@@ -1,8 +1,3 @@
-@font-face {
-    src: url("@/assets/fonts/nunito-sans/NunitoSans-Regular.ttf");
-    font-family: 'Nunito Sans';
-}
-
 body {
     font-family: "Nunito Sans";
     font-size: var(--text-size-normal);

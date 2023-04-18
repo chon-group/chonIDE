@@ -1,4 +1,5 @@
-@import "./body";
-@import "./normalize";
-@import "./variable";
+@import "./font.css";
+@import "./body.css";
+@import "./normalize.css";
+@import "./variable.css";
 @import "./tailwind.css";

@@ -1,0 +1,9 @@
+@font-face {
+    src: url("@/assets/fonts/nunito-sans/NunitoSans-Regular.ttf");
+    font-family: 'Nunito Sans';
+}
+
+@font-face {
+    src: url("@/assets/fonts/jet-mono/JetBrainsMono-VariableFont_wght.ttf");
+    font-family: 'JetBrains Mono', monospace;
+}

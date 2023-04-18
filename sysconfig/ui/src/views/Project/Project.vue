@@ -525,8 +525,9 @@ export default {
 }
 
 .project__coder {
+  font-family: 'JetBrains Mono', monospace;
   height: calc(100vh - calc(2 * var(--bar-height)));
-  --writer-font-size: var(--text-size-normal);
+  --writer-font-size: 14px;
   background-color: var(--pallete-color-black-1);
   @apply flex overflow-y-scroll;
 }
@@ -546,9 +547,6 @@ export default {
 .project__coder__text {
   background-color: var(--pallete-color-black-1);
   color: var(--pallete-text-main);
-  word-spacing: 2px;
-  letter-spacing: 1px;
-  font-weight: 1000;
   font-size: var(--writer-font-size);
   @apply min-h-full w-full border-none resize-none overflow-y-hidden;
 }
