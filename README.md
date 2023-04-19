@@ -15,7 +15,7 @@ Follow the two steps described below:
 In a terminal, execute the commands below:
 ```sh
  echo "deb [trusted=yes] http://packages.chon.group/ chonos main" | sudo tee /etc/apt/sources.list.d/chonos.list
- sudo apt update; sudo apt install chonide
+ sudo apt update; sudo apt install chonos-sysconfig chonide 
 ```
 
 ## Publications and how to cite
