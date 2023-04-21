@@ -18,7 +18,7 @@ public class AuthGeneratorServlet extends ApiController {
 
 
     /** Tempo de expiração do usuário autenticado (30 minutos). */
-    protected static final long EXPIRATION_TIME = 900000 * 2;
+    protected static final long EXPIRATION_TIME = 900000 * 4;
 
     /** Host padrão. */
     private static final String DEFAULT_HOST = "localhost";
@@ -41,7 +41,7 @@ public class AuthGeneratorServlet extends ApiController {
 
         if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
             return responseEntity.status(HttpServletResponse.SC_BAD_REQUEST).message(
-                    "Os parâmetros de 'username' e 'password' estão vazios ou não existem.");
+                    "The 'username' and 'password' parameters are empty or do not exist.");
         }
         boolean isDefaultHost = false;
         if (host == null || host.isEmpty()) {
@@ -63,10 +63,10 @@ public class AuthGeneratorServlet extends ApiController {
             newAuthenticatedUser.setExpirationDate(date);
             newAuthenticatedUser.setLastRequisitionDate(date);
             SecurityContextHolder.get().getAuthenticatedUsersByToken().put(jwt, newAuthenticatedUser);
-            return responseEntity.status(HttpServletResponse.SC_OK).message("Usuário autenticado").data(jwt);
+            return responseEntity.status(HttpServletResponse.SC_OK).message("Authenticated user").data(jwt);
         } else {
             return responseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).message(
-                    "Não foi possível autenticar seu usuário");
+                    "Unable to authenticate your user");
         }
     }
 }

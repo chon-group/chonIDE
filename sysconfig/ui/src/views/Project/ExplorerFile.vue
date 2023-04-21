@@ -12,23 +12,23 @@
         <Toggle parent-position>
           <template v-slot:options>
             <button v-if="canRename" @click="editNameAction">
-              Renomear
+              Rename
             </button>
             <button class="severe">
-              Excluir
-              <Popup :title="`Excluir ${file.name}`" is-children ref="dots-delete-file">
+              Delete
+              <Popup :title="`Delete ${file.name}`" is-children ref="dots-delete-file">
                 <template v-slot:content>
-                  Você tem certeza que deseja excluir {{ file.name }}?
+                  Are you sure you want to delete {{ file.name }}?
                 </template>
                 <template v-slot:action>
                   <Button role="pop-up-closer">
                     <template v-slot:content>
-                      Cancelar
+                      Cancel
                     </template>
                   </Button>
                   <Button color="var(--pallete-color-red-1)" @click="deleteFile">
                     <template v-slot:content>
-                      Sim, excluir
+                      Yes, delete.
                     </template>
                   </Button>
                 </template>
@@ -41,23 +41,23 @@
     <Toggle type="contextmenu" click-position>
       <template v-slot:options>
         <button v-if="canRename" @click="editNameAction">
-          Renomear
+          Rename
         </button>
         <button class="severe">
-          Excluir
-          <Popup :title="`Excluir ${file.name}`" is-children ref="delete-file">
+          Delete
+          <Popup :title="`Delete ${file.name}`" is-children ref="delete-file">
             <template v-slot:content>
-              Você tem certeza que deseja excluir {{ file.name }}?
+              Are you sure you want to delete {{ file.name }}?
             </template>
             <template v-slot:action>
               <Button role="pop-up-closer">
                 <template v-slot:content>
-                  Cancelar
+                  Cancel
                 </template>
               </Button>
               <Button color="var(--pallete-color-red-1)" @click="deleteFile">
                 <template v-slot:content>
-                  Sim, excluir
+                  Yes, delete.
                 </template>
               </Button>
             </template>

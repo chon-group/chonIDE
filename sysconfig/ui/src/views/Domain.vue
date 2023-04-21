@@ -8,23 +8,23 @@
       </template>
     </Header>
     <div class="flex flex-col gap-10 items-center m-auto">
-      <h2 class="text-xl">Informe o nome do seu bot</h2>
+      <h2 class="text-xl">Enter the name of your bot</h2>
       <div class="flex flex-col items-center gap-5">
-        <input type="text" class="domain__name" v-model="domain" placeholder="Nome do bot"
+        <input type="text" class="domain__name" v-model="domain" placeholder="Bot name"
                maxlength="30">
         <div class="domain__new-url">
-          <span class="text-base">URL de acesso a chonIDE</span>
+          <span class="text-base">chonIDE Access URL</span>
           <span class="text-xl text-aside">{{domainUrl}}</span>
         </div>
         <div class="flex gap-2.5">
           <Button @click="backToHome" v-if="!isFirstAccess">
             <template v-slot:content>
-              Voltar
+              Back
             </template>
           </Button>
           <Button @click="submit" :isLoading="loading" main-color>
             <template v-slot:content>
-              Salvar nome
+              Save name
             </template>
           </Button>
         </div>
@@ -68,7 +68,7 @@ export default {
     }
   },
   setup() {
-    Util.setTitle("Nome do bot");
+    Util.setTitle("Bot name");
     API.loadToken();
   },
   mounted() {
@@ -82,12 +82,12 @@ export default {
     },
     submit() {
       if (this.domain === '' || this.domain.length === 0) {
-        this.$emit(AppEvent.MESSAGE, {content: "O nome não pode ser vazio", type: MessageType.ERROR});
+        this.$emit(AppEvent.MESSAGE, {content: "Name cannot be empty", type: MessageType.ERROR});
         return;
       }
       this.loading = true;
       API.post(EndPoints.DOMAINS, {params: {domain: this.domain}}).then(() => {
-        this.$emit(AppEvent.MESSAGE, {content: "O nome do seu bot foi salvo com sucesso", type: MessageType.SUCCESS});
+        this.$emit(AppEvent.MESSAGE, {content: "Your bot name was successfully saved", type: MessageType.SUCCESS});
         router.push(Routes.CONNECT);
       });
     }

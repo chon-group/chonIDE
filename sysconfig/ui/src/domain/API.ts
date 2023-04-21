@@ -36,8 +36,8 @@ export class API {
         const urlKey = uuid.v5(url, API.NAMESPACE);
         const cacheResponse = localStorage.getItem(urlKey);
         if (cacheResponse != null && !update) {
-            const response = {data: {data: {}}};
-            response.data.data = JSON.parse(cacheResponse);
+            const response = {data: {}};
+            response.data = JSON.parse(cacheResponse);
             return Promise.resolve(response);
         }
         return this.validate(axios.get(url, config)).then((response) => {
@@ -47,7 +47,7 @@ export class API {
                 } catch (ignored) {
                     //
                 }
-                localStorage.setItem(urlKey, JSON.stringify(response.data.data));
+                localStorage.setItem(urlKey, JSON.stringify(response.data));
             }
             return response;
         });
@@ -97,6 +97,7 @@ export class EndPoints {
     public static NETWORKS_STATUS = API_URL + "/networks/status";
     public static NETWORKS_AP = API_URL + "/networks/ap";
     public static NETWORKS_CLIENT = API_URL + "/networks/client";
+    public static CONFIGURATION = API_URL + "/system/configuration";
 }
 
 export class Headers {

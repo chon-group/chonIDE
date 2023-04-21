@@ -7,32 +7,32 @@
     </h1>
     <div class="flex flex-col gap-5 items-center">
       <div class="login__form">
-        <Input v-model="username" placeholder="Usuário" center/>
-        <Input v-model="password" placeholder="Senha" center type="password"/>
+        <Input v-model="username" placeholder="User" center/>
+        <Input v-model="password" placeholder="Password" center type="password"/>
         <Input v-model="currentHost" placeholder="Hostname" v-if="!useLocalHost" center/>
       </div>
       <div class="flex items-center gap-5">
         <div class="flex gap-2.5 items-center justify-center">
         <span class="text-aside">
-          Host local
+          Localhost
         </span>
           <input type="checkbox" class="login__check-box" v-model="useLocalHost">
         </div>
-        <Button @click="submit" :is-loading="loading" text="Entrar"/>
+        <Button @click="submit" :is-loading="loading" text="Enter"/>
       </div>
     </div>
 
-    <Popup :title="'Conectando à rede'" :can-close="false" ref="conecting">
+    <Popup :title="'Connecting to the network'" :can-close="false" ref="conecting">
       <template v-slot:content>
         <div class="flex flex-col gap-5 items-center" v-if="awaitConnectionCounter != 0">
           <span>
-            Por favor, aguarde...
+            Please wait...
             <span v-if="currentDomain != null">{{ awaitConnectionCounter }}</span>
           </span>
           <Loading/>
         </div>
         <div v-else class="flex flex-col gap-2.5 items-center text-base">
-          Seu novo link de acesso à chonide
+          Your new access link to chonide
           <a :href="'https://' + currentDomain + ':3270/chonide/login'" target="_blank"
              class="login__new-link">{{
               'https://' + currentDomain + ':3270/chonide/login'
@@ -105,17 +105,20 @@ export default {
   methods: {
     submit() {
       if (this.username.length === 0 || this.password.length === 0) {
-        this.$emit(AppEvent.MESSAGE, {content: "O usuário e/ou a senha não podem ser vazios", type: MessageType.ERROR});
+        this.$emit(AppEvent.MESSAGE, {content: "User and/or password cannot be empty", type: MessageType.ERROR});
         return;
       }
 
       this.loading = true;
       API.auth(this.username, this.password, this.currentHost).then((response) => {
-        if (response.status == 200) {
+        if (response.data.status == 200) {
           API.get(EndPoints.USERS_FIRST_ACCESS).then((response) => {
             if (response.data.data == true) {
               router.push(Routes.DOMAIN);
             } else {
+              API.get(EndPoints.CONFIGURATION).then((response) => {
+                console.log(response.data.data)
+              });
               router.push(Routes.HOME);
             }
           });
@@ -124,7 +127,7 @@ export default {
         if (error.response.status == 401) {
           this.$emit(AppEvent.MESSAGE, {content: error.response.data.message, type: MessageType.ERROR});
         } else {
-          this.$emit(AppEvent.MESSAGE, {content: "Não foi possível acessar o sistema", type: MessageType.ERROR});
+          this.$emit(AppEvent.MESSAGE, {content: "Unable to access the system", type: MessageType.ERROR});
         }
       }).finally(() => {
         this.loading = false;

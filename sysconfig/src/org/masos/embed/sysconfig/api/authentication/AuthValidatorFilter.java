@@ -50,7 +50,7 @@ public class AuthValidatorFilter implements Filter {
         if (headerValue == null || headerValue.isEmpty()) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseEntity.status(HttpServletResponse.SC_BAD_REQUEST).message(
-                    "Cabeçalho de autenticação vazio ou inválido.").date(date);
+                    "Empty or invalid authentication header.").date(date);
             writer.write(JsonManager.get().toJson(responseEntity));
             writer.flush();
             writer.close();
@@ -60,7 +60,7 @@ public class AuthValidatorFilter implements Filter {
         if (!headerMatcher.find()) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseEntity.status(HttpServletResponse.SC_BAD_REQUEST).message(
-                    "Cabeçalho de autenticação vazio ou inválido.").date(date);
+                    "Empty or invalid authentication header.").date(date);
             writer.write(JsonManager.get().toJson(responseEntity));
             writer.flush();
             writer.close();
@@ -70,7 +70,7 @@ public class AuthValidatorFilter implements Filter {
         AuthenticatedUser authenticatedUser = SecurityContextHolder.get().getAuthenticatedUsersByToken().get(jwt);
         if (authenticatedUser == null) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            responseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).message("Não foi possível validar o token.")
+            responseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).message("Unable to validate token\n.")
                     .date(date);
             writer.write(JsonManager.get().toJson(responseEntity));
             writer.flush();
@@ -82,15 +82,14 @@ public class AuthValidatorFilter implements Filter {
             long lastRequisitionTime = authenticatedUser.getLastRequisitionDate().getTime();
             if (expirationTime - LAST_REQUISITION_SAFE_TIME <= lastRequisitionTime) {
                 resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                responseEntity.status(HttpServletResponse.SC_FORBIDDEN).message("Sessão terminou.").date(date);
+                responseEntity.status(HttpServletResponse.SC_FORBIDDEN).message("Session ended.").date(date);
                 writer.write(JsonManager.get().toJson(responseEntity));
                 writer.flush();
                 writer.close();
                 SecurityContextHolder.get().getAuthenticatedUsersByToken().remove(jwt);
                 return;
             }
-            authenticatedUser.setExpirationDate(
-                    new Date(authenticatedUser.getExpirationDate().getTime() + EXPIRATION_TIME));
+            authenticatedUser.setExpirationDate(new Date(System.currentTimeMillis() + EXPIRATION_TIME));
         }
         req.setAttribute("user", authenticatedUser);
         chain.doFilter(request, response);

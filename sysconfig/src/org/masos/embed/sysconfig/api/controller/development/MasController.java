@@ -45,7 +45,7 @@ public class MasController extends ApiController {
         } else if (action.equals("stop")) {
             String stopResponse = executor.execute(ReasoningScriptManager.EMBEDDED_MAS_STOP, false);
             if (stopResponse.isEmpty() || !STOPING_MAS_MESSAGE_PATTERN.matcher(stopResponse).find()) {
-                return ResponseEntity.get().status(HttpServletResponse.SC_ACCEPTED).message("SMA já foi encerrado");
+                return ResponseEntity.get().status(HttpServletResponse.SC_ACCEPTED).message("SMA has now been terminated");
             } else {
                 return ResponseEntity.get().status(HttpServletResponse.SC_OK).message(stopResponse);
             }

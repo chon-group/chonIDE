@@ -1,6 +1,6 @@
 <template>
   <div class="project flex flex-col h-screen">
-    <Popup title="Resposta da placa" ref="boardResponse" can-close>
+    <Popup title="Board response" ref="boardResponse" can-close>
       <template v-slot:content>
         <div class="project__compiled-response">
           {{ boardResponse }}
@@ -9,39 +9,39 @@
     </Popup>
     <Header>
       <template v-slot:left>
-        <router-link to="/home">
-          <Button icon-ratio="12px" icon="back.svg"/>
-        </router-link>
-      </template>
-      <template v-slot:center>
-        <div class="flex gap-1.5 items-center">
-          <Button icon="start.svg" icon-ratio="12px" @click="startMas"
-                  :is-loading="startingMas" color="var(--pallete-color-green-1)">
-            <template v-slot:content>
-              Iniciar
-            </template>
-          </Button>
-          <Button icon="stop.svg" icon-ratio="12px" @click="stopMas"
-                  :is-loading="stopingMas" color="var(--pallete-color-red-1)">
-            <template v-slot:content>
-              Parar
-            </template>
-          </Button>
+        <div class="flex items-center h-full">
+          <router-link to="/home">
+            <Button icon-ratio="11px" icon="back.svg"/>
+          </router-link>
+          <router-link to="/connect" v-if="configuration.network">
+            <Button icon-ratio="12px" icon="wifi-quality-4.svg">
+              <template v-slot:content>
+                Networks
+              </template>
+            </Button>
+          </router-link>
+          <router-link to="/domain" v-if="configuration.ddns">
+            <Button icon-ratio="12px" icon="domain.svg">
+              <template v-slot:content>
+                Bot name
+              </template>
+            </Button>
+          </router-link>
         </div>
       </template>
       <template v-slot:right>
         <div class="flex items-center gap-1.5 h-full">
-          <Button icon="start.svg" icon-ratio="11px" @click="startMas"
+          <Button v-if="configuration.startMAS" icon="start.svg" icon-ratio="11px" @click="startMas"
                   :is-loading="startingMas"/>
-          <Button icon="stop.svg" icon-ratio="11px" @click="stopMas"
+          <Button v-if="configuration.stopMAS" icon="stop.svg" icon-ratio="11px" @click="stopMas"
                   :is-loading="stopingMas"/>
           <div class="project-action-separator"></div>
-          <Button v-if="domain != null"
+          <Button v-if="domain != null && configuration.mindInspector"
                   :link="mindInspectorUrl"
                   icon="mindinspector.svg"
                   icon-ratio="14px"
                   text="Mind Inspector"/>
-          <Button v-if="domain != null"
+          <Button v-if="domain != null && configuration.logMAS"
                   :link="logsUrl"
                   icon="terminal.svg"
                   icon-ratio="14px"
@@ -55,13 +55,14 @@
           <span class="project__header-bar__title">{{ project.name }}</span>
           <div class="project__project-status">
             <Loading v-if="savingProject" border-width="1px" ratio="12px" main-color="var(--pallete-text-main)"/>
-            <img v-else src="@/assets/media/icon/check.svg" style="width: 12px">
+            <img v-else src="@/assets/media/icon/check.svg" style="width: 11px">
           </div>
         </div>
         <div class="project__explorer__main">
-          <ExplorerFolder name="Multi-Agent System" :has-add="false" icon="sma.svg" icon-ratio="13px">
+          <ExplorerFolder v-if="configuration.reasoningLayer" name="Multi-Agent System" :has-add="false" icon="sma.svg"
+                          icon-ratio="13px">
             <template v-slot:content>
-              <ExplorerFolder name="Agents" @add="addAgentFileAction" add-message="Novo agente" icon="agents.svg"
+              <ExplorerFolder name="Agents" @add="addAgentFileAction" add-message="New agent" icon="agents.svg"
                               icon-ratio="15px">
                 <template v-slot:content>
                   <ExplorerFile v-for="(agent, index) in project.agents"
@@ -82,7 +83,8 @@
               </ExplorerFolder>
             </template>
           </ExplorerFolder>
-          <ExplorerFolder name="Firmware" @add="addFirmwareFileAction" add-message="Novo firmware"
+          <ExplorerFolder v-if="configuration.firmwareLayer" name="Firmware" @add="addFirmwareFileAction"
+                          add-message="New firmware"
                           icon="firmwares.svg" icon-ratio="12px">
             <template v-slot:content>
               <ExplorerFile v-for="(firmware, index) in project.firmwares"
@@ -98,8 +100,10 @@
                                   firmwareFileIsOpen = true;
                                   agentFileIsOpen = false;
                                 "/>
-              <ExplorerFolder name="Libraries" @add="importLibrary" icon="libraries.svg" icon-ratio="12px"
-                              add-message="Nova biblioteca" has-refresh @refresh="loadLibraries(true)">
+              <ExplorerFolder v-if="configuration.firmwareLibraries" name="Libraries" @add="importLibrary"
+                              icon="libraries.svg"
+                              icon-ratio="12px"
+                              add-message="New library" has-refresh @refresh="loadLibraries(true)">
                 <template v-slot:content>
                   <ExplorerFile v-for="(library, index) in libraries"
                                 :key="index" :file="library" :can-rename="false" icon="library.svg"
@@ -117,7 +121,7 @@
             <span class="project__coding__file__name">
               {{ currentFile.name }}
             </span>
-            <div class="project-action-separator" v-if="currentFile.name != 'Nenhum arquivo'"></div>
+            <div class="project-action-separator" v-if="currentFile.name != 'No file'"></div>
             <Button icon="toggle.svg" icon-ratio="8px" icon-sense="right" v-if="agentFileIsOpen">
               <template v-slot:content>
                 {{ this.currentFile.archClass }}
@@ -136,7 +140,7 @@
             <div class="flex" v-if="firmwareFileIsOpen">
               <Button icon="check.svg" icon-ratio="11px" @click="compileSketch" :is-loading="compilingSketch">
                 <template v-slot:content>
-                  Compilar
+                  Compile
                 </template>
               </Button>
               <Button icon="upload.svg" icon-ratio="11px" @click="deploySketch" :is-loading="deployingSketch">
@@ -157,14 +161,14 @@
       </div>
       <div class="project__boards" v-if="firmwareFileIsOpen">
         <div class="project__header-bar">
-          <span class="project__header-bar__title">Placas disponíveis</span>
+          <span class="project__header-bar__title">Boards available</span>
           <Button icon="refresh.svg" icon-ratio="13px" side-padding="12px" @click="loadBoards(true)"/>
         </div>
         <div class="flex items-center justify-center h-full w-full" v-if="loadingBoards">
           <Loading border-width="2px" main-color="var(--pallete-text-main)" ratio="25px"/>
         </div>
         <div class="flex items-center justify-center h-full w-full" v-else-if="boards.length === 0 && !loadingBoards">
-          <span class="text-aside">Não foram encontradas placas disponíveis</span>
+          <span class="text-aside">No available boards found</span>
         </div>
         <div v-else class="flex flex-col gap-1.5 p-1.5">
           <Board v-for="(board, index) in boards" :key="index"
@@ -190,6 +194,7 @@ import ExplorerFolder from "@/views/Project/ExplorerFolder";
 import Board from "@/views/Project/Board";
 import Toggle from "@/components/Toggle";
 import Header from "@/layout/Header";
+import router, {Routes} from "@/router";
 
 const LINE_BREAK_CHAR = "\n", TAB_CHAR = "\t", POS_CHAR = "$";
 const project_DIFF_HEIGHT = 18;
@@ -203,7 +208,7 @@ export default {
   data() {
     return {
       project: {name: "", agents: [], firmwares: []},
-      currentFile: {name: "Nenhum arquivo", sourceCode: ""},
+      currentFile: {name: "No file", sourceCode: ""},
       boards: [],
       currentBoard: null,
       libraries: [],
@@ -219,7 +224,8 @@ export default {
       compilingSketch: false,
       deployingSketch: false,
       loadingBoards: false,
-      terminalIsOpen: true
+      terminalIsOpen: true,
+      configuration: {}
     }
   },
   watch: {
@@ -255,26 +261,33 @@ export default {
   },
   mounted() {
     API.get(EndPoints.PROJECTS, true, {params: {projectId: this.$route.params.id}}).then((response) => {
-      if (response.status == 200) {
+      if (response.data.status == 200) {
         this.project = response.data.data;
         this.project.id = this.$route.params.id;
+
+        Util.setTitle(this.project.name);
+
+        if (this.project.agents.length > 0) {
+          this.currentFile = this.project.agents[0];
+          this.agentFileIsOpen = true;
+        }
+
+        this.$refs.coder.style.height = this.$refs.coderLines.scrollHeight + "px";
       }
-    }).then(() => {
-      Util.setTitle(this.project.name);
-    }).then(() => {
-      if (this.project.agents.length > 0) {
-        this.currentFile = this.project.agents[0];
-        this.agentFileIsOpen = true;
+    }).catch((error) => {
+      router.push(Routes.HOME);
+    });
+
+    API.get(EndPoints.CONFIGURATION, false).then((response) => {
+      if (response.data.status == 200) {
+        this.configuration = response.data.data;
       }
-    }).then(() => {
-      this.$refs.coder.style.height = this.$refs.coderLines.scrollHeight + "px";
     });
 
     API.get(EndPoints.DOMAINS).then((response) => {
       this.domain = response.data.data;
     });
 
-    // this.loadBoards();
     this.loadLibraries();
 
     // Implementação do codador.
@@ -313,7 +326,7 @@ export default {
       let hasSameName = false;
       this.project.agents.forEach((agent) => {
         this.project.agents.forEach((anotherAgent) => {
-          if (agent.name == anotherAgent.name) {
+          if (agent != anotherAgent && agent.name == anotherAgent.name) {
             hasSameName = true;
             return;
           }
@@ -323,22 +336,18 @@ export default {
         }
       });
       if (hasSameName) {
-        this.$emit(AppEvent.MESSAGE, {content: "Existem agentes com o mesmo nome", type: MessageType.ERROR});
+        this.$emit(AppEvent.MESSAGE, {content: "There are agents with the same name", type: MessageType.ERROR});
         return true;
       }
       if (this.project.agents.length === 0) {
-        this.$emit(AppEvent.MESSAGE, {content: "Não é possível inicar o SMA sem agentes", type: MessageType.ERROR});
-        return true;
-      }
-      if (this.project.name.length === 0) {
-        this.$emit(AppEvent.MESSAGE, {content: "O nome do projeto não pode ser vazio", type: MessageType.ERROR});
+        this.$emit(AppEvent.MESSAGE, {content: "Unable to start SMA without agents", type: MessageType.ERROR});
         return true;
       }
       return false;
     },
     compileSketch() {
       if (this.currentBoard == null) {
-        this.$emit(AppEvent.MESSAGE, {content: "Nenhuma placa foi selecionada", type: MessageType.WARNING});
+        this.$emit(AppEvent.MESSAGE, {content: "No board has been selected", type: MessageType.WARNING});
         return;
       }
       this.compilingSketch = true;
@@ -356,7 +365,7 @@ export default {
     },
     deploySketch() {
       if (this.currentBoard == null) {
-        this.$emit(AppEvent.MESSAGE, {content: "Não existe nenhuma placa selecionada", type: MessageType.WARNING});
+        this.$emit(AppEvent.MESSAGE, {content: "There is no board selected", type: MessageType.WARNING});
         return;
       }
       this.deployingSketch = true;
@@ -379,16 +388,16 @@ export default {
       libraryInput.onchange = (event) => {
         let files = event.target.files;
         if (files.length === 0) {
-          this.$emit(AppEvent.MESSAGE, {content: "Nenhum arquivo selecionado", type: MessageType.WARNING});
+          this.$emit(AppEvent.MESSAGE, {content: "No file selected", type: MessageType.WARNING});
           return;
         }
         let libraryFile = files[0];
         if (Util.isFileInvalid(libraryFile)) {
-          this.$emit(AppEvent.MESSAGE, {content: "O nome do arquivo não pode ter espaço", type: MessageType.ERROR});
+          this.$emit(AppEvent.MESSAGE, {content: "File name cannot have space", type: MessageType.ERROR});
           return;
         }
         API.post(EndPoints.LIBRARIES_IMPORT, Headers.MULTIPART_CONFIG, {file: libraryFile}).then((response) => {
-          if (response.status === 200) {
+          if (response.data.status === 200) {
             this.$emit(AppEvent.MESSAGE, {
               content: response.data.data,
               type: MessageType.SUCCESS
@@ -432,7 +441,7 @@ export default {
     stopMas() {
       this.stopingMas = true;
       API.put(EndPoints.MAS, {params: {action: "stop"}}).then((response) => {
-        if (response.status == 202) {
+        if (response.data.status == 202) {
           this.$emit(AppEvent.MESSAGE, {content: response.data.message, type: MessageType.WARNING});
         } else {
           this.$emit(AppEvent.MESSAGE, {content: response.data.message, type: MessageType.SUCCESS});
@@ -463,7 +472,7 @@ export default {
         if (index == 0) {
           files.splice(index, 1);
           if (files.length == 0) {
-            this.currentFile = {name: "Nenhum arquivo", sourceCode: ""};
+            this.currentFile = {name: "No file", sourceCode: ""};
             this.agentFileIsOpen = false;
             this.firmwareFileIsOpen = false;
           }

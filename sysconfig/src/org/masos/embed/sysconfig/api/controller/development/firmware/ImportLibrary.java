@@ -17,9 +17,9 @@ import java.util.Map;
 public class ImportLibrary extends ApiController {
 
     private static final String FAILED_IMPORT_MESSAGE
-            = "Não foi possível importar, confira se o arquivo está vazio ou é válido";
+            = "Unable to import, check if the file is empty or valid";
 
-    private static final String SUCCESS_IMPORT_MESSAGE = "Biblioteca importada dom sucesso";
+    private static final String SUCCESS_IMPORT_MESSAGE = "Library imported from success";
 
     @Override
     protected ResponseEntity post(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {

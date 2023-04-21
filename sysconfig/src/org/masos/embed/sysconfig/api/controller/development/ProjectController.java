@@ -17,10 +17,10 @@ import java.util.Map;
 public class ProjectController extends ApiController {
 
     /** Mensagem quando projeto não existe. */
-    private static final String PROJECT_DOES_NOT_EXIST = "Projeto %s não existe";
+    private static final String PROJECT_DOES_NOT_EXIST = "Project %s does not exist";
 
     /** Mensagem quando o projeto já existe. */
-    private static final String PROJECT_ALREADY_EXISTS = "Projeto %s já existe";
+    private static final String PROJECT_ALREADY_EXISTS = "Project %s already exists";
 
     @Override
     protected ResponseEntity get(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {

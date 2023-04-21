@@ -2,68 +2,68 @@
   <div class="page flex flex-col items-center">
     <Header>
       <template v-slot:left>
-        <div class="flex items-center h-full">
-          <router-link to="/connect">
+        <div class="flex items-center h-full" v-if="configuration.ddns || configuration.network">
+          <router-link to="/connect" v-if="configuration.network">
             <Button icon-ratio="12px" icon="wifi-quality-4.svg">
               <template v-slot:content>
-                Redes
+                Networks
               </template>
             </Button>
           </router-link>
-          <router-link to="/domain">
+          <router-link to="/domain" v-if="configuration.ddns">
             <Button icon-ratio="12px" icon="domain.svg">
               <template v-slot:content>
-                Nome do bot
+                Bot Name
               </template>
             </Button>
           </router-link>
         </div>
       </template>
       <template v-slot:right>
-        <Button icon="dots.svg">
+        <Button icon="dots.svg" icon-ratio="12px">
           <template v-slot:content>
             <Toggle parent-position>
               <template v-slot:options>
-                <button @click="logout">Sair</button>
-                <hr>
-                <span>Sistema</span>
-                <button>
-                  Reiniciar
-                  <Popup is-children title="Reiniciar sistema">
+                <button @click="logout">Exit</button>
+                <hr v-if="configuration.reboot || configuration.shutdown">
+                <span v-if="configuration.reboot || configuration.shutdown">System</span>
+                <button v-if="configuration.reboot">
+                  Reboot
+                  <Popup is-children title="Reboot System">
                     <template v-slot:content>
-                      Reiniciar o sistema implicará no procedimento padrão de reinicialização do sistema onde está
-                      alocado o sistema operacional chonOS.
+                      Rebooting the system will imply the standard procedure of rebooting the system where it is
+                      allocated the chonOS operating system.
                     </template>
                     <template v-slot:action>
                       <Button role="pop-up-closer">
                         <template v-slot:content>
-                          Cancelar
+                          Cancel
                         </template>
                       </Button>
                       <Button main-color @click="resetSystem">
                         <template v-slot:content>
-                          Sim, reiniciar sistema.
+                          Yes, reboot system.
                         </template>
                       </Button>
                     </template>
                   </Popup>
                 </button>
-                <button class="severe">
-                  Desligar
+                <button class="severe" v-if="configuration.shutdown">
+                  Shutdown
                   <Popup is-children title="Desligar sistema">
                     <template v-slot:content>
-                      Desligar o sistema implicará no procedimento padrão de desligar do sistema onde está
-                      alocado o sistema operacional chonOS.
+                      Shutting down the system will carry out the standard shutdown procedure of the system where it is located.
+                      allocated the chonOS operating system.
                     </template>
                     <template v-slot:action>
                       <Button role="pop-up-closer">
                         <template v-slot:content>
-                          Cancelar
+                          Cancel
                         </template>
                       </Button>
                       <Button color="var(--pallete-color-red-1)" @click="turnOffSystem">
                         <template v-slot:content>
-                          Sim, desligar sistema.
+                          Yes, shutdown system.
                         </template>
                       </Button>
                     </template>
@@ -79,35 +79,68 @@
       <div class="project"
            v-for="(project, index) in projects" :key="project.id"
       >
-        <div class="project__image" :style="getProjectColor(project.name[0].toUpperCase())" ref="project" @click="goProject(project.id)">
-          {{ project.name[0].toUpperCase() }}
+        <div class="project__image-container">
+          <div class="project__image" :style="getProjectColor(project.name[0].toUpperCase())" ref="project"
+               @click="goProject(project.id)">
+            {{ project.name[0].toUpperCase() }}
+          </div>
+          <button class="project__options" ref="projectOptionsButton">
+            <Toggle type="click" parent-position>
+              <template v-slot:options>
+                <button class="severe">
+                  Delete
+                  <Popup is-children title="Delete project">
+                    <template v-slot:content>
+                      Deleting the project you will lose all agents and firmware developed in that project and the same.
+                      Sure you want to continue?
+                    </template>
+                    <template v-slot:action>
+                      <Button role="pop-up-closer">
+                        <template v-slot:content>
+                          Cancel
+                        </template>
+                      </Button>
+                      <Button color="var(--pallete-color-red-1)" @click="deleteProject(project.id, index)"
+                              role="pop-up-closer">
+                        <template v-slot:content>
+                          Yes, delete project.
+                        </template>
+                      </Button>
+                    </template>
+                  </Popup>
+                </button>
+                <button @click="selectCreatedProject(index)">Rename</button>
+              </template>
+            </Toggle>
+          </button>
         </div>
         <input class="project__name" v-model="project.name" @keyup="renamingProject(project, $event, index)" readonly
                ref="inputProject" spellcheck="false"/>
         <Toggle type="contextmenu" click-position>
           <template v-slot:options>
             <button class="severe">
-              Excluir
-              <Popup is-children title="Excluir projeto">
+              Delete
+              <Popup is-children title="Delete project">
                 <template v-slot:content>
-                  Excluindo o projeto você perderá todo os agentes e firmwares desenvolvidos nesse projeto e o mesmo.
-                  Certeza que deseja continuar?
+                  Deleting the project you will lose all agents and firmware developed in that project and the same.
+                  Sure you want to continue?
                 </template>
                 <template v-slot:action>
                   <Button role="pop-up-closer">
                     <template v-slot:content>
-                      Cancelar
+                      Cancel
                     </template>
                   </Button>
-                  <Button color="var(--pallete-color-red-1)" @click="deleteProject(project.id, index)" role="pop-up-closer">
+                  <Button color="var(--pallete-color-red-1)" @click="deleteProject(project.id, index)"
+                          role="pop-up-closer">
                     <template v-slot:content>
-                      Sim, excluir projeto.
+                      Yes, delete project.
                     </template>
                   </Button>
                 </template>
               </Popup>
             </button>
-            <button @click="selectCreatedProject(index)">Renomear</button>
+            <button @click="selectCreatedProject(index)">Rename</button>
           </template>
         </Toggle>
       </div>
@@ -138,12 +171,13 @@ export default {
   data() {
     return {
       projects: [],
-      newProjectName: "Novo projeto"
+      newProjectName: "New project",
+      configuration: {}
     }
   },
   watch: {
     newProjectName(newValue) {
-      if (newValue != "Novo projeto") {
+      if (newValue != "New project") {
         this.newProjectName = Util.mantainJustLetters(newValue);
       }
     }
@@ -157,6 +191,9 @@ export default {
     this.$refs.project.forEach((project) => {
       removeRipple(project);
     });
+    this.$refs.projectOptionsButton.forEach((button) => {
+      removeRipple(button);
+    })
   },
   mounted() {
     API.get(EndPoints.PROJECTS).then((response) => {
@@ -166,6 +203,14 @@ export default {
       this.$refs.project.forEach((project) => {
         useRipple(project);
       });
+      this.$refs.projectOptionsButton.forEach((button) => {
+        useRipple(button);
+      })
+    });
+    API.get(EndPoints.CONFIGURATION, false).then((response) => {
+      if (response.data.status == 200) {
+        this.configuration = response.data.data;
+      }
     });
     this.$refs.inputNewProject.onblur = () => {
       this.setDefaultNewProjet();
@@ -182,7 +227,7 @@ export default {
   },
   methods: {
     setDefaultNewProjet() {
-      this.newProjectName = "Novo projeto";
+      this.newProjectName = "New project";
       this.$refs.letterNewProject.innerText = "+";
       this.$refs.inputNewProject.readOnly = true;
       this.$refs.inputNewProject.blur();
@@ -197,7 +242,7 @@ export default {
     },
     renamingProject(project, event, index) {
       if (project.name.length == 0) {
-        this.$emit("message", {content: "O nome do projeto não pode ser vazio", type: MessageType.WARNING});
+        this.$emit("message", {content: "Project name cannot be empty", type: MessageType.WARNING});
         return;
       }
       if (event.code == Key.ENTER) {
@@ -217,22 +262,22 @@ export default {
     },
     deleteProject(projectId, projectIndex) {
       API.delete(EndPoints.PROJECTS, {params: {projectId: projectId}}).then((response) => {
-        if (response.status == 200) {
+        if (response.data.status == 200) {
           this.projects.splice(projectIndex, 1);
         }
       });
     },
     createNewProject() {
       if (this.newProjectName.length == 0) {
-        this.$emit("message", {type: MessageType.WARNING, content: "O nome do projeto não pode ser vazio"});
+        this.$emit("message", {type: MessageType.WARNING, content: "Project name cannot be empty"});
         return;
       }
       if (this.projects.filter((project) => project.name == this.newProjectName).length > 0) {
-        this.$emit("message", {type: MessageType.WARNING, content: "Já existe um projeto com esse nome"});
+        this.$emit("message", {type: MessageType.WARNING, content: "A project with that name already exists"});
         return;
       }
       API.post(EndPoints.PROJECTS, {params: {projectName: this.newProjectName}}).then((response) => {
-        if (response.status == 200) {
+        if (response.data.status == 200) {
           this.projects.push(response.data.data);
           this.setDefaultNewProjet();
         }
@@ -244,14 +289,14 @@ export default {
       }
     },
     turnOffSystem() {
-      this.$emit(AppEvent.MESSAGE, {content: "Desligando sistema", type: MessageType.WARNING});
+      this.$emit(AppEvent.MESSAGE, {content: "Shutting down system", type: MessageType.WARNING});
       API.put(EndPoints.SYSTEM_POWEROFF);
       setTimeout(() => {
         router.push(Routes.LOGIN);
       }, 2000);
     },
     resetSystem() {
-      this.$emit(AppEvent.MESSAGE, {content: "Reiniciando sistema", type: MessageType.WARNING});
+      this.$emit(AppEvent.MESSAGE, {content: "Rebooting system", type: MessageType.WARNING});
       API.put(EndPoints.SYSTEM_REBOOT);
       setTimeout(() => {
         router.push(Routes.LOGIN);
@@ -279,18 +324,26 @@ export default {
 }
 
 .project__image {
-  height: 80px;
-  width: 80px;
+  height: 90px;
+  width: 90px;
   background-color: var(--pallete-color-black-4);
-  transition: transform 0.2s;
   @apply flex items-center justify-center rounded-lg text-2xl font-black cursor-pointer;
 }
 
-.project__image:hover {
+.project__image-container {
+  transition: transform 0.2s;
+  @apply relative;
+}
+
+.project__image-container:hover {
   transform: scale(1.03);
 }
 
-.project__image:focus-within {
+.project__image-container:hover > .project__options {
+  opacity: 50%;
+}
+
+.project__image-container:focus-within {
   transform: scale(1.03);
 }
 
@@ -299,5 +352,23 @@ export default {
   width: 120px;
   transition: transform 0.3s;
   @apply border-none bg-transparent cursor-default text-center p-0.5 rounded-lg;
+}
+
+.project__options{
+  opacity: 0%;
+  background-image: url("@/assets/media/icon/vertical-dots.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 5%;
+  height: 24px;
+  aspect-ratio: 1/1;
+  top: 2px;
+  right: 2px;
+  transition: opacity 0.1s;
+  @apply rounded-md border-none bg-transparent cursor-pointer absolute;
+}
+
+.project__options:is(:hover, :focus) {
+  opacity: 100% !important;
 }
 </style>
