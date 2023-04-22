@@ -1,5 +1,5 @@
 # ChonIDE
-_Developing an Embedded MAS is a task that requires the domain ofseveral areas of knowledge; therefore, the Embedded MAS architecture used inthis work is divided into four layers: reasoning, serial, firmware, and hardware.Different knowledge is required at each project layer: electronics, low-level pro-gramming, object-oriented and agent-oriented programming. This work seeksto present the first results of a specialized web Integrated Development Environment (IDE) for Embedded MAS to simplify their development._
+_Developing an Embedded MAS is a task that requires the domain of several areas of knowledge; therefore, the Embedded MAS architecture used in this work is divided into four layers: reasoning, serial, firmware, and hardware. Different knowledge is required at each project layer: electronics, low-level programming, object-oriented and agent-oriented programming. This work seeks to present the first results of a specialized web Integrated Development Environment (IDE) for Embedded MAS to simplify their development._
 
 
 ## Publications
