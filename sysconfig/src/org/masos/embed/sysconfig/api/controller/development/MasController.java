@@ -19,9 +19,9 @@ import java.util.regex.Pattern;
 @WebServlet("/api/mas")
 public class MasController extends ApiController {
 
-    private static final Pattern STOPING_MAS_MESSAGE_PATTERN = Pattern.compile("Encerrando SMA, processo ([\\d]+)");
+    private static final Pattern STOPING_MAS_MESSAGE_PATTERN = Pattern.compile("Terminating the MAS, process ([\\d]+)");
 
-    private static final Pattern STARTING_MAS_MESSAGE_PATTERN = Pattern.compile("Executando SMA, processo ([\\d]+)");
+    private static final Pattern STARTING_MAS_MESSAGE_PATTERN = Pattern.compile("Executing the MAS, process ([\\d]+)");
 
     @Override
     protected ResponseEntity put(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
@@ -45,7 +45,7 @@ public class MasController extends ApiController {
         } else if (action.equals("stop")) {
             String stopResponse = executor.execute(ReasoningScriptManager.EMBEDDED_MAS_STOP, false);
             if (stopResponse.isEmpty() || !STOPING_MAS_MESSAGE_PATTERN.matcher(stopResponse).find()) {
-                return ResponseEntity.get().status(HttpServletResponse.SC_ACCEPTED).message("SMA has now been terminated");
+                return ResponseEntity.get().status(HttpServletResponse.SC_ACCEPTED).message("The MAS has now been terminated!");
             } else {
                 return ResponseEntity.get().status(HttpServletResponse.SC_OK).message(stopResponse);
             }
