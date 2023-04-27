@@ -1,4 +1,4 @@
 {
   "firmware": "void setup() {\n\n}\n\nvoid loop(){\n\n}",
-  "agent": "/* Initial beliefs and rules */\n\n/* Initial goals */\n\n!start.\n\n/* Plans */\n\n+!start <- .print(\"Hello world!\")."
+  "agent": "/* Initial beliefs and rules */\n\n/* Initial goals */\n\n!start.\n\n/* Plans */\n\n+!start <- .print(\"Never Send A Human To Do A Machine's Job!\")."
 }
