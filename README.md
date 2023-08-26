@@ -6,7 +6,7 @@ _Embedded MAS development requires knowledge in different areas, such as agent-o
 ### MS Windows
 Follow the two steps described below:
 1. Download and install the [Oracle Virtual Box Virtualizer](https://www.virtualbox.org/)
-2. Download and import the [ChonIDE Virtual Machine](https://sourceforge.net/projects/chonide/files/chonIDEvm-beta.ova/download)
+2. Download and import the [ChonIDE Virtual Machine](https://chonide.sf.net)
 
 ### Debian 11 or Ubuntu 22.04
 
