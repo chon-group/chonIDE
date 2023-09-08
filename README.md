@@ -1,6 +1,9 @@
 # Cognitive Hardware on Network - IDE (ChonIDE)
 _Embedded MAS development requires knowledge in different areas, such as agent-oriented programming, object-oriented programming, low-level programming, and basic electronics concepts. The literature has a consolidated Embedded MAS development architecture divided into four layers: Reasoning, Serial, Firmware, and Hardware. However, one of the main difficulties that MAS designers face is the need to use and configure different Integrated Development Environments (IDE) and make several integrations to embed the MAS. Even using all these technologies, embedding and monitoring the Embedded MAS is done using physical wired connections, making them limited and impracticable depending on the application. Therefore, this work aims to present an IDE to develop Embedded MAS that centralizes the entire development in a single IDE with all required integrations and configurations done. Moreover, the embedding and monitoring MAS of the IDE are done remotely without physical wired connections._
 
+![Captura de tela de 2023-09-08 15-14-16](https://github.com/chon-group/chonIDE/assets/32855001/28799173-245a-4ce0-8ace-0cd2c06733d2)
+
+
 ## How to install?
 
 ### MS Windows
