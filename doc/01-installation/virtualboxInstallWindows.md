@@ -17,7 +17,3 @@
 ![ok](https://github.com/chon-group/chonIDE/assets/32855001/c99b14b0-08e6-4062-8519-b24cca7a0736)
 
 
-### 1) Download of Virtual Box
-Access the [Download Page of Virtual Box](https://www.virtualbox.org/wiki/Downloads) and download the Virtual Box Instalator.
-
-![site](https://github.com/chon-group/chonIDE/assets/32855001/ff6279b9-1c4d-4da0-82c0-cfc04f637720)
