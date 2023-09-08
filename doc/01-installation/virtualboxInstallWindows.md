@@ -1,19 +1,25 @@
-# Installing the Virtual Box in Windows
+### 1) Download of Virtual Box
+Access the [Download Page of Virtual Box](https://www.virtualbox.org/wiki/Downloads) and download the Virtual Box Instalator.
 
-### 1) Pre-requiriments
-  The Virtual Box need the [Visual C++](https://learn.microsoft.com/pt-br/cpp/windows/latest-supported-vc-redist?view=msvc-170).
-![visual](https://github.com/chon-group/chonIDE/assets/32855001/92d6d48d-9fb1-4830-bac8-17e63736edf1)
+![site](https://github.com/chon-group/chonIDE/assets/32855001/ff6279b9-1c4d-4da0-82c0-cfc04f637720)
 
-## Choose your version
-![x64](https://github.com/chon-group/chonIDE/assets/32855001/4a8b7b08-64be-47a1-9fe5-4b1350ff8c4a)
+### file
+![fileok](https://github.com/chon-group/chonIDE/assets/32855001/68b8af9b-dbde-49ae-b074-706236f46851)
 
-### Proceed with the installation
-![file](https://github.com/chon-group/chonIDE/assets/32855001/4e9177a4-fac6-4af0-a10f-9792fba5efcc)
 
-![admin](https://github.com/chon-group/chonIDE/assets/32855001/806a0775-b8c2-4d32-9f8b-343e8d7b84b1)
+![admin2](https://github.com/chon-group/chonIDE/assets/32855001/81910e63-6e4a-4224-8309-788da48b9e5c)
 
-![install](https://github.com/chon-group/chonIDE/assets/32855001/77858a9a-9867-4657-9042-d12223177d1b)
+![next1](https://github.com/chon-group/chonIDE/assets/32855001/e559ba54-387f-4ff3-9e01-5c3349792f53)
 
-![ok](https://github.com/chon-group/chonIDE/assets/32855001/c99b14b0-08e6-4062-8519-b24cca7a0736)
+![next2](https://github.com/chon-group/chonIDE/assets/32855001/6284ed7a-4372-470c-ab6b-7004fc1a9e3a)
+
+![next3](https://github.com/chon-group/chonIDE/assets/32855001/e3ca4478-19b8-48b8-b3bb-d14c100816b8)
+
+![next4](https://github.com/chon-group/chonIDE/assets/32855001/3e732c7a-88b1-42ad-80da-a675bc7d9103)
+
+![next5](https://github.com/chon-group/chonIDE/assets/32855001/1c751027-07a0-4162-be52-7cade079d177)
+
+![finish](https://github.com/chon-group/chonIDE/assets/32855001/c5b5b058-5e7c-476b-b43d-9c9990279382)
+
 
 
