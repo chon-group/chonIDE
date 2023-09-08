@@ -5,17 +5,24 @@ _Embedded MAS development requires knowledge in different areas, such as agent-o
 
 ### MS Windows
 Follow the two steps described below:
-1. Download and install the [Oracle Virtual Box Virtualizer](https://www.virtualbox.org/)
-2. Download and import the [ChonIDE Virtual Machine](https://chonide.sf.net)
+1. Install the Oracle Virtual Box Virtualizer [Available at](https://www.virtualbox.org/)
+2. Download and Import the ChonIDE Virtual Machine [Available at](https://chonide.sf.net)
 
 ### Debian 11 or Ubuntu 22.04
 
-In a terminal, execute the commands below:
+In a terminal, execute the two steps described below:
+
+i) Include the ChonOS repository address into APT Sources List 
+
 ```sh
- echo "deb [trusted=yes] http://packages.chon.group/ chonos main" | sudo tee /etc/apt/sources.list.d/chonos.list
- sudo apt update; sudo apt install openjdk-17-jre chonide 
+ echo "deb [trusted=yes] http://packages.chon.group/ chonos main" | sudo tee /etc/apt/sources.list.d/chonos.list 
 ```
 
+ii) Execute the APT Update and Install the packages
+
+```sh
+ sudo apt update; sudo apt install openjdk-17-jre chonide 
+```
 ## Publications
 + PAAMS 2023 (Full paper) - [An IDE to Support the Development of Embedded Multi-Agent Systems](https://www.researchgate.net/publication/372282731_An_IDE_to_Support_the_Development_of_Embedded_Multi-Agent_Systems)
   
