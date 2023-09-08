@@ -11,7 +11,7 @@ Follow the two steps described below:
 1. Install the Oracle Virtual Box Virtualizer [Available at](https://www.virtualbox.org/)
 2. Download and Import the ChonIDE Virtual Machine [Available at](https://chonide.sf.net)
 
-+ ### [Debian 11 or Ubuntu 22.04 installation instructions](https://github.com/chon-group/chonIDE/blob/main/doc/installation/debian-and-Ubuntu.md) 
++ ### [Debian 11 or Ubuntu 22.04 installation instructions](https://github.com/chon-group/chonIDE/blob/main/doc/01-installation/debian-and-Ubuntu.md) 
 
 ## Publications
 + PAAMS 2023 (Full paper) - [An IDE to Support the Development of Embedded Multi-Agent Systems](https://www.researchgate.net/publication/372282731_An_IDE_to_Support_the_Development_of_Embedded_Multi-Agent_Systems)
