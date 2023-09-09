@@ -6,11 +6,7 @@ _Embedded MAS development requires knowledge in different areas, such as agent-o
 
 ## How to install?
 
-### MS Windows
-Follow the two steps described below:
-1. Install the Oracle Virtual Box Virtualizer [Available at](https://www.virtualbox.org/)
-2. Download and Import the ChonIDE Virtual Machine [Available at](https://chonide.sf.net)
-
++ ### [Microsoft Windows](https://github.com/chon-group/chonIDE/blob/main/doc/01-installation/windows.md)
 + ### [Debian 11 or Ubuntu 22.04 installation instructions](https://github.com/chon-group/chonIDE/blob/main/doc/01-installation/debian-and-Ubuntu.md) 
 
 ## Publications
