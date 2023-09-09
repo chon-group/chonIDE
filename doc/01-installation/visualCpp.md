@@ -16,4 +16,5 @@
 
 ![ok](https://github.com/chon-group/chonIDE/assets/32855001/c99b14b0-08e6-4062-8519-b24cca7a0736)
 
-
+### 2) Installation of Virtual Box
+See the [tutorial](https://github.com/chon-group/chonIDE/blob/main/doc/01-installation/virtualboxInstallWindows.md)
