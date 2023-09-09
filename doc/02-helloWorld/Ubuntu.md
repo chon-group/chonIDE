@@ -1,10 +1,5 @@
 # Hello World!
 
-### i) Executing the ChonIDE
-A ChonIDE conta com alguns projetos de demonstração que facilitam o teste de funcionamento. Para tal, execute a ChonIDE. No Ubuntu, clique em mostrar aplicativos (1), na barra de pesquisa (2), digite chonide, por fim clique no ícone (3) para executar. Caso esteja utilizando a ChonIDE no virtual box, o ícone encontra-se na área de trabalho.
-
-![image3](https://github.com/chon-group/chonIDE/assets/32855001/6cf8a1c0-7cab-4068-94ad-7c140e69bc13)
-
 ### ii) Logging into ChonIDE 
 Uma vez que a ChonIDE é executada como uma página web, para utilizá-la, é necessário realizar a autenticação na página inicial. Informe um nome de usuário válido no computador (1) e a sua respectiva senha (2). Após isso, clique em entrar (3). 
 ![login](https://github.com/chon-group/chonIDE/assets/32855001/7a699246-ed8a-46bd-b5ca-c76e46467465)
