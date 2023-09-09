@@ -32,7 +32,12 @@ In a terminal, execute the steps described below:
 ```
 ![Captura de tela de 2023-09-08 16-04-07](https://github.com/chon-group/chonIDE/assets/32855001/2ecbfe1b-2827-49a9-9081-b682b0a9b415)
 
-### 5) Execute the [Hello Agent!](https://github.com/chon-group/chonIDE/blob/main/doc/02-helloWorld/Ubuntu.md)
+### 5) Executing the ChonIDE
+A ChonIDE conta com alguns projetos de demonstração que facilitam o teste de funcionamento. Para tal, execute a ChonIDE. No Ubuntu, clique em mostrar aplicativos (1), na barra de pesquisa (2), digite chonide, por fim clique no ícone (3) para executar. Caso esteja utilizando a ChonIDE no virtual box, o ícone encontra-se na área de trabalho.
+
+![image3](https://github.com/chon-group/chonIDE/assets/32855001/6cf8a1c0-7cab-4068-94ad-7c140e69bc13)
+
+### 6) Execute the [Hello Agent!](https://github.com/chon-group/chonIDE/blob/main/doc/02-helloWorld/Ubuntu.md)
 The ChonIDE was installed in your system. 
 
 Now, see the instructions of the [Hello Agent!](https://github.com/chon-group/chonIDE/blob/main/doc/02-helloWorld/Ubuntu.md) test page to try your ChonIDE.
