@@ -11,3 +11,6 @@
 ![0000](https://github.com/chon-group/chonIDE/assets/32855001/930703cc-e84e-4c46-b6e4-a71375ae1540)
 
 ![0004](https://github.com/chon-group/chonIDE/assets/32855001/a8093ffb-8703-42bc-8c39-ea4a4eec2a28)
+
+## 2) Execute the Hello Agent Example
+See the [Hello Agent Example](https://github.com/chon-group/chonIDE/blob/main/doc/02-helloWorld/Ubuntu.md)
