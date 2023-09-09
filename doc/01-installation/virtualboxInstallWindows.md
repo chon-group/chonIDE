@@ -17,12 +17,11 @@ Access the [Download Page of Virtual Box](https://www.virtualbox.org/wiki/Downlo
 
 ![next4](https://github.com/chon-group/chonIDE/assets/32855001/3e732c7a-88b1-42ad-80da-a675bc7d9103)
 
-### 2) Install the Extension Pack
-See the [tutorial](https://github.com/chon-group/chonIDE/blob/main/doc/01-installation/virtualBoxExtensionPack.md)
-
 ![next5](https://github.com/chon-group/chonIDE/assets/32855001/1c751027-07a0-4162-be52-7cade079d177)
 
 ![finish](https://github.com/chon-group/chonIDE/assets/32855001/c5b5b058-5e7c-476b-b43d-9c9990279382)
 
 
+### 2) Install the Extension Pack
+See the [tutorial](https://github.com/chon-group/chonIDE/blob/main/doc/01-installation/virtualBoxExtensionPack.md)
 
