@@ -10,3 +10,6 @@
 ![104](https://github.com/chon-group/chonIDE/assets/32855001/5b2bc237-3004-4135-b11a-d783f1b4dccc)
 
 ![105](https://github.com/chon-group/chonIDE/assets/32855001/ff0f098d-28b9-44d6-a3d2-07c6094fd181)
+
+### 2) Import the ChonIDE Virtual Machine
+See the [tutorial](https://github.com/chon-group/chonIDE/blob/main/doc/01-installation/importingChonIDEvm.md)
