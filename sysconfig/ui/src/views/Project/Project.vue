@@ -431,7 +431,7 @@ export default {
         }
       }, this.project).then((response) => {
         this.$emit(AppEvent.MESSAGE, {
-          content: response.data.message,
+          content: response.data.data.message,
           type: MessageType.SUCCESS
         });
       }).finally(() => {

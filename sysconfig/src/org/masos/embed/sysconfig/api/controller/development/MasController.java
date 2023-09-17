@@ -4,6 +4,7 @@ import org.masos.embed.sysconfig.api.authentication.AuthenticatedUser;
 import org.masos.embed.sysconfig.api.controller.ApiController;
 import org.masos.embed.sysconfig.api.controller.JsonManager;
 import org.masos.embed.sysconfig.api.controller.ResponseEntity;
+import org.masos.embed.sysconfig.api.dto.StartMasResponse;
 import org.masos.embed.sysconfig.domain.file.content.MasContentManager;
 import org.masos.embed.sysconfig.domain.file.model.Mas;
 import org.masos.embed.sysconfig.domain.file.model.Project;
@@ -13,15 +14,12 @@ import org.masos.embed.sysconfig.domain.script.ReasoningScriptManager;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @WebServlet("/api/mas")
 public class MasController extends ApiController {
 
     private static final Pattern STOPING_MAS_MESSAGE_PATTERN = Pattern.compile("Terminating the MAS, process ([\\d]+)");
-
-    private static final Pattern STARTING_MAS_MESSAGE_PATTERN = Pattern.compile("Executing the MAS, process ([\\d]+)");
 
     @Override
     protected ResponseEntity put(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
@@ -35,17 +33,15 @@ public class MasController extends ApiController {
             // Certificando a finalização do SMA anterior.
             executor.execute(ReasoningScriptManager.EMBEDDED_MAS_STOP, false);
 
-            String startMessage = executor.execute(ReasoningScriptManager.EMBEDDED_MAS_START, false);
-            Matcher matcher = STARTING_MAS_MESSAGE_PATTERN.matcher(startMessage);
-            if (matcher.find()) {
-                startMessage = matcher.group(0);
-            }
             // Iniciando SMA.
-            return ResponseEntity.get().status(HttpServletResponse.SC_OK).message(startMessage);
+            return ResponseEntity.get().status(HttpServletResponse.SC_OK).data(JsonManager.get()
+                    .fromJson(executor.execute(ReasoningScriptManager.EMBEDDED_MAS_START, false),
+                            StartMasResponse.class));
         } else if (action.equals("stop")) {
             String stopResponse = executor.execute(ReasoningScriptManager.EMBEDDED_MAS_STOP, false);
             if (stopResponse.isEmpty() || !STOPING_MAS_MESSAGE_PATTERN.matcher(stopResponse).find()) {
-                return ResponseEntity.get().status(HttpServletResponse.SC_ACCEPTED).message("The MAS has now been terminated!");
+                return ResponseEntity.get().status(HttpServletResponse.SC_ACCEPTED).message(
+                        "The MAS has now been terminated!");
             } else {
                 return ResponseEntity.get().status(HttpServletResponse.SC_OK).message(stopResponse);
             }
