@@ -116,9 +116,7 @@ export default {
             if (response.data.data == true) {
               router.push(Routes.DOMAIN);
             } else {
-              API.get(EndPoints.CONFIGURATION).then((response) => {
-                console.log(response.data.data)
-              });
+              API.get(EndPoints.CONFIGURATION);
               router.push(Routes.HOME);
             }
           });

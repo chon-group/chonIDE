@@ -1,8 +1,10 @@
 package org.masos.embed.sysconfig.api.controller;
 
 import org.masos.embed.sysconfig.api.authentication.AuthenticatedUser;
+import org.masos.embed.sysconfig.api.dto.ReturnedFile;
 import org.masos.embed.sysconfig.api.http.HttpContent;
 import org.masos.embed.sysconfig.api.http.HttpEncoding;
+import org.masos.embed.sysconfig.api.util.ResponseUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -12,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -62,9 +63,7 @@ public abstract class ApiController extends HttpServlet {
         }
         try {
             request.getParts().stream().forEach(part -> parameters.put(part.getName(), part));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ServletException e) {
+        } catch (IOException | ServletException e) {
             throw new RuntimeException(e);
         }
         return parameters;
@@ -85,18 +84,27 @@ public abstract class ApiController extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
-        resp.setCharacterEncoding(HttpEncoding.UTF_8.getType());
-        resp.setHeader("Content-Type", HttpContent.JSON.getType() + "; charset=" + HttpEncoding.ISO_8859_1.getType());
-        resp.setStatus(responseEntity.getStatus());
         responseEntity.date(new Date(System.currentTimeMillis()));
+        Object data = responseEntity.getData();
+        resp.setStatus(responseEntity.getStatus());
+        if (data instanceof ReturnedFile) {
+            ReturnedFile masReturnedFile = ((ReturnedFile) data);
+
+            resp.setContentType("application/octet-stream");
+            resp.setHeader("Content-disposition",
+                    String.format("attachment; filename=\"%s.zip\"", masReturnedFile.getFileName()));
+
+            ResponseUtil.writeBinary(resp, masReturnedFile.getInputStream());
+        } else {
+            resp.setCharacterEncoding(HttpEncoding.UTF_8.getType());
+            resp.setHeader("Content-Type",
+                    HttpContent.JSON.getType() + "; charset=" + HttpEncoding.ISO_8859_1.getType());
+            ResponseUtil.writeText(resp, JsonManager.get().toJson(responseEntity));
+        }
         try {
-            PrintWriter writer = resp.getWriter();
-            String jsonData = JsonManager.get().toJson(responseEntity);
-            writer.write(jsonData);
-            writer.flush();
-            writer.close();
+            resp.getOutputStream().close();
         } catch (IOException e) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            throw new RuntimeException(e);
         }
     }
 

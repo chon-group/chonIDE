@@ -9,12 +9,14 @@ import org.masos.embed.sysconfig.domain.file.model.Project;
 import org.masos.embed.sysconfig.domain.file.model.ProjectsMapping;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.nio.file.Files.*;
@@ -74,7 +76,7 @@ public class ProjectsContentManager {
         try {
             write(projectFile, JsonManager.get().toJson(project).getBytes());
             ProjectsMapping projectsMapping = getProjectMapping();
-            Long id = Long.valueOf(projectsMapping.getProjects().size() + 1);
+            long id = projectsMapping.getNextId();
             projectsMapping.getProjects().put(id, project.getName());
             saveProjectMapping(projectsMapping);
             project.setId(id);
@@ -82,6 +84,10 @@ public class ProjectsContentManager {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static boolean isProjectNameInvalid(String projectName) {
+        return !Pattern.compile("^([a-zA-z]+)$").matcher(projectName).find();
     }
 
     /**
@@ -140,6 +146,30 @@ public class ProjectsContentManager {
         Path projectFile = projectFolder.resolve(PROJECT_FILE);
         try {
             return JsonManager.get().fromJson(lines(projectFile).collect(Collectors.joining()), Project.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Retorna um projeto a partir do nome.
+     *
+     * @param projectId Id do projeto.
+     * @return Projeto.
+     */
+    public static InputStream getFile(long projectId) {
+        ProjectsMapping projectsMapping = getProjectMapping();
+        String projectName = projectsMapping.getProjects().get(projectId);
+        if (projectName == null) {
+            throw new ProjectDoesNotExistException();
+        }
+        Path projectFolder = PROJECTS_DIRECTORY_PATH.resolve(projectName);
+        if (!exists(projectFolder)) {
+            throw new ProjectDoesNotExistException();
+        }
+        Path projectFile = projectFolder.resolve(PROJECT_FILE);
+        try {
+            return Files.newInputStream(projectFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

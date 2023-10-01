@@ -10,6 +10,10 @@ import org.masos.embed.sysconfig.domain.model.SSHExecutor;
 import org.masos.embed.sysconfig.domain.script.ReasoningScriptManager;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,9 +29,25 @@ public class MasContentManager {
 
     private static final String MAS_DIRECTORY_PATH = FileConstants.ROOT_DIRECTORY + MAS_DIRECTORY_NAME;
 
+    public static InputStream getMas(Mas mas, Executor executor) {
+        buildMas(mas, executor);
+
+        File masDirectory = new File(MAS_DIRECTORY_PATH);
+        File[] files = masDirectory.listFiles();
+        if (files == null || files.length == 0) {
+            return null;
+        }
+        File masBuild = FileUtils.zipFilesByFolder(masDirectory);
+        try {
+            return Files.newInputStream(masBuild.toPath());
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
     public static void buildMas(Mas mas, Executor executor) {
         File masDirectory = new File(MAS_DIRECTORY_PATH);
-        if(masDirectory.exists()){
+        if (masDirectory.exists()) {
             FileUtils.deleteFolder(masDirectory);
         }
         FileUtils.createFolder(masDirectory);

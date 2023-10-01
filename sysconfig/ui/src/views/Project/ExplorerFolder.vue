@@ -10,10 +10,11 @@
         </div>
       </div>
       <button class="coder__explorer__action-button add" ref="dotsButton" v-if="hasAdd" @click="addFile"></button>
+      <button class="coder__explorer__action-button download" v-if="hasDownload" @click="download"></button>
       <Toggle click-position type="contextmenu" v-if="hasAdd || hasRefresh">
         <template v-slot:options>
           <button v-if="hasAdd" @click="addFile">{{ addMessage }}</button>
-          <button v-if="hasRefresh" @click="refresh">Atualizar</button>
+          <button v-if="hasRefresh" @click="refresh">Refresh</button>
         </template>
       </Toggle>
     </div>
@@ -43,7 +44,8 @@ export default {
     hasRefresh: Boolean,
     addMessage: {
       default: "Novo arquivo"
-    }
+    },
+    hasDownload: Boolean
   },
   data() {
     return {
@@ -85,7 +87,10 @@ export default {
     },
     refresh() {
       this.$emit("refresh");
-    }
+    },
+      download() {
+        this.$emit("download");
+      }
   }
 }
 </script>
@@ -109,7 +114,14 @@ export default {
   background-size: 44%;
 }
 
-.coder__explorer__action-button.add:hover {
+.coder__explorer__action-button.download {
+    background-image: url("@/assets/media/icon/download.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 42%;
+}
+
+.coder__explorer__action-button.add:hover, .coder__explorer__action-button.download:hover {
   background-color: var(--pallete-color-black-4);
 }
 

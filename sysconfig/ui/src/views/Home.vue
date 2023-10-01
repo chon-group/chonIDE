@@ -110,6 +110,7 @@
                   </Popup>
                 </button>
                 <button @click="selectCreatedProject(index)">Rename</button>
+                <button @click="downloadProject(project)">Download</button>
               </template>
             </Toggle>
           </button>
@@ -141,20 +142,25 @@
               </Popup>
             </button>
             <button @click="selectCreatedProject(index)">Rename</button>
+            <button @click="downloadProject(project)">Download</button>
           </template>
         </Toggle>
       </div>
       <div class="project">
         <div class="project__image" ref="letterNewProject" @click="selectNewProject">+</div>
-        <input class="project__name" v-model="newProjectName" readonly="true"
+        <input class="project__name" v-model="createProjectName" readonly="true"
                ref="inputNewProject" spellcheck="false"/>
       </div>
+        <div class="project">
+            <div class="project__image" @click="importProject">+</div>
+            <span class="project__name">Import project</span>
+        </div>
     </div>
   </div>
 </template>
 
 <script>
-import {API, EndPoints} from "@/domain/API";
+import {API, EndPoints, Headers} from "@/domain/API";
 import router, {Routes} from "@/router";
 import Util from "@/domain/Util";
 import {AppEvent, Key, MessageType} from "@/domain/Enums";
@@ -171,14 +177,14 @@ export default {
   data() {
     return {
       projects: [],
-      newProjectName: "New project",
+      createProjectName: "New project",
       configuration: {}
     }
   },
   watch: {
-    newProjectName(newValue) {
-      if (newValue != "New project") {
-        this.newProjectName = Util.mantainJustLetters(newValue);
+    createProjectName(newValue) {
+      if (newValue !== "New project") {
+        this.createProjectName = Util.mantainJustLetters(newValue);
       }
     }
   },
@@ -218,16 +224,43 @@ export default {
     this.$refs.inputNewProject.onkeyup = (event) => {
       if (event.code == Key.ENTER) {
         this.createNewProject();
-      } else if (this.newProjectName.length == 0) {
+      } else if (this.createProjectName.length == 0) {
         this.$refs.letterNewProject.innerText = "+";
       } else {
-        this.$refs.letterNewProject.innerText = this.newProjectName[0].toUpperCase();
+        this.$refs.letterNewProject.innerText = this.createProjectName[0].toUpperCase();
       }
     }
   },
   methods: {
+    importProject() {
+      let projectInput = document.createElement('input');
+      projectInput.type = 'file';
+      projectInput.click();
+      projectInput.onchange = (event) => {
+          let files = event.target.files;
+          if (files.length === 0) {
+              this.$emit(AppEvent.MESSAGE, {content: "No file selected", type: MessageType.WARNING});
+              return;
+          }
+          let projectFile = files[0];
+          API.post(EndPoints.PROJECTS_IMPORT, Headers.MULTIPART_CONFIG, {file: projectFile}).then((response) => {
+              if (response.status === 201) {
+                  this.projects.push(response.data.data);
+                  this.$emit(AppEvent.MESSAGE, {
+                      content: response.data.message,
+                      type: MessageType.SUCCESS
+                  });
+              }
+          }).catch((error) => {
+              this.$emit(AppEvent.MESSAGE, {
+                  content: error.response.data.message,
+                  type: MessageType.ERROR
+              });
+          });
+      }
+    },
     setDefaultNewProjet() {
-      this.newProjectName = "New project";
+      this.createProjectName = "New project";
       this.$refs.letterNewProject.innerText = "+";
       this.$refs.inputNewProject.readOnly = true;
       this.$refs.inputNewProject.blur();
@@ -238,7 +271,7 @@ export default {
     selectNewProject() {
       this.$refs.inputNewProject.readOnly = false;
       this.$refs.inputNewProject.focus();
-      this.newProjectName = "";
+      this.createProjectName = "";
     },
     renamingProject(project, event, index) {
       if (project.name.length == 0) {
@@ -260,6 +293,27 @@ export default {
         inputProjectElement.readOnly = true;
       }
     },
+    downloadProject(project) {
+        API.getWithoutLocalStorage(EndPoints.PROJECTS, {params: {projectId: project.id, getType: 2}, responseType:
+                'blob'})
+            .then((response) => {
+            if (response.status === 200) {
+                const filename = project.name + ".json";
+                const blob = new Blob([response.data]);
+
+                const url = window.URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+
+                window.URL.revokeObjectURL(url);
+            }
+        })
+    },
     deleteProject(projectId, projectIndex) {
       API.delete(EndPoints.PROJECTS, {params: {projectId: projectId}}).then((response) => {
         if (response.data.status == 200) {
@@ -268,15 +322,15 @@ export default {
       });
     },
     createNewProject() {
-      if (this.newProjectName.length == 0) {
+      if (this.createProjectName.length == 0) {
         this.$emit("message", {type: MessageType.WARNING, content: "Project name cannot be empty"});
         return;
       }
-      if (this.projects.filter((project) => project.name == this.newProjectName).length > 0) {
+      if (this.projects.filter((project) => project.name == this.createProjectName).length > 0) {
         this.$emit("message", {type: MessageType.WARNING, content: "A project with that name already exists"});
         return;
       }
-      API.post(EndPoints.PROJECTS, {params: {projectName: this.newProjectName}}).then((response) => {
+      API.post(EndPoints.PROJECTS, {params: {projectName: this.createProjectName}}).then((response) => {
         if (response.data.status == 200) {
           this.projects.push(response.data.data);
           this.setDefaultNewProjet();
@@ -340,7 +394,7 @@ export default {
 }
 
 .project__image-container:hover > .project__options {
-  opacity: 50%;
+  opacity: 100%;
 }
 
 .project__image-container:focus-within {
@@ -355,20 +409,21 @@ export default {
 }
 
 .project__options{
-  opacity: 0%;
+  opacity: 0;
   background-image: url("@/assets/media/icon/vertical-dots.svg");
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 5%;
-  height: 24px;
+  background-size: 7%;
+  height: 25px;
   aspect-ratio: 1/1;
-  top: 2px;
-  right: 2px;
+  top: 0;
+  right: -5px;
+  transform: translateX(100%);
   transition: opacity 0.1s;
   @apply rounded-md border-none bg-transparent cursor-pointer absolute;
 }
 
-.project__options:is(:hover, :focus) {
-  opacity: 100% !important;
+.project__options:is(:hover) {
+  opacity: 100%;
 }
 </style>

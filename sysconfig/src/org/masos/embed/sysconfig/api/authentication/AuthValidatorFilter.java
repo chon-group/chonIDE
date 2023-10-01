@@ -4,13 +4,13 @@ import org.masos.embed.sysconfig.api.controller.JsonManager;
 import org.masos.embed.sysconfig.api.controller.ResponseEntity;
 import org.masos.embed.sysconfig.api.http.HttpContent;
 import org.masos.embed.sysconfig.api.http.HttpEncoding;
+import org.masos.embed.sysconfig.api.util.ResponseUtil;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,35 +46,31 @@ public class AuthValidatorFilter implements Filter {
         resp.setCharacterEncoding(HttpEncoding.ISO_8859_1.getType());
         resp.setHeader("Content-Type", HttpContent.JSON.getType() + "; charset=" + HttpEncoding.ISO_8859_1.getType());
 
-        PrintWriter writer = resp.getWriter();
         if (headerValue == null || headerValue.isEmpty()) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            responseEntity.status(HttpServletResponse.SC_BAD_REQUEST).message(
-                    "Empty or invalid authentication header.").date(date);
-            writer.write(JsonManager.get().toJson(responseEntity));
-            writer.flush();
-            writer.close();
+            responseEntity.status(HttpServletResponse.SC_BAD_REQUEST).message("Empty or invalid authentication header.")
+                    .date(date);
+            ResponseUtil.writeText(resp, JsonManager.get().toJson(responseEntity));
+            resp.getOutputStream().close();
             return;
         }
         Matcher headerMatcher = AUTHORIZATION_HEADER_VALUE_PATTERN.matcher(headerValue);
         if (!headerMatcher.find()) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            responseEntity.status(HttpServletResponse.SC_BAD_REQUEST).message(
-                    "Empty or invalid authentication header.").date(date);
-            writer.write(JsonManager.get().toJson(responseEntity));
-            writer.flush();
-            writer.close();
+            responseEntity.status(HttpServletResponse.SC_BAD_REQUEST).message("Empty or invalid authentication header.")
+                    .date(date);
+            ResponseUtil.writeText(resp, JsonManager.get().toJson(responseEntity));
+            resp.getOutputStream().close();
             return;
         }
         String jwt = headerMatcher.group(1);
         AuthenticatedUser authenticatedUser = SecurityContextHolder.get().getAuthenticatedUsersByToken().get(jwt);
         if (authenticatedUser == null) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            responseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).message("Unable to validate token\n.")
-                    .date(date);
-            writer.write(JsonManager.get().toJson(responseEntity));
-            writer.flush();
-            writer.close();
+            responseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).message("Unable to validate token\n.").date(
+                    date);
+            ResponseUtil.writeText(resp, JsonManager.get().toJson(responseEntity));
+            resp.getOutputStream().close();
             return;
         }
         long expirationTime = authenticatedUser.getExpirationDate().getTime();
@@ -83,9 +79,8 @@ public class AuthValidatorFilter implements Filter {
             if (expirationTime - LAST_REQUISITION_SAFE_TIME <= lastRequisitionTime) {
                 resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 responseEntity.status(HttpServletResponse.SC_FORBIDDEN).message("Session ended.").date(date);
-                writer.write(JsonManager.get().toJson(responseEntity));
-                writer.flush();
-                writer.close();
+                ResponseUtil.writeText(resp, JsonManager.get().toJson(responseEntity));
+                resp.getOutputStream().close();
                 SecurityContextHolder.get().getAuthenticatedUsersByToken().remove(jwt);
                 return;
             }

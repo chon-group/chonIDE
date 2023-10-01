@@ -53,6 +53,10 @@ export class API {
         });
     }
 
+    public static getWithoutLocalStorage(url: string, config = {}) {
+        return this.validate(axios.get(url, config));
+    }
+
     public static post(url: string, config = {}, data = {}) {
         return this.validate(axios.post(url, data, config));
     }
@@ -70,6 +74,7 @@ export class API {
             if (error.response.status == 401) {
                 router.push(Routes.LOGIN);
             }
+            throw error;
         });
     }
 
@@ -82,6 +87,7 @@ const API_URL = URL + API_PREFIX;
 export class EndPoints {
     public static AUTH = URL + "/auth";
     public static PROJECTS = API_URL + "/projects";
+    public static PROJECTS_IMPORT = API_URL + "/projects/import";
     public static DOMAINS = API_URL + "/domains";
     public static USERS = API_URL + "/users";
     public static USERS_FIRST_ACCESS = API_URL + "/users/first-access";

@@ -11,6 +11,7 @@ public class ResponseEntity {
     private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     /** Objeto de resposta. */
+    @Getter
     private Object data;
 
     /** Status da requisição. */

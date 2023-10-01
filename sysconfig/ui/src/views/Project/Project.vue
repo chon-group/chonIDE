@@ -60,7 +60,7 @@
         </div>
         <div class="project__explorer__main">
           <ExplorerFolder v-if="configuration.reasoningLayer" name="Multi-Agent System" :has-add="false" icon="sma.svg"
-                          icon-ratio="13px">
+                          icon-ratio="13px" :has-download="true" @download="downloadMas">
             <template v-slot:content>
               <ExplorerFolder name="Agents" @add="addAgentFileAction" add-message="New agent" icon="agents.svg"
                               icon-ratio="15px">
@@ -260,7 +260,7 @@ export default {
     API.loadToken();
   },
   mounted() {
-    API.get(EndPoints.PROJECTS, true, {params: {projectId: this.$route.params.id}}).then((response) => {
+    API.get(EndPoints.PROJECTS, true, {params: {projectId: this.$route.params.id, getType: 1}}).then((response) => {
       if (response.data.status == 200) {
         this.project = response.data.data;
         this.project.id = this.$route.params.id;
@@ -420,6 +420,28 @@ export default {
         }, 100);
       });
     },
+      downloadMas() {
+          if (this.projectIsInvalid()) {
+              return;
+          }
+          API.post(EndPoints.MAS,{responseType: 'blob'}, this.project).then((response) => {
+              if (response.status === 200) {
+                  const filename = this.project.name + ".zip";
+                  const blob = new Blob([response.data]);
+
+                  const url = window.URL.createObjectURL(blob);
+
+                  const a = document.createElement('a');
+                  a.style.display = 'none';
+                  a.href = url;
+                  a.download = filename;
+                  document.body.appendChild(a);
+                  a.click();
+
+                  window.URL.revokeObjectURL(url);
+              }
+          });
+      },
     startMas() {
       if (this.projectIsInvalid()) {
         return;
