@@ -115,7 +115,6 @@ public class ProjectsContentManager {
         try {
             FileUtils.write(projectFile, JsonManager.get().toJson(project));
             if (!projectName.equals(project.getName())) {
-                projects.remove(projectName);
                 projects.put(project.getId(), project.getName());
                 saveProjectMapping(projectsMapping);
 
