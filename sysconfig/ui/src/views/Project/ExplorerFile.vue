@@ -8,13 +8,13 @@
         <input type="text" class="coder__explorer__item__name w-full" :value="file.name" @change="editFile"
                ref="filename" readonly spellcheck="false"/>
       </div>
-      <button class="coder__explorer__action-button dots" ref="dotsButton" tabindex="0">
+      <button class="coder__explorer__action-button dots" ref="dotsButton" tabindex="0" v-if="canRename || canDelete">
         <Toggle parent-position>
           <template v-slot:options>
             <button v-if="canRename" @click="editNameAction">
               Rename
             </button>
-            <button class="severe">
+            <button class="severe" v-if="canDelete">
               Delete
               <Popup :title="`Delete ${file.name}`" is-children ref="dots-delete-file">
                 <template v-slot:content>
@@ -38,12 +38,12 @@
         </Toggle>
       </button>
     </div>
-    <Toggle type="contextmenu" click-position>
+    <Toggle type="contextmenu" click-position v-if="canRename || canDelete">
       <template v-slot:options>
         <button v-if="canRename" @click="editNameAction">
           Rename
         </button>
-        <button class="severe">
+        <button class="severe" v-if="canDelete">
           Delete
           <Popup :title="`Delete ${file.name}`" is-children ref="delete-file">
             <template v-slot:content>
@@ -91,6 +91,10 @@ export default {
       type: Boolean,
       default: true
     },
+    canDelete: {
+      type: Boolean,
+      default: true
+    },
     selected: Boolean
   },
   mounted() {
@@ -106,10 +110,14 @@ export default {
       this.finishEditNameAction();
     }
 
-    useRipple(this.$refs.dotsButton);
+    if (this.$refs.dotsButton != null) {
+        useRipple(this.$refs.dotsButton);
+    }
   },
   beforeUnmount() {
-    removeRipple(this.$refs.dotsButton);
+    if (this.$refs.dotsButton != null) {
+        removeRipple(this.$refs.dotsButton);
+    }
   },
   methods: {
     deleteFile() {

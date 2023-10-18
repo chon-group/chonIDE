@@ -8,4 +8,7 @@ public class FileConstants {
 
     public static final String ROOT_DIRECTORY = File.separator + "root" + File.separator;
 
+    public static final String ARDUINO_LIB_DIRECTORIES =
+            File.separator + "root" + File.separator + "Arduino" + File.separator + "libraries";
+
 }

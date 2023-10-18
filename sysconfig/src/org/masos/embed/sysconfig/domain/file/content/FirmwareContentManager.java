@@ -63,6 +63,17 @@ public class FirmwareContentManager {
         }
     }
 
+    public static void deleteLibrary(String libName) {
+        File libFile = new File(FileConstants.ARDUINO_LIB_DIRECTORIES + File.separator + libName);
+        if (libFile.exists()) {
+            if (libFile.isFile()) {
+                FileUtils.deleteFile(libFile);
+            } else {
+                FileUtils.deleteFolder(libFile);
+            }
+        }
+    }
+
     public static boolean isValidSubmittedLibrary(Part submittedLibrary) {
         return submittedLibrary.getSize() > 0 && submittedLibrary.getSubmittedFileName().endsWith(
                 FileUtils.COMPACTED_FILE_EXTENSION);

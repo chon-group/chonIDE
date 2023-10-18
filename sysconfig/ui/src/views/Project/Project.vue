@@ -106,7 +106,10 @@
                               add-message="New library" has-refresh @refresh="loadLibraries(true)">
                 <template v-slot:content>
                   <ExplorerFile v-for="(library, index) in libraries"
-                                :key="index" :file="library" :can-rename="false" icon="library.svg"
+                                :key="index" :file="library" :can-rename="false"
+                                :can-delete="library.name !== 'Javino'"
+                                @delete="deleteLibrary(library)"
+                                icon="library.svg"
                                 icon-ratio="11px"/>
                 </template>
               </ExplorerFolder>
@@ -517,6 +520,14 @@ export default {
         name: AGENT_DEFAULT_FILE_NAME + (this.project.agents.length == 0 ? '' : this.project.agents.length + 1),
         archClass: AgentType.JASON,
         sourceCode: defaultSourceCode.agent
+      });
+    },
+    deleteLibrary(library) {
+      API.delete(EndPoints.LIBRARIES, {params: {name: library.name}}).then(() => {
+          this.loadLibraries(true);
+      }).catch(() => {
+          this.$emit(AppEvent.MESSAGE, {content: `It was not possible delete library ${library.name}`, type:
+              MessageType.ERROR});
       });
     },
     writeAction(event, text, setPositionInner) {
