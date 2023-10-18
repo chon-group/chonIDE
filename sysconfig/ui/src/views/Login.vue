@@ -81,17 +81,21 @@ export default {
   mounted() {
     this.awaitConnection = localStorage.getItem("connecting");
     if (this.awaitConnection === 'true') {
-      this.$refs.conecting.showing(true);
       API.get(EndPoints.DOMAINS).then((response) => {
+        this.$refs.conecting.showing(true);
         this.currentDomain = response.data.data.domain;
         API.delete(EndPoints.USERS);
         let interval = setInterval(() => {
           this.awaitConnectionCounter--;
-          if (this.awaitConnectionCounter == 0) {
+          if (this.awaitConnectionCounter === 0) {
             localStorage.setItem("connecting", "false");
             clearInterval(interval);
           }
         }, 1000);
+      }).catch(() => {
+          this.$emit(AppEvent.MESSAGE, {content: "It was not possible generate new access link to chonide", type:
+              MessageType.ERROR});
+          localStorage.setItem("connecting", "false");
       });
     }
 
