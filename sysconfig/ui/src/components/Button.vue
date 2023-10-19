@@ -36,7 +36,11 @@ export default {
     noBorder: Boolean,
     isLoading: Boolean,
     height: String,
-    link: String
+    link: String,
+    widthFull: {
+      default: false,
+      type: Boolean
+    }
   },
   mounted() {
     useRipple(this.$el);
@@ -63,6 +67,9 @@ export default {
       return this.hasNotText() && this.icon != null ? "0px" : "12px";
     },
     width() {
+      if (this.widthFull) {
+        return "100%";
+      }
       return this.hasNotText() && this.icon != null ? "32px" : "fit-content";
     },
     buttonClasses() {

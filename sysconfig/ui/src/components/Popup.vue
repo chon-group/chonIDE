@@ -6,7 +6,7 @@
         <div class="pop-up__close-action" @click="close" v-if="canClose"></div>
       </div>
       <slot name="content"></slot>
-      <div class="flex gap-1.5 justify-end">
+      <div class="flex gap-1.5 justify-end" v-if="$slots.action != null">
         <slot name="action"></slot>
       </div>
     </div>
@@ -22,7 +22,11 @@ export default {
     type: String,
     for: String,
     canClose: Boolean,
-    isChildren: Boolean
+    isChildren: Boolean,
+    width: {
+      type: String,
+      default: "var(--container-width-2)"
+    }
   },
   data() {
     return {
@@ -38,11 +42,11 @@ export default {
     },
     showing(isShowing) {
       if (isShowing) {
-        this.$el.removeAttribute("style");
+        this.$el.style.removeProperty("display");
         document.body.style.overflow = "hidden";
       } else {
         this.$el.style.display = "none";
-        document.body.removeAttribute("style");
+        document.body.style.removeProperty("overflow");
       }
     }
   },
@@ -85,7 +89,7 @@ export default {
 }
 
 .pop-up {
-  width: var(--container-width-2);
+  width: v-bind(width);
   z-index: 10;
   background-color: var(--pallete-color-black-2);
   @apply m-auto p-5 rounded-md;

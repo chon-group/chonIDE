@@ -1,12 +1,63 @@
 <template>
   <div class="project flex flex-col h-screen">
-    <Popup title="Board response" ref="boardResponse" can-close>
+    <Popup title="Sketch compiled" ref="boardResponse" can-close width="var(--container-width-1)">
       <template v-slot:content>
         <div class="project__compiled-response">
           {{ boardResponse }}
         </div>
       </template>
     </Popup>
+
+    <Popup can-close ref="deployBoardUnknownPopup" title="Choose board model">
+      <template v-slot:content>
+        <p v-if="this.isCurrentBoardUnknown">The Arduino board model cannot be identified.</p>
+        <p> Perform deploy as...</p>
+      </template>
+      <template v-slot:action>
+        <div class="flex gap-2 flex-col w-full">
+          <Button width-full
+                  @click="this.performBoardOperationWithDifferentFqbn('arduino:avr:uno', this.deploySketch,
+                            $refs.deployBoardUnknownPopup)">
+            <template v-slot:content>
+              Arduino Uno
+            </template>
+          </Button>
+          <Button width-full
+                  @click="this.performBoardOperationWithDifferentFqbn('arduino:avr:mega', this.deploySketch,
+                            $refs.deployBoardUnknownPopup)">
+            <template v-slot:content>
+              Arduino Mega
+            </template>
+          </Button>
+        </div>
+      </template>
+    </Popup>
+
+    <Popup can-close ref="compileBoardUnknownPopup" title="Choose board model">
+      <template v-slot:content>
+        <p v-if="this.isCurrentBoardUnknown">The Arduino board model cannot be identified.</p>
+        <p> Perform compile as...</p>
+      </template>
+      <template v-slot:action>
+        <div class="flex gap-2 flex-col w-full">
+          <Button width-full
+                  @click="this.performBoardOperationWithDifferentFqbn('arduino:avr:uno', this.compileSketch,
+                            $refs.compileBoardUnknownPopup)">
+            <template v-slot:content>
+              Arduino Uno
+            </template>
+          </Button>
+          <Button width-full
+                  @click="this.performBoardOperationWithDifferentFqbn('arduino:avr:mega', this.compileSketch,
+                            $refs.compileBoardUnknownPopup)">
+            <template v-slot:content>
+              Arduino Mega
+            </template>
+          </Button>
+        </div>
+      </template>
+    </Popup>
+
     <Header>
       <template v-slot:left>
         <div class="flex items-center h-full">
@@ -71,7 +122,7 @@
                                 icon-ratio="13px"
                                 @delete="removeFileAction(index, project.agents)"
                                 @edit="(editedAgent) => agent = editedAgent"
-                                :selected="currentFile == agent"
+                                :selected="currentFile === agent"
                                 ref="agents"
                                 @show="
                                   currentFile = agent;
@@ -94,13 +145,14 @@
                             icon="ino.svg"
                             icon-ratio="17px"
                             ref="firmwares"
-                            :selected="currentFile == firmware"
+                            :selected="currentFile === firmware"
                             @show="
                                   currentFile = firmware;
                                   firmwareFileIsOpen = true;
                                   agentFileIsOpen = false;
                                 "/>
-              <ExplorerFolder v-if="configuration.firmwareLibraries" name="Libraries" @add="importLibrary"
+              <ExplorerFolder v-if="configuration.firmwareLibraries" name="Libraries"
+                              @add="importLibrary"
                               icon="libraries.svg"
                               icon-ratio="12px"
                               add-message="New library" has-refresh @refresh="loadLibraries(true)">
@@ -124,7 +176,7 @@
             <span class="project__coding__file__name">
               {{ currentFile.name }}
             </span>
-            <div class="project-action-separator" v-if="currentFile.name != 'No file'"></div>
+            <div class="project-action-separator" v-if="currentFile.name !== 'No file'"></div>
             <Button icon="toggle.svg" icon-ratio="8px" icon-sense="right" v-if="agentFileIsOpen">
               <template v-slot:content>
                 {{ this.currentFile.archClass }}
@@ -141,16 +193,10 @@
               </template>
             </Button>
             <div class="flex" v-if="firmwareFileIsOpen">
-              <Button icon="check.svg" icon-ratio="11px" @click="compileSketch" :is-loading="compilingSketch">
-                <template v-slot:content>
-                  Compile
-                </template>
-              </Button>
-              <Button icon="upload.svg" icon-ratio="11px" @click="deploySketch" :is-loading="deployingSketch">
-                <template v-slot:content>
-                  Deploy
-                </template>
-              </Button>
+              <Button icon="check.svg" icon-ratio="11px" @click="compileSketch" :is-loading="compilingSketch"
+                      text="Compile"/>
+              <Button icon="upload.svg" icon-ratio="11px" @click="deploySketch" :is-loading="deployingSketch"
+                      v-if="currentBoard != null" text="Deploy"/>
             </div>
           </div>
         </div>
@@ -175,7 +221,9 @@
         </div>
         <div v-else class="flex flex-col gap-1.5 p-1.5">
           <Board v-for="(board, index) in boards" :key="index"
-                 @select="currentBoard = board;" :is-current="currentBoard == board" :board="board"/>
+                 @select="() => {currentBoard = currentBoard === board ? null : board}"
+                 :is-current="currentBoard === board"
+                 :board="board"/>
         </div>
       </div>
     </div>
@@ -204,6 +252,7 @@ const project_DIFF_HEIGHT = 18;
 const AGENT_DEFAULT_FILE_NAME = "newAgent", FIRMWARE_DEFAULT_FILE_NAME = "newSketch";
 const DEFAULT_LINKS_PROTOCOL = "http://";
 const MIND_INSPECTOR_PORT = ":3272", SMA_PORT_PORT = ":3271";
+const UNKNOW_BOARD_MODEL_STRING = 'unknown:unknown:unknown';
 
 export default {
   name: "Project",
@@ -256,15 +305,21 @@ export default {
       } catch (error) {
         return 1;
       }
+    },
+    isCurrentBoardUnknown() {
+      if (this.currentBoard == null || this.currentBoard.fqbn == null) {
+        return false;
+      }
+      return this.currentBoard.fqbn.toLowerCase().includes(UNKNOW_BOARD_MODEL_STRING);
     }
   },
   setup() {
-    Util.setTitle("SMA");
+    Util.setTitle("Project");
     API.loadToken();
   },
   mounted() {
     API.get(EndPoints.PROJECTS, true, {params: {projectId: this.$route.params.id, getType: 1}}).then((response) => {
-      if (response.data.status == 200) {
+      if (response.data.status === 200) {
         this.project = response.data.data;
         this.project.id = this.$route.params.id;
 
@@ -282,7 +337,7 @@ export default {
     });
 
     API.get(EndPoints.CONFIGURATION, false).then((response) => {
-      if (response.data.status == 200) {
+      if (response.data.status === 200) {
         this.configuration = response.data.data;
       }
     });
@@ -292,68 +347,92 @@ export default {
     });
 
     this.loadLibraries();
+    this.loadBoards();
 
     // Implementação do codador.
 
     this.$refs.coder.addEventListener("keydown", (event) => {
-      if (event.key == Key.ENTER) {
+      if (event.key === Key.ENTER) {
         this.$refs.coder.style.height = this.$refs.coderLines.scrollHeight + "px";
-      } else if (event.key == Key.BACKSPACE) {
+      } else if (event.key === Key.BACKSPACE) {
         this.$refs.coder.style.height = (this.$refs.coderLines.scrollHeight - project_DIFF_HEIGHT) + "px";
-      } else if (event.key == Key.BRACKET_RIGHT) {
+      } else if (event.key === Key.BRACKET_RIGHT) {
         this.writeAction(event, `{${POS_CHAR}}`, true);
-      } else if (event.key == Key.SQUARE_BRACKET_RIGHT) {
+      } else if (event.key === Key.SQUARE_BRACKET_RIGHT) {
         this.writeAction(event, `[${POS_CHAR}]`, true);
-      } else if (event.key == Key.PARENTESIS_RIGHT) {
+      } else if (event.key === Key.PARENTESIS_RIGHT) {
         this.writeAction(event, `(${POS_CHAR})`, true);
-      } else if (event.key == Key.TAB) {
+      } else if (event.key === Key.TAB) {
         event.preventDefault();
         this.writeAction(event, TAB_CHAR, false);
-      } else if (event.key == Key.DOUBLE_BACKQUOTE) {
+      } else if (event.key === Key.DOUBLE_BACKQUOTE) {
         this.writeAction(event, `"${POS_CHAR}"`, true);
-      } else if (event.key == Key.BACKQUOTE) {
+      } else if (event.key === Key.BACKQUOTE) {
         this.writeAction(event, `'${POS_CHAR}'`, true);
       }
     });
   },
   methods: {
     getAgentIcon(agentType) {
-      if (agentType == "Argo") {
+      if (agentType === "Argo") {
         return "argo-agent.svg";
-      } else if (agentType == "Communicator") {
+      } else if (agentType === "Communicator") {
         return "communicator-agent.svg";
       } else {
         return "jason-agent.svg";
       }
     },
     projectIsInvalid() {
-      let hasSameName = false;
-      this.project.agents.forEach((agent) => {
-        this.project.agents.forEach((anotherAgent) => {
-          if (agent != anotherAgent && agent.name == anotherAgent.name) {
-            hasSameName = true;
-            return;
-          }
-        });
-        if (hasSameName) {
-          return;
-        }
-      });
-      if (hasSameName) {
-        this.$emit(AppEvent.MESSAGE, {content: "There are agents with the same name", type: MessageType.ERROR});
-        return true;
-      }
       if (this.project.agents.length === 0) {
         this.$emit(AppEvent.MESSAGE, {content: "Unable to start SMA without agents", type: MessageType.ERROR});
         return true;
       }
+
+      let hasSameName = false;
+      for (let agent in this.project.agents) {
+        for(let anotherAgent in this.project.agents) {
+          if (agent !== anotherAgent && agent.name === anotherAgent.name) {
+            hasSameName = true;
+            break;
+          }
+        }
+        if (hasSameName) {
+          return;
+        }
+      }
+
+      if (hasSameName) {
+        this.$emit(AppEvent.MESSAGE, {content: "There are agents with the same name", type: MessageType.ERROR});
+        return true;
+      }
+
       return false;
     },
-    compileSketch() {
+    performBoardOperationWithDifferentFqbn(fqbn, operation, popUpToClose) {
+      popUpToClose.showing(false);
       if (this.currentBoard == null) {
-        this.$emit(AppEvent.MESSAGE, {content: "No board has been selected", type: MessageType.WARNING});
+        this.currentBoard = {
+          fqbn: fqbn
+        }
+      } else {
+        this.currentBoard.fqbn = fqbn;
+      }
+
+      this.$refs.deployBoardUnknownPopup.showing(false);
+      operation();
+
+      if (this.currentBoard.name == null) {
+        this.currentBoard = null;
+      } else {
+        this.currentBoard.fqbn = UNKNOW_BOARD_MODEL_STRING;
+      }
+    },
+    compileSketch() {
+      if (this.currentBoard == null || this.isCurrentBoardUnknown) {
+        this.$refs.compileBoardUnknownPopup.showing(true);
         return;
       }
+
       this.compilingSketch = true;
       API.post(EndPoints.SKETCH_COMPILE, {
         params: {
@@ -372,6 +451,12 @@ export default {
         this.$emit(AppEvent.MESSAGE, {content: "There is no board selected", type: MessageType.WARNING});
         return;
       }
+
+      if (this.isCurrentBoardUnknown) {
+        this.$refs.deployBoardUnknownPopup.showing(true);
+        return;
+      }
+
       this.deployingSketch = true;
       API.post(EndPoints.SKETCH_DEPLOY, {
         params: {
@@ -424,28 +509,28 @@ export default {
         }, 100);
       });
     },
-      downloadMas() {
-          if (this.projectIsInvalid()) {
-              return;
-          }
-          API.post(EndPoints.MAS,{responseType: 'blob'}, this.project).then((response) => {
-              if (response.status === 200) {
-                  const filename = this.project.name + ".zip";
-                  const blob = new Blob([response.data]);
+    downloadMas() {
+      if (this.projectIsInvalid()) {
+          return;
+      }
+      API.post(EndPoints.MAS,{responseType: 'blob'}, this.project).then((response) => {
+        if (response.status === 200) {
+          const filename = this.project.name + ".zip";
+          const blob = new Blob([response.data]);
 
-                  const url = window.URL.createObjectURL(blob);
+          const url = window.URL.createObjectURL(blob);
 
-                  const a = document.createElement('a');
-                  a.style.display = 'none';
-                  a.href = url;
-                  a.download = filename;
-                  document.body.appendChild(a);
-                  a.click();
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
 
-                  window.URL.revokeObjectURL(url);
-              }
-          });
-      },
+          window.URL.revokeObjectURL(url);
+        }
+      });
+    },
     startMas() {
       if (this.projectIsInvalid()) {
         return;
@@ -467,7 +552,7 @@ export default {
     stopMas() {
       this.stopingMas = true;
       API.put(EndPoints.MAS, {params: {action: "stop"}}).then((response) => {
-        if (response.data.status == 202) {
+        if (response.data.status === 202) {
           this.$emit(AppEvent.MESSAGE, {content: response.data.message, type: MessageType.WARNING});
         } else {
           this.$emit(AppEvent.MESSAGE, {content: response.data.message, type: MessageType.SUCCESS});
@@ -486,7 +571,7 @@ export default {
       this.loadingBoards = true;
       API.get(EndPoints.BOARDS, refresh).then((response) => {
         this.boards = response.data.data;
-        if (this.boards.length != 0) {
+        if (this.boards.length !== 0) {
           this.currentBoard = this.boards[0];
         }
       }).finally(() => {
@@ -494,10 +579,10 @@ export default {
       });
     },
     removeFileAction(index, files) {
-      if (this.currentFile == files[index]) {
-        if (index == 0) {
+      if (this.currentFile === files[index]) {
+        if (index === 0) {
           files.splice(index, 1);
-          if (files.length == 0) {
+          if (files.length === 0) {
             this.currentFile = {name: "No file", sourceCode: ""};
             this.agentFileIsOpen = false;
             this.firmwareFileIsOpen = false;
@@ -518,7 +603,7 @@ export default {
     },
     addAgentFileAction() {
       this.project.agents.push({
-        name: AGENT_DEFAULT_FILE_NAME + (this.project.agents.length == 0 ? '' : this.project.agents.length + 1),
+        name: AGENT_DEFAULT_FILE_NAME + (this.project.agents.length === 0 ? '' : this.project.agents.length + 1),
         archClass: AgentType.JASON,
         sourceCode: defaultSourceCode.agent
       });
@@ -567,8 +652,8 @@ export default {
 
 .project__compiled-response {
   background-color: var(--pallete-color-black-3);
-  line-height: 1.7;
-  @apply p-2.5 rounded-sm;
+  word-break: break-word;
+  @apply p-2.5 rounded-sm text-lg;
 }
 
 .project__project-status {

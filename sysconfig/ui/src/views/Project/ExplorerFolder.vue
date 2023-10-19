@@ -11,6 +11,7 @@
       </div>
       <button class="coder__explorer__action-button add" ref="dotsButton" v-if="hasAdd" @click="addFile"></button>
       <button class="coder__explorer__action-button download" v-if="hasDownload" @click="download"></button>
+      <button class="coder__explorer__action-button refresh" v-if="hasRefresh" @click="refresh"></button>
       <Toggle click-position type="contextmenu" v-if="hasAdd || hasRefresh">
         <template v-slot:options>
           <button v-if="hasAdd" @click="addFile">{{ addMessage }}</button>
@@ -121,7 +122,15 @@ export default {
     background-size: 42%;
 }
 
-.coder__explorer__action-button.add:hover, .coder__explorer__action-button.download:hover {
+.coder__explorer__action-button.refresh {
+  background-image: url("@/assets/media/icon/refresh.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 42%;
+}
+
+.coder__explorer__action-button.add:hover, .coder__explorer__action-button.download:hover,
+.coder__explorer__action-button.refresh:hover {
   background-color: var(--pallete-color-black-4);
 }
 

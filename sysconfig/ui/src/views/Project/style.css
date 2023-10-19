@@ -14,7 +14,3 @@
     transition: opacity 0.1s;
     @apply rounded-md border-none bg-transparent cursor-pointer shrink-0;
 }
-
-.coder__explorer__action-button:is(:focus, :hover) {
-    opacity: 100% !important;
-}

@@ -183,7 +183,7 @@ export default {
 }
 
 .coder__explorer__file.coder__explorer__item:hover .coder__explorer__action-button.dots {
-  opacity: 50%;
+  opacity: 100%;
 }
 
 </style>
