@@ -566,7 +566,7 @@ export default {
         this.libraries = response.data.data;
       });
     },
-    loadBoards(refresh) {
+    loadBoards(refresh = false) {
       this.currentBoard = null;
       this.loadingBoards = true;
       API.get(EndPoints.BOARDS, refresh).then((response) => {

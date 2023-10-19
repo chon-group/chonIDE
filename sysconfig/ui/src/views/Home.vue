@@ -110,7 +110,7 @@
                   </Popup>
                 </button>
                 <button @click="selectCreatedProject(index)">Rename</button>
-                <button @click="downloadProject(project)">Download</button>
+                <button @click="downloadProject(project)">Export</button>
               </template>
             </Toggle>
           </button>
