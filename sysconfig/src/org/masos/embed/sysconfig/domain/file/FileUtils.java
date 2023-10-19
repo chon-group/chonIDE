@@ -6,6 +6,7 @@ import org.masos.embed.sysconfig.domain.file.exception.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
@@ -165,6 +166,7 @@ public class FileUtils {
 
     public static File zipFilesByFolder(File folder) {
         try {
+            Files.deleteIfExists(Paths.get(folder.getAbsolutePath() + COMPACTED_FILE_EXTENSION));
             ZipFile zipFile = new ZipFile(folder.getAbsoluteFile() + COMPACTED_FILE_EXTENSION);
             File[] files = folder.listFiles();
             if (files.length == 0) {
