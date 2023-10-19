@@ -131,10 +131,10 @@ import Popup from "@/components/Popup";
 import Input from "@/components/Input";
 import Util from "@/domain/Util";
 import Loading from "@/components/Loading";
-import router, {Routes} from "@/router";
 import {AppEvent, MessageType} from "@/domain/Enums"
 import {API, EndPoints} from "@/domain/API";
 import Header from "@/layout/Header";
+import {Routes} from "@/router/routes";
 
 export default {
   name: "Connect",
@@ -165,7 +165,7 @@ export default {
   },
   methods: {
     backToCoder() {
-      router.push(Routes.HOME);
+      this.$router.push(Routes.HOME);
     },
     getNetworks() {
       this.isSearching = true;
@@ -196,7 +196,7 @@ export default {
         this.isConnecting = false;
         this.$refs['customized-network-pop-up'].close();
         localStorage.setItem("connecting", "true");
-        router.push(Routes.LOGIN);
+        this.$router.push(Routes.LOGIN);
       });
     },
     connectNetwork(networkIndex) {
@@ -213,7 +213,7 @@ export default {
         this.isConnecting = false;
         this.$refs['network'][networkIndex].close();
         localStorage.setItem("connecting", "true");
-        router.push(Routes.LOGIN);
+        this.$router.push(Routes.LOGIN);
       });
     },
     connectManualNetwork() {
@@ -230,7 +230,7 @@ export default {
         this.isConnecting = false;
         this.$refs['manual-network-pop-up'].close();
         localStorage.setItem("connecting", "true");
-        router.push(Routes.LOGIN);
+        this.$router.push(Routes.LOGIN);
       });
     }
   }

@@ -161,7 +161,6 @@
 
 <script>
 import {API, EndPoints, Headers} from "@/domain/API";
-import router, {Routes} from "@/router";
 import Util from "@/domain/Util";
 import {AppEvent, Key, MessageType} from "@/domain/Enums";
 import Toggle from "@/components/Toggle";
@@ -170,6 +169,7 @@ import Header from "@/layout/Header";
 import Button from "@/components/Button";
 import Popup from "@/components/Popup";
 import {removeRipple, useRipple} from "@/composable/Ripple";
+import {Routes} from "@/router/routes";
 
 export default {
   name: "Home",
@@ -266,7 +266,7 @@ export default {
       this.$refs.inputNewProject.blur();
     },
     goProject(projectId) {
-      router.push(Routes.PROJECT + projectId);
+      this.$router.push(Routes.PROJECT + projectId);
     },
     selectNewProject() {
       this.$refs.inputNewProject.readOnly = false;
@@ -346,19 +346,19 @@ export default {
       this.$emit(AppEvent.MESSAGE, {content: "Shutting down system", type: MessageType.WARNING});
       API.put(EndPoints.SYSTEM_POWEROFF);
       setTimeout(() => {
-        router.push(Routes.LOGIN);
+          this.$router.push(Routes.LOGIN);
       }, 2000);
     },
     resetSystem() {
       this.$emit(AppEvent.MESSAGE, {content: "Rebooting system", type: MessageType.WARNING});
       API.put(EndPoints.SYSTEM_REBOOT);
       setTimeout(() => {
-        router.push(Routes.LOGIN);
+          this.$router.push(Routes.LOGIN);
       }, 2000);
     },
     logout() {
       API.delete(EndPoints.USERS).then(() => {
-        router.push(Routes.LOGIN);
+          this.$router.push(Routes.LOGIN);
       });
     },
   }

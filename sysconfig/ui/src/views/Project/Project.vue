@@ -274,10 +274,10 @@ export default {
           this.currentFile = this.project.agents[0];
           this.agentFileIsOpen = true;
         }
-
-        this.$refs.coder.style.height = this.$refs.coderLines.scrollHeight + "px";
       }
-    }).catch((error) => {
+    }).then(() => {
+      this.$refs.coder.style.height = this.$refs.coderLines.scrollHeight + "px";
+    }).catch(() => {
       router.push(Routes.HOME);
     });
 
@@ -294,6 +294,7 @@ export default {
     this.loadLibraries();
 
     // Implementação do codador.
+
     this.$refs.coder.addEventListener("keydown", (event) => {
       if (event.key == Key.ENTER) {
         this.$refs.coder.style.height = this.$refs.coderLines.scrollHeight + "px";

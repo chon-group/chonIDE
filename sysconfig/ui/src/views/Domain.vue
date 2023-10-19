@@ -37,10 +37,10 @@
 
 import Util from "@/domain/Util";
 import Button from "@/components/Button";
-import router, {Routes} from "@/router";
 import {AppEvent, MessageType} from "@/domain/Enums"
 import {API, EndPoints} from "@/domain/API";
 import Header from "@/layout/Header";
+import {Routes} from "@/router/routes";
 
 
 export default {
@@ -78,7 +78,7 @@ export default {
   },
   methods: {
     backToHome() {
-      router.push(Routes.HOME);
+      this.$router.push(Routes.HOME);
     },
     submit() {
       if (this.domain === '' || this.domain.length === 0) {
@@ -88,7 +88,7 @@ export default {
       this.loading = true;
       API.post(EndPoints.DOMAINS, {params: {domain: this.domain}}).then(() => {
         this.$emit(AppEvent.MESSAGE, {content: "Your bot name was successfully saved", type: MessageType.SUCCESS});
-        router.push(Routes.CONNECT);
+        this.$router.push(Routes.CONNECT);
       });
     }
   }

@@ -1,6 +1,7 @@
 import axios from "axios";
 import {uuid} from "vue-uuid"
-import router, {Routes} from "@/router";
+import router from "@/router";
+import {Routes} from "@/router/routes";
 
 axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
 axios.defaults.headers.put['Access-Control-Allow-Origin'] = '*';

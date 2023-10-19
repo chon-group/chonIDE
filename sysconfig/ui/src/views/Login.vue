@@ -46,13 +46,13 @@
 
 <script>
 import Util from "@/domain/Util";
-import router, {Routes} from "@/router";
 import {AppEvent, MessageType} from "@/domain/Enums"
 import Popup from "@/components/Popup";
 import Loading from "@/components/Loading";
 import {API, EndPoints} from "@/domain/API";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
+import {Routes} from "@/router/routes";
 
 
 export default {
@@ -118,10 +118,10 @@ export default {
         if (response.data.status == 200) {
           API.get(EndPoints.USERS_FIRST_ACCESS).then((response) => {
             if (response.data.data == true) {
-              router.push(Routes.DOMAIN);
+              this.$router.push(Routes.DOMAIN);
             } else {
               API.get(EndPoints.CONFIGURATION);
-              router.push(Routes.HOME);
+              this.$router.push(Routes.HOME);
             }
           });
         }
