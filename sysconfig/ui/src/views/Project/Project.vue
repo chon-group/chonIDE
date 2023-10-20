@@ -1,6 +1,6 @@
 <template>
   <div class="project flex flex-col h-screen">
-    <Popup title="Sketch compiled" ref="boardResponse" can-close width="var(--container-width-1)">
+    <Popup title="Board response" ref="boardResponse" can-close width="var(--container-width-1)">
       <template v-slot:content>
         <div class="project__compiled-response">
           {{ boardResponse }}
@@ -442,6 +442,7 @@ export default {
       }).then((response) => {
         this.boardResponse = response.data.data;
         this.$refs.boardResponse.showing(true);
+        this.$emit(AppEvent.MESSAGE, {content: 'Sketch compiled', type: MessageType.SUCCESS});
       }).finally(() => {
         this.compilingSketch = false;
       });
@@ -463,9 +464,10 @@ export default {
           serialPort: this.currentBoard.port,
           boardName: this.currentBoard.fqbn
         }
-      }).then((response) => {
-        this.$refs.boardResponse.showing(true);
-        this.boardResponse = response.data.data;
+      }).then(() => {
+        this.$emit(AppEvent.MESSAGE, {content: 'Sketch deployed', type: MessageType.SUCCESS});
+      }).catch(() => {
+        this.$emit(AppEvent.MESSAGE, {content: 'ERROR: Sketch was not deployed', type: MessageType.ERROR});
       }).finally(() => {
         this.deployingSketch = false;
       });
@@ -653,7 +655,7 @@ export default {
 .project__compiled-response {
   background-color: var(--pallete-color-black-3);
   word-break: break-word;
-  @apply p-2.5 rounded-sm text-lg;
+  @apply p-2.5 rounded-sm text-xl;
 }
 
 .project__project-status {

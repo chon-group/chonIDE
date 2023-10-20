@@ -129,14 +129,14 @@ public class SSHExecutor implements Executor {
             channel.connect();
             byte[] tmp = new byte[1024];
 
-            String output = "";
+            StringBuilder output = new StringBuilder();
             while (true) {
                 while (in.available() > 0) {
                     int i = in.read(tmp, 0, 1024);
                     if (i < 0) {
                         break;
                     }
-                    output = output + (new String(tmp, 0, i));
+                    output.append(new String(tmp, 0, i));
                 }
                 if (channel.isClosed()) {
                     if (channel.getExitStatus() != 0) {
@@ -146,7 +146,7 @@ public class SSHExecutor implements Executor {
                 }
             }
             channel.disconnect();
-            return output;
+            return output.toString();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

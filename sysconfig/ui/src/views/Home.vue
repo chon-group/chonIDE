@@ -87,6 +87,8 @@
           <button class="project__options" ref="projectOptionsButton">
             <Toggle type="click" parent-position>
               <template v-slot:options>
+                <button @click="downloadProject(project)">Export</button>
+                <button @click="selectCreatedProject(index)">Rename</button>
                 <button class="severe">
                   Delete
                   <Popup is-children title="Delete project">
@@ -109,8 +111,6 @@
                     </template>
                   </Popup>
                 </button>
-                <button @click="selectCreatedProject(index)">Rename</button>
-                <button @click="downloadProject(project)">Export</button>
               </template>
             </Toggle>
           </button>
@@ -119,6 +119,8 @@
                ref="inputProject" spellcheck="false"/>
         <Toggle type="contextmenu" click-position>
           <template v-slot:options>
+            <button @click="downloadProject(project)">Export</button>
+            <button @click="selectCreatedProject(index)">Rename</button>
             <button class="severe">
               Delete
               <Popup is-children title="Delete project">
@@ -141,8 +143,6 @@
                 </template>
               </Popup>
             </button>
-            <button @click="selectCreatedProject(index)">Rename</button>
-            <button @click="downloadProject(project)">Download</button>
           </template>
         </Toggle>
       </div>
@@ -170,6 +170,8 @@ import Button from "@/components/Button";
 import Popup from "@/components/Popup";
 import {removeRipple, useRipple} from "@/composable/Ripple";
 import {Routes} from "@/router/routes";
+
+const PROJECT_EXTESION = ".chon";
 
 export default {
   name: "Home",
@@ -298,7 +300,7 @@ export default {
                 'blob'})
             .then((response) => {
             if (response.status === 200) {
-                const filename = project.name + ".json";
+                const filename = project.name + PROJECT_EXTESION;
                 const blob = new Blob([response.data]);
 
                 const url = window.URL.createObjectURL(blob);
