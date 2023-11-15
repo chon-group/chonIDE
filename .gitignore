@@ -1,15 +1,16 @@
-# Library
+### Library ###
 node_modules
 /lib
 
-# Ide files and folders
+### VS Code ###
 *.iml
 .settings
 .classpath
 .project
 .idea
+.vscode/
 
-# Build folders
+### Build Folders ###
 /build/
 target
 /out
