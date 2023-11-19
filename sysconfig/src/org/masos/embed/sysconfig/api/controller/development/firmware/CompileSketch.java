@@ -18,7 +18,7 @@ public class CompileSketch extends ApiController {
     protected ResponseEntity post(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
         String boardName = parameters.get("boardName").toString();
         String code = parameters.get("code").toString();
-
+    
         Executor executor = authenticatedUser.getExecutor();
         String buildSketchPath = FirmwareContentManager.buildSketch(code, executor);
 
