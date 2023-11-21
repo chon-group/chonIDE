@@ -10,7 +10,6 @@ import org.masos.embed.sysconfig.domain.model.SSHExecutor;
 import org.masos.embed.sysconfig.domain.script.ReasoningScriptManager;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
