@@ -19,9 +19,11 @@ public class ResponseEntity {
     private int status;
 
     /** Mensagem da requisição. */
+    @Getter
     private String message;
 
     /** Data e horário da requisição. */
+    @Getter
     private String date;
 
     /**
