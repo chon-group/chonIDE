@@ -434,11 +434,9 @@ export default {
       }
 
       this.compilingSketch = true;
-      API.post(EndPoints.SKETCH_COMPILE, {
-        params: {
+      API.post(EndPoints.SKETCH_COMPILE, {}, {
           boardName: this.currentBoard.fqbn,
           code: this.currentFile.sourceCode
-        }
       }).then((response) => {
         this.boardResponse = response.data.data;
         this.$refs.boardResponse.showing(true);
