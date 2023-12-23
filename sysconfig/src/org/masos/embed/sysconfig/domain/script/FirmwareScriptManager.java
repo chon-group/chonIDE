@@ -6,7 +6,7 @@ package org.masos.embed.sysconfig.domain.script;
 public class FirmwareScriptManager {
 
     /** Comando para interação com o(s) firmware(s) do sistema. */
-    private static final String FIRMWARE_MANAGER_COMMAND = "chonosFirmwareManager ";
+    private static final String FIRMWARE_MANAGER_COMMAND = "sudo chonosFirmwareManager ";
 
     /** Script para listar as placas do sistema. */
     public static final String ARDUINO_LIST_BOARDS = FIRMWARE_MANAGER_COMMAND + "--list";

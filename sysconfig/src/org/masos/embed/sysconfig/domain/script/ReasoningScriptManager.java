@@ -6,13 +6,13 @@ package org.masos.embed.sysconfig.domain.script;
 public class ReasoningScriptManager {
 
     /** Script para iniciar o SMA. */
-    public static String EMBEDDED_MAS_START = "chonosEmbeddedMAS --start";
+    public static String EMBEDDED_MAS_START = "sudo chonosEmbeddedMAS --start";
 
     /** Script para parar o SMA. */
-    public static String EMBEDDED_MAS_STOP = "chonosEmbeddedMAS --stop";
+    public static String EMBEDDED_MAS_STOP = "sudo chonosEmbeddedMAS --stop";
 
     /** Script para importar o SMA. */
-    private static String EMBEDDED_MAS_IMPORT = "chonosEmbeddedMAS --import -f %s";
+    private static String EMBEDDED_MAS_IMPORT = "sudo chonosEmbeddedMAS --import -f %s";
 
     /**
      * Retorna o script formatado para importação do SMA.
