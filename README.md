@@ -16,10 +16,7 @@ _Embedded MAS development requires knowledge in different areas, such as agent-o
 + WESAAC 2022 (Best Demo) - [Implementando uma IDE para SMA Embarcados](https://www.researchgate.net/publication/363108136_Implementando_uma_IDE_para_SMA_Embarcados)
 
 ## How to Contribute in this Repository
-Repositório das listas de exercícios da disciplina <strong>Linguagens e Técnicas de Programação II</strong>.
-
-Como criar uma branch neste repositório:
-
+How to create a branch in this repository:
 | Category      | Meaning                                                                     |
 | ------------- | --------------------------------------------------------------------------- |
 | wip           | for a work in progress                                                      |
