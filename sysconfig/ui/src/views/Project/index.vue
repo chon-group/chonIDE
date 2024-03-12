@@ -1,5 +1,6 @@
 <template>
   <div class="project flex flex-col h-screen">
+
     <Popup title="Board response" ref="boardResponse" can-close width="var(--container-width-1)">
       <template v-slot:content>
         <div class="project__compiled-response">
@@ -7,7 +8,6 @@
         </div>
       </template>
     </Popup>
-
     <Popup can-close ref="deployBoardUnknownPopup" title="Choose board model">
       <template v-slot:content>
         <p v-if="this.isCurrentBoardUnknown">The Arduino board model cannot be identified.</p>
@@ -32,7 +32,6 @@
         </div>
       </template>
     </Popup>
-
     <Popup can-close ref="compileBoardUnknownPopup" title="Choose board model">
       <template v-slot:content>
         <p v-if="this.isCurrentBoardUnknown">The Arduino board model cannot be identified.</p>
@@ -100,6 +99,7 @@
         </div>
       </template>
     </Header>
+
     <div class="flex">
       <div class="project__explorer">
         <div class="project__header-bar">
@@ -110,63 +110,13 @@
           </div>
         </div>
         <div class="project__explorer__main">
-          <ExplorerFolder v-if="configuration.reasoningLayer" name="Multi-Agent System" :has-add="false" icon="sma.svg"
-                          icon-ratio="13px" :has-download="true" @download="downloadMas">
-            <template v-slot:content>
-              <ExplorerFolder name="Agents" @add="addAgentFileAction" add-message="New agent" icon="agents.svg"
-                              icon-ratio="15px">
-                <template v-slot:content>
-                  <ExplorerFile v-for="(agent, index) in project.agents"
-                                :key="index" :file="agent"
-                                :icon="getAgentIcon(agent.archClass)"
-                                icon-ratio="13px"
-                                @delete="removeFileAction(index, project.agents)"
-                                @edit="(editedAgent) => agent = editedAgent"
-                                :selected="currentFile === agent"
-                                ref="agents"
-                                @show="
-                                  currentFile = agent;
-                                  firmwareFileIsOpen = false;
-                                  agentFileIsOpen = true;
-                                "/>
-
-                </template>
-              </ExplorerFolder>
-            </template>
-          </ExplorerFolder>
-          <ExplorerFolder v-if="configuration.firmwareLayer" name="Firmware" @add="addFirmwareFileAction"
-                          add-message="New firmware"
-                          icon="firmwares.svg" icon-ratio="12px">
-            <template v-slot:content>
-              <ExplorerFile v-for="(firmware, index) in project.firmwares"
-                            :key="index" :file="firmware"
-                            @delete="removeFileAction(index, project.firmwares)"
-                            @edit="(editedFirmware) => firmware = editedFirmware"
-                            icon="ino.svg"
-                            icon-ratio="17px"
-                            ref="firmwares"
-                            :selected="currentFile === firmware"
-                            @show="
-                                  currentFile = firmware;
-                                  firmwareFileIsOpen = true;
-                                  agentFileIsOpen = false;
-                                "/>
-              <ExplorerFolder v-if="configuration.firmwareLibraries" name="Libraries"
-                              @add="importLibrary"
-                              icon="libraries.svg"
-                              icon-ratio="12px"
-                              add-message="New library" has-refresh @refresh="loadLibraries(true)">
-                <template v-slot:content>
-                  <ExplorerFile v-for="(library, index) in libraries"
-                                :key="index" :file="library" :can-rename="false"
-                                :can-delete="library.name !== 'Javino'"
-                                @delete="deleteLibrary(library)"
-                                icon="library.svg"
-                                icon-ratio="11px"/>
-                </template>
-              </ExplorerFolder>
-            </template>
-          </ExplorerFolder>
+          <Explorer :configuration="configuration"
+                    :agents="project.agents"
+                    :firmwares="project.firmwares"
+                    :current-file="currentFile"
+                    @downloadMas="downloadMas"
+                    @setCurrentFile="currentFile = $event"
+          />
         </div>
       </div>
       <div class="project__coding flex flex-col">
@@ -231,34 +181,30 @@
 <script>
 import Util from "@/domain/Util";
 import Button from "@/components/Button";
-import {AgentType, AgentTypes, AppEvent, MessageType} from "@/domain/Enums";
+import {AgentTypes, AppEvent, MessageType} from "@/domain/Enums";
 import Loading from "@/components/Loading";
 import Popup from "@/components/Popup";
-import {API, EndPoints, Headers} from "@/domain/API";
-import defaultSourceCode from "@/domain/content/default-source-codes.json";
-import ExplorerFile from "@/views/Project/ExplorerFile";
-import ExplorerFolder from "@/views/Project/ExplorerFolder";
+import {API, EndPoints} from "@/domain/API";
 import Board from "@/views/Project/Board";
 import Toggle from "@/components/Toggle";
 import Header from "@/layout/Header";
 import router, {Routes} from "@/router";
 import Coder from "@/views/Project/Coder.vue";
+import Explorer from "@/views/Project/explorer/Explorer.vue";
 
-const AGENT_DEFAULT_FILE_NAME = "newAgent", FIRMWARE_DEFAULT_FILE_NAME = "newSketch";
 const DEFAULT_LINKS_PROTOCOL = "http://";
 const MIND_INSPECTOR_PORT = ":3272", SMA_PORT_PORT = ":3271";
 const UNKNOW_BOARD_MODEL_STRING = 'unknown:unknown:unknown';
 
 export default {
   name: "Project",
-  components: {Coder, Header, Toggle, Board, ExplorerFolder, ExplorerFile, Loading, Button, Popup},
+  components: {Explorer, Coder, Header, Toggle, Board, Loading, Button, Popup},
   data() {
     return {
       project: {name: "", agents: [], firmwares: []},
       currentFile: {name: "No file", sourceCode: ""},
       boards: [],
       currentBoard: null,
-      libraries: [],
       domain: null,
       agentTypes: AgentTypes,
       firmwareFileIsOpen: false,
@@ -328,20 +274,8 @@ export default {
     API.get(EndPoints.DOMAINS).then((response) => {
       this.domain = response.data.data;
     });
-
-    this.loadLibraries();
-    this.loadBoards();
   },
   methods: {
-    getAgentIcon(agentType) {
-      if (agentType === "Argo") {
-        return "argo-agent.svg";
-      } else if (agentType === "Communicator") {
-        return "communicator-agent.svg";
-      } else {
-        return "jason-agent.svg";
-      }
-    },
     projectIsInvalid() {
       if (this.project.agents.length === 0) {
         this.$emit(AppEvent.MESSAGE, {content: "Unable to start SMA without agents", type: MessageType.ERROR});
@@ -430,37 +364,6 @@ export default {
         this.deployingSketch = false;
       });
     },
-    importLibrary() {
-      let libraryInput = document.createElement('input');
-      libraryInput.type = 'file';
-      libraryInput.click();
-      libraryInput.onchange = (event) => {
-        let files = event.target.files;
-        if (files.length === 0) {
-          this.$emit(AppEvent.MESSAGE, {content: "No file selected", type: MessageType.WARNING});
-          return;
-        }
-        let libraryFile = files[0];
-        if (Util.isFileInvalid(libraryFile)) {
-          this.$emit(AppEvent.MESSAGE, {content: "File name cannot have space", type: MessageType.ERROR});
-          return;
-        }
-        API.post(EndPoints.LIBRARIES_IMPORT, Headers.MULTIPART_CONFIG, {file: libraryFile}).then((response) => {
-          if (response.data.status === 200) {
-            this.$emit(AppEvent.MESSAGE, {
-              content: response.data.data,
-              type: MessageType.SUCCESS
-            });
-            this.loadLibraries(true);
-          } else {
-            this.$emit(AppEvent.MESSAGE, {
-              content: response.data.data,
-              type: MessageType.ERROR
-            });
-          }
-        });
-      }
-    },
     saveProject() {
       this.savingProject = true;
       return API.put(EndPoints.PROJECTS, {}, this.project).then(() => {
@@ -521,11 +424,6 @@ export default {
         this.stopingMas = false;
       });
     },
-    loadLibraries(refresh = false) {
-      API.get(EndPoints.LIBRARIES, refresh).then((response) => {
-        this.libraries = response.data.data;
-      });
-    },
     loadBoards(refresh = false) {
       this.currentBoard = null;
       this.loadingBoards = true;
@@ -538,44 +436,6 @@ export default {
         this.loadingBoards = false;
       });
     },
-    removeFileAction(index, files) {
-      if (this.currentFile === files[index]) {
-        if (index === 0) {
-          files.splice(index, 1);
-          if (files.length === 0) {
-            this.currentFile = {name: "No file", sourceCode: ""};
-            this.agentFileIsOpen = false;
-            this.firmwareFileIsOpen = false;
-          }
-        } else {
-          this.currentFile = files[index - 1];
-          files.splice(index, 1);
-        }
-      } else {
-        files.splice(index, 1);
-      }
-    },
-    addFirmwareFileAction() {
-      this.project.firmwares.push({
-        name: FIRMWARE_DEFAULT_FILE_NAME,
-        sourceCode: defaultSourceCode.firmware
-      });
-    },
-    addAgentFileAction() {
-      this.project.agents.push({
-        name: AGENT_DEFAULT_FILE_NAME + (this.project.agents.length === 0 ? '' : this.project.agents.length + 1),
-        archClass: AgentType.JASON,
-        sourceCode: defaultSourceCode.agent
-      });
-    },
-    deleteLibrary(library) {
-      API.delete(EndPoints.LIBRARIES, {params: {name: library.name}}).then(() => {
-          this.loadLibraries(true);
-      }).catch(() => {
-          this.$emit(AppEvent.MESSAGE, {content: `It was not possible delete library ${library.name}`, type:
-              MessageType.ERROR});
-      });
-    }
   }
 }
 </script>
@@ -639,33 +499,6 @@ export default {
   @apply overflow-hidden whitespace-nowrap shrink-0 mr-2.5 select-none;
 }
 
-.project__coder {
-  font-family: 'JetBrains Mono', monospace;
-  height: calc(100vh - calc(2 * var(--bar-height)));
-  --writer-font-size: 14px;
-  background-color: var(--pallete-color-black-1);
-  @apply flex overflow-y-scroll;
-}
-
-.project__coder__lines {
-  min-width: 68px;
-  background-color: var(--pallete-color-black-2);
-  color: var(--pallete-text-aside);
-  border-right: 5px solid var(--pallete-color-black-3);
-  @apply min-h-full h-fit flex flex-col py-5;
-}
-
-.project__coder__line {
-  font-size: var(--writer-font-size);
-}
-
-.project__coder__text {
-  background-color: var(--pallete-color-black-1);
-  color: var(--pallete-text-main);
-  font-size: var(--writer-font-size);
-  @apply min-h-full w-full border-none resize-none overflow-y-hidden;
-}
-
 /* Lateral */
 
 .project__explorer {
@@ -676,7 +509,6 @@ export default {
 
 .project__explorer__main {
   height: calc(100vh - calc(2 * var(--bar-height)));
-  @apply overflow-y-auto p-1.5;
 }
 
 .project__header-bar {

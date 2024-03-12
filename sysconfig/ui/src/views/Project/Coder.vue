@@ -84,7 +84,7 @@ export default {
     </div>
 </template>
 
-<style>
+<style scoped>
 
 .coder {
     font-family: 'JetBrains Mono', monospace;
