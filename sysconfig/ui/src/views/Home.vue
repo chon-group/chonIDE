@@ -75,7 +75,10 @@
         </Button>
       </template>
     </Header>
-    <div class="project__list">
+    <div class="flex justify-center items-center h-full w-full m-auto" v-if="loadingProjects">
+      <Loading main-color="var(--pallete-text-main)"/>
+    </div>
+    <div class="project__list" v-show="!loadingProjects">
       <div class="project"
            v-for="(project, index) in projects" :key="project.id"
       >
@@ -170,15 +173,17 @@ import Button from "@/components/Button";
 import Popup from "@/components/Popup";
 import {removeRipple, useRipple} from "@/composable/Ripple";
 import {Routes} from "@/router/routes";
+import Loading from "@/components/Loading.vue";
 
 const PROJECT_EXTESION = ".chon";
 
 export default {
   name: "Home",
-  components: {Header, Toggle, Button, Popup},
+  components: {Loading, Header, Toggle, Button, Popup},
   data() {
     return {
       projects: [],
+      loadingProjects: true,
       createProjectName: "New project",
       configuration: {}
     }
@@ -207,6 +212,7 @@ export default {
     API.get(EndPoints.PROJECTS).then((response) => {
       this.projects = response.data.data;
     }).then(() => {
+      this.loadingProjects = false;
       useRipple(this.$refs.letterNewProject);
       this.$refs.project.forEach((project) => {
         useRipple(project);
