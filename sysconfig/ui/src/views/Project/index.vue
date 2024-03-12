@@ -200,12 +200,8 @@
             </div>
           </div>
         </div>
-        <div class="project__coder">
-          <div class="project__coder__lines" ref="coderLines">
-            <div v-for="index in lineQuantity" :key="index" class="project__coder__line pl-5">{{ index }}</div>
-          </div>
-          <textarea class="project__coder__text p-5" ref="coder" v-model="currentFile.sourceCode"
-                    spellcheck="false"></textarea>
+        <div style="height: calc(100vh - calc(2*var(--bar-height)))">
+          <Coder :sourceCode="currentFile.sourceCode" @sourceCode="currentFile.sourceCode = $event"/>
         </div>
       </div>
       <div class="project__boards" v-if="firmwareFileIsOpen">
@@ -235,7 +231,7 @@
 <script>
 import Util from "@/domain/Util";
 import Button from "@/components/Button";
-import {AgentType, AgentTypes, AppEvent, Key, MessageType} from "@/domain/Enums";
+import {AgentType, AgentTypes, AppEvent, MessageType} from "@/domain/Enums";
 import Loading from "@/components/Loading";
 import Popup from "@/components/Popup";
 import {API, EndPoints, Headers} from "@/domain/API";
@@ -246,9 +242,8 @@ import Board from "@/views/Project/Board";
 import Toggle from "@/components/Toggle";
 import Header from "@/layout/Header";
 import router, {Routes} from "@/router";
+import Coder from "@/views/Project/Coder.vue";
 
-const LINE_BREAK_CHAR = "\n", TAB_CHAR = "\t", POS_CHAR = "$";
-const project_DIFF_HEIGHT = 18;
 const AGENT_DEFAULT_FILE_NAME = "newAgent", FIRMWARE_DEFAULT_FILE_NAME = "newSketch";
 const DEFAULT_LINKS_PROTOCOL = "http://";
 const MIND_INSPECTOR_PORT = ":3272", SMA_PORT_PORT = ":3271";
@@ -256,7 +251,7 @@ const UNKNOW_BOARD_MODEL_STRING = 'unknown:unknown:unknown';
 
 export default {
   name: "Project",
-  components: {Header, Toggle, Board, ExplorerFolder, ExplorerFile, Loading, Button, Popup},
+  components: {Coder, Header, Toggle, Board, ExplorerFolder, ExplorerFile, Loading, Button, Popup},
   data() {
     return {
       project: {name: "", agents: [], firmwares: []},
@@ -296,16 +291,6 @@ export default {
     logsUrl() {
       return DEFAULT_LINKS_PROTOCOL + this.domain.domain + SMA_PORT_PORT;
     },
-    lineQuantity() {
-      try {
-        if (this.currentFile.sourceCode === '') {
-          return 1;
-        }
-        return this.currentFile.sourceCode.split(LINE_BREAK_CHAR).length;
-      } catch (error) {
-        return 1;
-      }
-    },
     isCurrentBoardUnknown() {
       if (this.currentBoard == null || this.currentBoard.fqbn == null) {
         return false;
@@ -330,8 +315,6 @@ export default {
           this.agentFileIsOpen = true;
         }
       }
-    }).then(() => {
-      this.$refs.coder.style.height = this.$refs.coderLines.scrollHeight + "px";
     }).catch(() => {
       router.push(Routes.HOME);
     });
@@ -348,29 +331,6 @@ export default {
 
     this.loadLibraries();
     this.loadBoards();
-
-    // Implementação do codador.
-
-    this.$refs.coder.addEventListener("keydown", (event) => {
-      if (event.key === Key.ENTER) {
-        this.$refs.coder.style.height = this.$refs.coderLines.scrollHeight + "px";
-      } else if (event.key === Key.BACKSPACE) {
-        this.$refs.coder.style.height = (this.$refs.coderLines.scrollHeight - project_DIFF_HEIGHT) + "px";
-      } else if (event.key === Key.BRACKET_RIGHT) {
-        this.writeAction(event, `{${POS_CHAR}}`, true);
-      } else if (event.key === Key.SQUARE_BRACKET_RIGHT) {
-        this.writeAction(event, `[${POS_CHAR}]`, true);
-      } else if (event.key === Key.PARENTESIS_RIGHT) {
-        this.writeAction(event, `(${POS_CHAR})`, true);
-      } else if (event.key === Key.TAB) {
-        event.preventDefault();
-        this.writeAction(event, TAB_CHAR, false);
-      } else if (event.key === Key.DOUBLE_BACKQUOTE) {
-        this.writeAction(event, `"${POS_CHAR}"`, true);
-      } else if (event.key === Key.BACKQUOTE) {
-        this.writeAction(event, `'${POS_CHAR}'`, true);
-      }
-    });
   },
   methods: {
     getAgentIcon(agentType) {
@@ -615,27 +575,7 @@ export default {
           this.$emit(AppEvent.MESSAGE, {content: `It was not possible delete library ${library.name}`, type:
               MessageType.ERROR});
       });
-    },
-    writeAction(event, text, setPositionInner) {
-      event.preventDefault();
-      setTimeout(() => {
-        let selectionStart = this.$refs.coder.selectionStart;
-        let beforeText = this.currentFile.sourceCode.substring(0, selectionStart);
-        let afterText = this.currentFile.sourceCode.substring(selectionStart);
-        this.currentFile.sourceCode = beforeText + text + afterText;
-        let selectionPosition;
-
-        if (setPositionInner) {
-          selectionPosition = this.currentFile.sourceCode.indexOf(POS_CHAR);
-          this.currentFile.sourceCode = this.currentFile.sourceCode.replace(POS_CHAR, "");
-        } else {
-          selectionPosition = selectionStart + text.length;
-        }
-        setTimeout(() => {
-          this.$refs.coder.setSelectionRange(selectionPosition, selectionPosition);
-        }, 0)
-      }, 0);
-    },
+    }
   }
 }
 </script>
