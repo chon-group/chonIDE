@@ -1,7 +1,7 @@
 <script>
 import ExplorerFolder from "@/views/Project/explorer/ExplorerFolder.vue";
 import ExplorerFile from "@/views/Project/explorer/ExplorerFile.vue";
-import {AgentType, AppEvent, MessageType} from "@/domain/Enums";
+import {AgentType, AppEvent, FileType, MessageType} from "@/domain/Enums";
 import defaultSourceCode from "@/domain/content/default-source-codes.json";
 import Util from "@/domain/Util";
 import {API, EndPoints, Headers} from "@/domain/API";
@@ -10,30 +10,84 @@ const AGENT_DEFAULT_FILE_NAME = "newAgent", FIRMWARE_DEFAULT_FILE_NAME = "newSke
 
 export default {
     name: "Explorer",
+    computed: {
+        FileType() {
+            return FileType
+        },
+        JavinoLibraryName() {
+            return "Javino";
+        }
+    },
     components: {ExplorerFile, ExplorerFolder},
     props: {
         configuration: {},
-        agents: [],
-        firmwares: [],
+        project: {},
         currentFile: {}
     },
     data() {
         return {
-            libraries: [],
-            firmwareFileIsOpen: true,
-            agentFileIsOpen: true
+            libraries: []
         }
     },
     mounted() {
         this.loadLibraries();
     },
     methods: {
+        projectIsInvalid() {
+            if (this.project.agents.length === 0) {
+                this.$emit(AppEvent.MESSAGE, {content: "Unable to start SMA without agents", type: MessageType.ERROR});
+                return true;
+            }
+
+            let hasSameName = false;
+            for (let agent in this.project.agents) {
+                for (let anotherAgent in this.project.agents) {
+                    if (agent !== anotherAgent && agent.name === anotherAgent.name) {
+                        hasSameName = true;
+                        break;
+                    }
+                }
+                if (hasSameName) {
+                    return;
+                }
+            }
+
+            if (hasSameName) {
+                this.$emit(AppEvent.MESSAGE, {content: "There are agents with the same name", type: MessageType.ERROR});
+                return true;
+            }
+
+            return false;
+        },
+        downloadMas() {
+            if (this.projectIsInvalid()) {
+                return;
+            }
+            API.post(EndPoints.MAS, {responseType: 'blob'}, this.project).then((response) => {
+                if (response.status === 200) {
+                    const filename = this.project.name + ".zip";
+                    const blob = new Blob([response.data]);
+
+                    const url = window.URL.createObjectURL(blob);
+
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+
+                    window.URL.revokeObjectURL(url);
+                }
+            });
+        },
         setCurrentFile(file) {
           this.$emit("setCurrentFile", file);
         },
         addAgentFileAction() {
-            this.project.agents.push({
-                name: AGENT_DEFAULT_FILE_NAME + (this.project.agents.length === 0 ? '' : this.project.agents.length + 1),
+            this.project.agents.push( {
+                name: AGENT_DEFAULT_FILE_NAME + (this.project.agents.length === 0 ? '' : this.project.agents.length +
+                 1),
                 archClass: AgentType.JASON,
                 sourceCode: defaultSourceCode.agent
             });
@@ -50,8 +104,6 @@ export default {
                     files.splice(index, 1);
                     if (files.length === 0) {
                         this.setCurrentFile({name: "No file", sourceCode: ""});
-                        this.agentFileIsOpen = false;
-                        this.firmwareFileIsOpen = false;
                     }
                 } else {
                     this.setCurrentFile(files[index - 1]);
@@ -121,26 +173,43 @@ export default {
 <template>
     <div class="overflow-y-auto p-1.5 h-full">
 
-        <ExplorerFolder v-if="configuration.reasoningLayer" name="Multi-Agent System" :has-add="false" icon="sma.svg"
-                        icon-ratio="13px" :has-download="true" @download="$emit('downloadMas')">
+        <ExplorerFolder
+                v-if="configuration.reasoningLayer"
+
+                name="Multi-Agent System"
+                :has-add="false"
+                icon="sma.svg"
+                icon-ratio="13px"
+                :has-download="true"
+
+                @download="downloadMas"
+        >
             <template v-slot:content>
 
-                <ExplorerFolder name="Agents" @add="addAgentFileAction" add-message="New agent" icon="agents.svg"
-                                icon-ratio="15px">
+                <ExplorerFolder
+                        name="Agents"
+                        add-message="New agent"
+                        icon="agents.svg"
+                        icon-ratio="15px"
+
+                        @add="addAgentFileAction"
+                >
                     <template v-slot:content>
-                        <ExplorerFile v-for="(agent, index) in agents"
-                                      :key="index" :file="agent"
-                                      :icon="getAgentIcon(agent.archClass)"
-                                      icon-ratio="13px"
-                                      @delete="removeFileAction(index, agents)"
-                                      @edit="(editedAgent) => agent = editedAgent"
-                                      :selected="currentFile === agent"
-                                      ref="agents"
-                                      @show="
-                                        setCurrentFile(agent);
-                                        firmwareFileIsOpen = false;
-                                        agentFileIsOpen = true;
-                        "/>
+                        <ExplorerFile
+                                v-for="(agent, index) in project.agents" :key="index" :file="agent"
+                                :icon="getAgentIcon(agent.archClass)"
+                                icon-ratio="13px"
+                                :selected="currentFile === agent"
+                                ref="agents"
+
+                                @delete="removeFileAction(index, project.agents)"
+                                @edit="(editedAgent) => agent = editedAgent"
+                                @show="
+                                    setCurrentFile(agent);
+                                    $emit('fileType', FileType.AGENT);
+                                "
+
+                        />
 
                     </template>
                 </ExplorerFolder>
@@ -148,38 +217,53 @@ export default {
             </template>
         </ExplorerFolder>
 
-        <ExplorerFolder v-if="configuration.firmwareLayer" name="Firmware" @add="addFirmwareFileAction"
-                        add-message="New firmware"
-                        icon="firmwares.svg" icon-ratio="12px">
+        <ExplorerFolder
+                v-if="configuration.firmwareLayer"
+                name="Firmware"
+                add-message="New firmware"
+                icon="firmwares.svg"
+                icon-ratio="12px"
+
+                @add="addFirmwareFileAction"
+        >
             <template v-slot:content>
 
-                <ExplorerFile v-for="(firmware, index) in firmwares"
-                              :key="index" :file="firmware"
-                              @delete="removeFileAction(index, firmwares)"
-                              @edit="(editedFirmware) => firmware = editedFirmware"
-                              icon="ino.svg"
-                              icon-ratio="17px"
-                              ref="firmwares"
-                              :selected="currentFile === firmware"
-                              @show="
-                                  setCurrentFile(firmware);
-                                  firmwareFileIsOpen = true;
-                                  agentFileIsOpen = false;
-                                "/>
+                <ExplorerFile
+                        v-for="(firmware, index) in project.firmwares" :key="index"
+                        :file="firmware"
+                        icon="ino.svg"
+                        icon-ratio="17px"
+                        ref="firmwares"
+                        :selected="currentFile === firmware"
 
-                <ExplorerFolder v-if="configuration.firmwareLibraries" name="Libraries"
-                                @add="importLibrary"
-                                icon="libraries.svg"
-                                icon-ratio="12px"
-                                add-message="New library" has-refresh @refresh="loadLibraries(true)">
+                        @delete="removeFileAction(index, project.firmwares)"
+                        @edit="(editedFirmware) => firmware = editedFirmware"
+                        @show="
+                            setCurrentFile(firmware);
+                            $emit('fileType', FileType.FIRMWARE)
+                        "
+                />
+
+                <ExplorerFolder
+                        v-if="configuration.firmwareLibraries" name="Libraries"
+                        add-message="New library" has-refresh @refresh="loadLibraries(true)"
+                        icon="libraries.svg"
+                        icon-ratio="12px"
+
+                        @add="importLibrary"
+                >
                     <template v-slot:content>
 
-                        <ExplorerFile v-for="(library, index) in libraries"
-                                      :key="index" :file="library" :can-rename="false"
-                                      :can-delete="library.name !== 'Javino'"
-                                      @delete="deleteLibrary(library)"
-                                      icon="library.svg"
-                                      icon-ratio="11px"/>
+                        <ExplorerFile
+                                v-for="(library, index) in libraries" :key="index"
+                                :file="library"
+                                :can-rename="false"
+                                :can-delete="library.name !== JavinoLibraryName"
+                                icon="library.svg"
+                                icon-ratio="11px"
+
+                                @delete="deleteLibrary(library)"
+                        />
 
                     </template>
                 </ExplorerFolder>

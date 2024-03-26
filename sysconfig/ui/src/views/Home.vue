@@ -76,7 +76,7 @@
       </template>
     </Header>
     <div class="flex justify-center items-center h-full w-full m-auto" v-if="loadingProjects">
-      <Loading main-color="var(--pallete-text-main)"/>
+      <Loading main-color="var(--pallete-text-main)" border-width="2px"/>
     </div>
     <div class="project__list" v-show="!loadingProjects">
       <div class="project"

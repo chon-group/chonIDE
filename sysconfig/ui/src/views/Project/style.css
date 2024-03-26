@@ -14,3 +14,21 @@
     transition: opacity 0.1s;
     @apply rounded-md border-none bg-transparent cursor-pointer shrink-0;
 }
+
+.project__header-bar {
+    background-color: var(--pallete-color-black-3);
+    border-bottom: 1px solid var(--pallete-color-black-1);
+    min-height: var(--bar-height);
+    height: var(--bar-height);
+    @apply flex justify-between items-center p-1.5;
+}
+
+.project__header-bar__title {
+    @apply ml-1.5 select-none;
+}
+
+.project-action-separator {
+    height: 20px;
+    width: 1px;
+    background-color: var(--pallete-color-black-4);
+}

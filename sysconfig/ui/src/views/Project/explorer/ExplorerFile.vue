@@ -126,7 +126,7 @@ export default {
       this.$refs["dots-delete-file"].close();
     },
     showFile(event) {
-      if(event.target != this.$refs.dotsButton) {
+      if(event.target !== this.$refs.dotsButton) {
         this.$emit("show");
       }
     },

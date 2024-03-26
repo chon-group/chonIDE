@@ -59,7 +59,7 @@ export default {
       useRipple(this.$refs.dotsButton);
     }
     let currentParent = this.$parent;
-    while (currentParent.$options.name == "ExplorerFolder") {
+    while (currentParent.$options.name === "ExplorerFolder") {
       currentParent = currentParent.$parent;
       this.level++;
     }
