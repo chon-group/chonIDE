@@ -85,7 +85,8 @@ export default {
           this.$emit("setCurrentFile", file);
         },
         addAgentFileAction() {
-            this.project.agents.push( {
+            const agents = this.project.agents;
+            agents.push( {
                 name: AGENT_DEFAULT_FILE_NAME + (this.project.agents.length === 0 ? '' : this.project.agents.length +
                  1),
                 archClass: AgentType.JASON,
@@ -93,7 +94,8 @@ export default {
             });
         },
         addFirmwareFileAction() {
-            this.project.firmwares.push({
+            const firmwares = this.project.firmwares;
+            firmwares.push({
                 name: FIRMWARE_DEFAULT_FILE_NAME,
                 sourceCode: defaultSourceCode.firmware
             });

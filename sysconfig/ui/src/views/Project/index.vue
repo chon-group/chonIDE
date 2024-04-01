@@ -51,9 +51,8 @@
                         :sourceCode="currentFile.sourceCode"
 
                         @sourceCode="currentFile.sourceCode = $event"
-
-                        style="height: calc(100vh - calc(2*var(--bar-height)));"
                 />
+                <Console :domain="domain"/>
             </div>
 
             <Boards
@@ -81,10 +80,11 @@ import Explorer from "@/views/Project/explorer/Explorer.vue";
 import Boards from "@/views/Project/boards/Boards.vue";
 import TabController from "@/views/Project/code/TabController.vue";
 import ProjectHeader from "@/views/Project/ProjectHeader.vue";
+import Console from "@/views/Project/code/Console.vue";
 
 export default {
     name: "Project",
-    components: {ProjectHeader, TabController, Boards, Explorer, Coder, Loading, Popup},
+    components: {Console, ProjectHeader, TabController, Boards, Explorer, Coder, Loading, Popup},
     data() {
         return {
             project: {name: "", agents: [], firmwares: []},

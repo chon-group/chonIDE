@@ -6,7 +6,7 @@ import {API, EndPoints} from "@/domain/API";
 import {AppEvent, MessageType} from "@/domain/Enums";
 
 const DEFAULT_LINKS_PROTOCOL = "http://";
-const MIND_INSPECTOR_PORT = ":3272", SMA_PORT_PORT = ":3271";
+const MIND_INSPECTOR_PORT = ":3272";
 
 export default {
     name: "ProjectHeader",
@@ -25,9 +25,6 @@ export default {
     computed: {
         mindInspectorUrl() {
             return DEFAULT_LINKS_PROTOCOL + this.domain.domain + MIND_INSPECTOR_PORT;
-        },
-        logsUrl() {
-            return DEFAULT_LINKS_PROTOCOL + this.domain.domain + SMA_PORT_PORT;
         }
     },
     methods: {
@@ -127,11 +124,6 @@ export default {
                         icon="mindinspector.svg"
                         icon-ratio="14px"
                         text="Mind Inspector"/>
-                <Button v-if="domain != null && configuration.logMAS"
-                        :link="logsUrl"
-                        icon="terminal.svg"
-                        icon-ratio="14px"
-                        text="Logs"/>
             </div>
         </template>
     </Header>
