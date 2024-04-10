@@ -1,12 +1,13 @@
 <script>
 import Button from "@/components/Button.vue";
+import Dragger from "@/components/Dragger.vue";
 
 const DEFAULT_LINKS_PROTOCOL = "http://";
 const SMA_PORT = ":3271";
 
 export default {
     name: "Console",
-    components: {Button},
+    components: {Dragger, Button},
     props: {
         domain: {}
     },
@@ -25,7 +26,13 @@ export default {
     },
     methods: {
         show() {
-            this.showing = !this.showing;
+            if (this.showing) {
+                this.$el.style.height = "fit-content";
+                this.showing = false;
+            } else {
+                this.$el.removeAttribute("style");
+                this.showing = true;
+            }
         },
         reload() {
             const iframeSrc = this.$refs.iframe.src;
@@ -49,9 +56,11 @@ export default {
 
                         class="console__show-button"
                 />
+                <Button :link="logsUrl" text="Tab"/>
             </div>
         </div>
         <iframe v-show="domain != null && showing" :src="logsUrl" frameborder="0" ref="iframe"></iframe>
+        <Dragger top :min-height="42"/>
     </div>
 </template>
 
@@ -59,10 +68,12 @@ export default {
 
 .console {
     border: 1px solid var(--pallete-color-black-1);
+    border-right: 0;
+    height: 350px;
 }
 
 .console > iframe {
-    min-height: 300px;
+    height: 100%;
 }
 
 </style>

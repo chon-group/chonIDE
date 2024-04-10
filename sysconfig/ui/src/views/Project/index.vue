@@ -1,5 +1,5 @@
 <template>
-    <div class="project flex flex-col h-screen">
+    <div class="project flex flex-col h-screen w-full">
 
         <Popup title="Board response" ref="boardResponse" can-close width="var(--container-width-1)">
             <template v-slot:content>
@@ -13,19 +13,15 @@
                 :configuration="configuration"
                 :domain="domain"
                 :project="project"
+                :saving-project="savingProject"
 
                 @message="$emit(AppEvent.MESSAGE, $event)"
         />
 
-        <div class="flex">
+        <div class="flex w-full h-full">
             <div class="project__left-bar">
                 <div class="project__header-bar">
-                    <span class="project__header-bar__title">{{ project.name }}</span>
-                    <div class="project__project-status">
-                        <Loading v-if="savingProject" border-width="1px" ratio="12px"
-                                 main-color="var(--pallete-text-main)"/>
-                        <img v-else src="@/assets/media/icon/check.svg" style="width: 11px">
-                    </div>
+                    <span class="project__header-bar__title">Explorer</span>
                 </div>
                 <Explorer
                         :configuration="configuration"
@@ -34,12 +30,11 @@
 
                         @setCurrentFile="currentFile = $event"
                         @fileType="currentFileType = $event"
-
-                        style="height: calc(100vh - calc(2 * var(--bar-height)));"
                 />
+                <Dragger right :min-width="300" :max-width="500"/>
             </div>
 
-            <div class="flex flex-col" style="width: calc(100vw - var(--explorer-width))">
+            <div class="flex flex-col flex-grow">
                 <TabController
                         :current-file="currentFile"
                         :current-board="currentBoard"
@@ -59,8 +54,6 @@
                     v-if="currentFileType === FileType.FIRMWARE"
 
                     @selectedBoard="currentBoard = $event"
-
-                    style="calc(100vh - var(--bar-height))"
             />
         </div>
 
@@ -71,7 +64,6 @@
 <script>
 import Util from "@/domain/Util";
 import {AppEvent, FileType} from "@/domain/Enums";
-import Loading from "@/components/Loading";
 import Popup from "@/components/Popup";
 import {API, EndPoints} from "@/domain/API";
 import router, {Routes} from "@/router";
@@ -81,10 +73,11 @@ import Boards from "@/views/Project/boards/Boards.vue";
 import TabController from "@/views/Project/code/TabController.vue";
 import ProjectHeader from "@/views/Project/ProjectHeader.vue";
 import Console from "@/views/Project/code/Console.vue";
+import Dragger from "@/components/Dragger.vue";
 
 export default {
     name: "Project",
-    components: {Console, ProjectHeader, TabController, Boards, Explorer, Coder, Loading, Popup},
+    components: {Dragger, Console, ProjectHeader, TabController, Boards, Explorer, Coder, Popup},
     data() {
         return {
             project: {name: "", agents: [], firmwares: []},
@@ -169,9 +162,9 @@ export default {
 }
 
 .project__left-bar {
-    min-width: var(--explorer-width);
+    min-width: 300px;
     background-color: var(--pallete-color-black-2);
-    @apply flex flex-col;
+    @apply flex flex-col h-full;
 }
 
 </style>

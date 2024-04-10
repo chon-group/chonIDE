@@ -173,8 +173,7 @@ export default {
 </script>
 
 <template>
-    <div class="overflow-y-auto p-1.5 h-full">
-
+    <div class="explorer">
         <ExplorerFolder
                 v-if="configuration.reasoningLayer"
 
@@ -218,7 +217,6 @@ export default {
 
             </template>
         </ExplorerFolder>
-
         <ExplorerFolder
                 v-if="configuration.firmwareLayer"
                 name="Firmware"
@@ -273,3 +271,12 @@ export default {
         </ExplorerFolder>
     </div>
 </template>
+
+<style scoped>
+
+.explorer {
+    flex-basis: 300px;
+    @apply overflow-y-auto p-1.5 w-full flex-grow;
+}
+
+</style>

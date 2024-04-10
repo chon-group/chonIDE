@@ -191,7 +191,7 @@ export default {
   watch: {
     createProjectName(newValue) {
       if (newValue !== "New project") {
-        this.createProjectName = Util.mantainJustLetters(newValue);
+        this.createProjectName = newValue.replace(/[^a-z]/g, "");
       }
     }
   },

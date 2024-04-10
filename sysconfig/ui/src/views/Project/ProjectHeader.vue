@@ -4,17 +4,21 @@ import Button from "@/components/Button.vue";
 import Header from "@/layout/Header.vue";
 import {API, EndPoints} from "@/domain/API";
 import {AppEvent, MessageType} from "@/domain/Enums";
+import Loading from "@/components/Loading.vue";
 
 const DEFAULT_LINKS_PROTOCOL = "http://";
 const MIND_INSPECTOR_PORT = ":3272";
 
 export default {
     name: "ProjectHeader",
-    components: {Header, Button},
+    components: {Loading, Header, Button},
     props: {
         configuration: {},
         domain: {},
-        project: {}
+        project: {},
+        savingProject: {
+            default: false
+        }
     },
     data() {
         return {
@@ -110,6 +114,16 @@ export default {
                         </template>
                     </Button>
                 </router-link>
+            </div>
+        </template>
+        <template v-slot:center>
+            <div class="flex items-center gap-3">
+                <span class="project__header-bar__title">{{ project.name }}</span>
+                <div class="project__project-status">
+                    <Loading v-if="savingProject" border-width="1px" ratio="11px"
+                             main-color="var(--pallete-text-main)"/>
+                    <img v-else src="@/assets/media/icon/check.svg" style="width: 11px" alt="check-icon">
+                </div>
             </div>
         </template>
         <template v-slot:right>

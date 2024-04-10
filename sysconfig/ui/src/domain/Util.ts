@@ -10,10 +10,6 @@ export default class Util {
         return string.replace(/[^a-zA-Z0-9]/g, "");
     }
 
-    public static mantainJustLetters(string: string) {
-        return string.replace(/[^a-zA-Z]/g, "");
-    }
-
     public static isFileInvalid(file: any) {
         return file.name.includes(" ");
     }
