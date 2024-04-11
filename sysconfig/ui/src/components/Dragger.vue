@@ -10,18 +10,6 @@ export default {
     right: Boolean,
     left: Boolean,
     bottom: Boolean,
-    maxHeight: {
-      default: 99999
-    },
-    minHeight: {
-      default: 0
-    },
-    minWidth: {
-      default: 0
-    },
-    maxWidth: {
-      default: 99999
-    }
   },
   data() {
     return {
@@ -75,8 +63,6 @@ export default {
   mounted() {
     let parentElement = this.$el.parentElement;
 
-    parentElement.style.position = "relative";
-
     let img = new Image();
     this.$el.ondragstart = (event) => {
       event.dataTransfer.setDragImage(img, 0, 0);
@@ -89,15 +75,21 @@ export default {
 
     const resize = (event) => {
       if (this.isVertical) {
-        let height = Math.abs(window.innerHeight - event.pageY);
-        if (height < this.maxHeight && height > this.minHeight) {
-          parentElement.style.height = height + "px";
+        let height;
+        if (this.top) {
+          height = Math.abs(window.innerHeight - event.pageY);
+        } else {
+          height = 0
         }
+        parentElement.style.height = height + "px";
       } else if (this.isHorizontal) {
-        let width = event.pageX;
-        if (width < this.maxWidth && width > this.minWidth) {
-          parentElement.style.width = width + "px";
+        let width;
+        if (this.right) {
+          width = event.pageX
+        } else {
+          width = Math.abs(window.innerWidth - event.pageX);
         }
+        parentElement.style.width = width + "px";
       }
     }
 

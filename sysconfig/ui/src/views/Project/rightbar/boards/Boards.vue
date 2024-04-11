@@ -2,13 +2,11 @@
 import Button from "@/components/Button.vue";
 import Loading from "@/components/Loading.vue";
 import {API, EndPoints} from "@/domain/API";
-import Board from "@/views/Project/boards/Board.vue";
-import Dragger from "@/components/Dragger.vue";
-
+import Board from "@/views/Project/rightbar/boards/Board.vue";
 
 export default {
     name: "Boards",
-    components: {Dragger, Board, Loading, Button},
+    components: {Board, Loading, Button},
     data() {
       return {
           loadingBoards: false,
@@ -61,16 +59,14 @@ export default {
                     @click="$emit('selectedBoard', board)"/>
         </div>
     </div>
-    <Dragger left :min-width="300" :max-width="500"/>
 </template>
 
 <style scoped>
 @import "@/views/Project/style.css";
 
 .boards {
-    min-width: 300px;
     background-color: var(--pallete-color-black-2);
     border-left: 1px solid var(--pallete-color-black-1);
-    @apply flex flex-col overflow-y-auto h-full;
+    @apply flex flex-col overflow-y-auto h-full w-full;
 }
 </style>

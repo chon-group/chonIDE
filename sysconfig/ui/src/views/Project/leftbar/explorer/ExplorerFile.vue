@@ -153,7 +153,7 @@ export default {
 </script>
 
 <style scoped>
-@import "@/views/Project/style.css";
+@import "@/views/Project/leftbar/explorer/style.css";
 
 .coder__explorer__item.selected {
   background-color: var(--pallete-color-black-3);

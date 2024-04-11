@@ -3,7 +3,7 @@
     <div class="coder__explorer__folder-name coder__explorer__item flex items-center pr-1">
       <div class="h-full w-full flex justify-between items-center" @click="folderOpen = !folderOpen">
         <div class="flex gap-2.5 items-center w-full">
-          <img src="../../../assets/media/icon/toggle.svg" :class="`coder__explorer__item__toggle
+          <img src="../../../../assets/media/icon/toggle.svg" :class="`coder__explorer__item__toggle
              ${folderOpen ? 'open' : ''}`">
           <img class="coder__explorer__folder__icon" v-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)"/>
           <span>{{ name }}</span>
@@ -97,7 +97,7 @@ export default {
 </script>
 
 <style scoped>
-@import "@/views/Project/style.css";
+@import "@/views/Project/leftbar/explorer/style.css";
 
 .coder__explorer__folder-name {
   @apply pl-2.5;

@@ -1,14 +1,5 @@
 <template>
     <div class="project flex flex-col h-screen w-full">
-
-        <Popup title="Board response" ref="boardResponse" can-close width="var(--container-width-1)">
-            <template v-slot:content>
-                <div class="project__compiled-response">
-                    {{ boardResponse }}
-                </div>
-            </template>
-        </Popup>
-
         <ProjectHeader
                 :configuration="configuration"
                 :domain="domain"
@@ -19,20 +10,18 @@
         />
 
         <div class="flex w-full h-full">
-            <div class="project__left-bar">
-                <div class="project__header-bar">
-                    <span class="project__header-bar__title">Explorer</span>
-                </div>
-                <Explorer
-                        :configuration="configuration"
-                        :project="project"
-                        :current-file="currentFile"
+            <LeftBar
+                    :configuration="configuration"
+                    :project="project"
+                    :current-file="currentFile"
 
-                        @setCurrentFile="currentFile = $event"
-                        @fileType="currentFileType = $event"
-                />
-                <Dragger right :min-width="300" :max-width="500"/>
-            </div>
+                    @addFirmware="addFirmware"
+                    @removeFirmware="removeFirmware"
+                    @addAgent="addAgent"
+                    @removeAgent="removeAgent"
+                    @setCurrentFile="currentFile = $event"
+                    @setFileType="currentFileType = $event"
+            />
 
             <div class="flex flex-col flex-grow">
                 <TabController
@@ -50,9 +39,8 @@
                 <Console :domain="domain"/>
             </div>
 
-            <Boards
-                    v-if="currentFileType === FileType.FIRMWARE"
-
+            <RightBar
+                    :current-file-type="currentFileType"
                     @selectedBoard="currentBoard = $event"
             />
         </div>
@@ -64,24 +52,22 @@
 <script>
 import Util from "@/domain/Util";
 import {AppEvent, FileType} from "@/domain/Enums";
-import Popup from "@/components/Popup";
 import {API, EndPoints} from "@/domain/API";
 import router, {Routes} from "@/router";
-import Coder from "@/views/Project/code/Coder.vue";
-import Explorer from "@/views/Project/explorer/Explorer.vue";
-import Boards from "@/views/Project/boards/Boards.vue";
-import TabController from "@/views/Project/code/TabController.vue";
-import ProjectHeader from "@/views/Project/ProjectHeader.vue";
-import Console from "@/views/Project/code/Console.vue";
-import Dragger from "@/components/Dragger.vue";
+import Coder from "@/views/Project/main/Coder.vue";
+import TabController from "@/views/Project/main/TabController.vue";
+import ProjectHeader from "@/views/Project/header/ProjectHeader.vue";
+import Console from "@/views/Project/main/Console.vue";
+import LeftBar from "@/views/Project/leftbar/LeftBar.vue";
+import RightBar from "@/views/Project/rightbar/RightBar.vue";
 
 export default {
     name: "Project",
-    components: {Dragger, Console, ProjectHeader, TabController, Boards, Explorer, Coder, Popup},
+    components: {RightBar, LeftBar, Console, ProjectHeader, TabController, Coder},
     data() {
         return {
             project: {name: "", agents: [], firmwares: []},
-            currentFile: {name: "No file", sourceCode: ""},
+            currentFile: this.mountNoSelectedFile(),
             currentBoard: null,
             currentFileType: FileType.AGENT,
             domain: null,
@@ -110,15 +96,49 @@ export default {
             return FileType;
         }
     },
+    methods: {
+        mountNoSelectedFile() {
+            return {name: "No file", sourceCode: ""};
+        },
+        addAgent(agent) {
+            this.project.agents.push(agent);
+        },
+        removeAgent(index) {
+            this.removeFile(index, this.project.agents);
+        },
+        addFirmware(firmware) {
+            this.project.firmwares.push(firmware);
+        },
+        removeFirmware(index) {
+            this.removeFile(index, this.project.firmwares);
+        },
+        removeFile(index, files) {
+            if (this.currentFile === files[index]) {
+                if (index === 0) {
+                    files.splice(index, 1);
+                    if (files.length === 0) {
+                        this.currentFile = this.mountNoSelectedFile();
+                    }
+                } else {
+                    this.currentFile = files[index - 1];
+                    files.splice(index, 1);
+                }
+            } else {
+                files.splice(index, 1);
+            }
+        }
+    },
     setup() {
         Util.setTitle("Project");
         API.loadToken();
     },
     mounted() {
-        API.get(EndPoints.PROJECTS, true, {params: {projectId: this.$route.params.id, getType: 1}}).then((response) => {
+        const id = this.$route.params.id;
+
+        API.get(EndPoints.PROJECTS, true, {params: {projectId: id, getType: 1}}).then((response) => {
             if (response.data.status === 200) {
                 this.project = response.data.data;
-                this.project.id = this.$route.params.id;
+                this.project.id = id;
 
                 Util.setTitle(this.project.name);
 
@@ -146,25 +166,8 @@ export default {
 <style scoped>
 
 .project {
-    --explorer-width: 300px;
     --bar-height: 42px;
     @apply overflow-y-hidden;
-}
-
-.project__compiled-response {
-    background-color: var(--pallete-color-black-3);
-    word-break: break-word;
-    @apply p-2.5 rounded-sm text-xl;
-}
-
-.project__project-status {
-    @apply select-none mr-1.5;
-}
-
-.project__left-bar {
-    min-width: 300px;
-    background-color: var(--pallete-color-black-2);
-    @apply flex flex-col h-full;
 }
 
 </style>

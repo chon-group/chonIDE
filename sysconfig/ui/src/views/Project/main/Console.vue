@@ -23,14 +23,20 @@ export default {
             }
             return DEFAULT_LINKS_PROTOCOL + this.domain.domain + SMA_PORT;
         },
+        closedHeight() {
+            return "41px";
+        },
+        openHeight() {
+            return "350px";
+        }
     },
     methods: {
         show() {
             if (this.showing) {
-                this.$el.style.height = "fit-content";
+                this.$el.style.height = this.openHeight;
                 this.showing = false;
             } else {
-                this.$el.removeAttribute("style");
+                this.$el.style.height = this.closedHeight;
                 this.showing = true;
             }
         },
@@ -59,8 +65,8 @@ export default {
                 <Button :link="logsUrl" text="Tab"/>
             </div>
         </div>
-        <iframe v-show="domain != null && showing" :src="logsUrl" frameborder="0" ref="iframe"></iframe>
-        <Dragger top :min-height="42"/>
+        <iframe v-show="domain != null" :src="logsUrl" frameborder="0" ref="iframe"></iframe>
+        <Dragger top/>
     </div>
 </template>
 
@@ -69,7 +75,9 @@ export default {
 .console {
     border: 1px solid var(--pallete-color-black-1);
     border-right: 0;
-    height: 350px;
+    min-height: v-bind(closedHeight);
+    height: v-bind(openHeight);
+    @apply relative;
 }
 
 .console > iframe {

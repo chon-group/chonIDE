@@ -234,4 +234,10 @@ export default {
     @apply overflow-hidden whitespace-nowrap shrink-0 mr-2.5 select-none;
 }
 
+.project__compiled-response {
+    background-color: var(--pallete-color-black-3);
+    word-break: break-word;
+    @apply p-2.5 rounded-sm text-xl;
+}
+
 </style>

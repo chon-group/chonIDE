@@ -1,10 +1,10 @@
 <script>
-import ExplorerFolder from "@/views/Project/explorer/ExplorerFolder.vue";
-import ExplorerFile from "@/views/Project/explorer/ExplorerFile.vue";
+import ExplorerFolder from "@/views/Project/leftbar/explorer/ExplorerFolder.vue";
+import ExplorerFile from "@/views/Project/leftbar/explorer/ExplorerFile.vue";
 import {AgentType, AppEvent, FileType, MessageType} from "@/domain/Enums";
 import defaultSourceCode from "@/domain/content/default-source-codes.json";
-import Util from "@/domain/Util";
 import {API, EndPoints, Headers} from "@/domain/API";
+import validateProject from "@/views/Project/util";
 
 const AGENT_DEFAULT_FILE_NAME = "newAgent", FIRMWARE_DEFAULT_FILE_NAME = "newSketch";
 
@@ -33,34 +33,8 @@ export default {
         this.loadLibraries();
     },
     methods: {
-        projectIsInvalid() {
-            if (this.project.agents.length === 0) {
-                this.$emit(AppEvent.MESSAGE, {content: "Unable to start SMA without agents", type: MessageType.ERROR});
-                return true;
-            }
-
-            let hasSameName = false;
-            for (let agent in this.project.agents) {
-                for (let anotherAgent in this.project.agents) {
-                    if (agent !== anotherAgent && agent.name === anotherAgent.name) {
-                        hasSameName = true;
-                        break;
-                    }
-                }
-                if (hasSameName) {
-                    return;
-                }
-            }
-
-            if (hasSameName) {
-                this.$emit(AppEvent.MESSAGE, {content: "There are agents with the same name", type: MessageType.ERROR});
-                return true;
-            }
-
-            return false;
-        },
         downloadMas() {
-            if (this.projectIsInvalid()) {
+            if (validateProject(this.$emit, this.project)) {
                 return;
             }
             API.post(EndPoints.MAS, {responseType: 'blob'}, this.project).then((response) => {
@@ -81,12 +55,8 @@ export default {
                 }
             });
         },
-        setCurrentFile(file) {
-          this.$emit("setCurrentFile", file);
-        },
         addAgentFileAction() {
-            const agents = this.project.agents;
-            agents.push( {
+            this.$emit("addAgent", {
                 name: AGENT_DEFAULT_FILE_NAME + (this.project.agents.length === 0 ? '' : this.project.agents.length +
                  1),
                 archClass: AgentType.JASON,
@@ -94,26 +64,13 @@ export default {
             });
         },
         addFirmwareFileAction() {
-            const firmwares = this.project.firmwares;
-            firmwares.push({
+            this.$emit("addFirmware", {
                 name: FIRMWARE_DEFAULT_FILE_NAME,
                 sourceCode: defaultSourceCode.firmware
             });
         },
-        removeFileAction(index, files) {
-            if (this.currentFile === files[index]) {
-                if (index === 0) {
-                    files.splice(index, 1);
-                    if (files.length === 0) {
-                        this.setCurrentFile({name: "No file", sourceCode: ""});
-                    }
-                } else {
-                    this.setCurrentFile(files[index - 1]);
-                    files.splice(index, 1);
-                }
-            } else {
-                files.splice(index, 1);
-            }
+        isFileInvalid(file) {
+            return file.name.includes(" ")
         },
         importLibrary() {
             let libraryInput = document.createElement('input');
@@ -121,15 +78,18 @@ export default {
             libraryInput.click();
             libraryInput.onchange = (event) => {
                 let files = event.target.files;
+
                 if (files.length === 0) {
                     this.$emit(AppEvent.MESSAGE, {content: "No file selected", type: MessageType.WARNING});
                     return;
                 }
+
                 let libraryFile = files[0];
-                if (Util.isFileInvalid(libraryFile)) {
+                if (this.isFileInvalid(libraryFile)) {
                     this.$emit(AppEvent.MESSAGE, {content: "File name cannot have space", type: MessageType.ERROR});
                     return;
                 }
+
                 API.post(EndPoints.LIBRARIES_IMPORT, Headers.MULTIPART_CONFIG, {file: libraryFile}).then((response) => {
                     if (response.data.status === 200) {
                         this.$emit(AppEvent.MESSAGE, {
@@ -203,11 +163,11 @@ export default {
                                 :selected="currentFile === agent"
                                 ref="agents"
 
-                                @delete="removeFileAction(index, project.agents)"
+                                @delete="$emit('removeAgent', index)"
                                 @edit="(editedAgent) => agent = editedAgent"
                                 @show="
-                                    setCurrentFile(agent);
-                                    $emit('fileType', FileType.AGENT);
+                                    $emit('setCurrentFile', agent);
+                                    $emit('setFileType', FileType.AGENT);
                                 "
 
                         />
@@ -236,11 +196,11 @@ export default {
                         ref="firmwares"
                         :selected="currentFile === firmware"
 
-                        @delete="removeFileAction(index, project.firmwares)"
+                        @delete="$emit('removeFirmware', index)"
                         @edit="(editedFirmware) => firmware = editedFirmware"
                         @show="
-                            setCurrentFile(firmware);
-                            $emit('fileType', FileType.FIRMWARE)
+                            $emit('setCurrentFile', firmware);
+                            $emit('setFileType', FileType.FIRMWARE)
                         "
                 />
 
@@ -275,7 +235,7 @@ export default {
 <style scoped>
 
 .explorer {
-    flex-basis: 300px;
+    flex-basis: 0;
     @apply overflow-y-auto p-1.5 w-full flex-grow;
 }
 

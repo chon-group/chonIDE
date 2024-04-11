@@ -5,6 +5,7 @@ import Header from "@/layout/Header.vue";
 import {API, EndPoints} from "@/domain/API";
 import {AppEvent, MessageType} from "@/domain/Enums";
 import Loading from "@/components/Loading.vue";
+import validateProject from "@/views/Project/util";
 
 const DEFAULT_LINKS_PROTOCOL = "http://";
 const MIND_INSPECTOR_PORT = ":3272";
@@ -32,34 +33,8 @@ export default {
         }
     },
     methods: {
-        projectIsInvalid() {
-            if (this.project.agents.length === 0) {
-                this.$emit(AppEvent.MESSAGE, {content: "Unable to start SMA without agents", type: MessageType.ERROR});
-                return true;
-            }
-
-            let hasSameName = false;
-            for (let agent in this.project.agents) {
-                for (let anotherAgent in this.project.agents) {
-                    if (agent !== anotherAgent && agent.name === anotherAgent.name) {
-                        hasSameName = true;
-                        break;
-                    }
-                }
-                if (hasSameName) {
-                    return;
-                }
-            }
-
-            if (hasSameName) {
-                this.$emit(AppEvent.MESSAGE, {content: "There are agents with the same name", type: MessageType.ERROR});
-                return true;
-            }
-
-            return false;
-        },
         startMas() {
-            if (this.projectIsInvalid()) {
+            if (validateProject(this.$emit, this.project)) {
                 return;
             }
             this.startingMas = true;
@@ -122,7 +97,7 @@ export default {
                 <div class="project__project-status">
                     <Loading v-if="savingProject" border-width="1px" ratio="11px"
                              main-color="var(--pallete-text-main)"/>
-                    <img v-else src="@/assets/media/icon/check.svg" style="width: 11px" alt="check-icon">
+                    <img v-else src="../../../assets/media/icon/check.svg" style="width: 11px" alt="check-icon">
                 </div>
             </div>
         </template>

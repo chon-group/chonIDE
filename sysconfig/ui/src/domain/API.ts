@@ -81,7 +81,7 @@ export class API {
 
 }
 
-const URL = "/chonide";
+const URL = "https://labredes.bot.chon.group:3270/chonide";
 const API_PREFIX = "/api";
 const API_URL = URL + API_PREFIX;
 

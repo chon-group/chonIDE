@@ -90,7 +90,7 @@ export default {
     font-family: 'JetBrains Mono', monospace;
     background-color: var(--pallete-color-black-1);
     border-left: 1px solid var(--pallete-color-black-1);
-    flex-basis: 100px;
+    flex-basis: 0;
     @apply flex overflow-y-scroll flex-grow;
 }
 
