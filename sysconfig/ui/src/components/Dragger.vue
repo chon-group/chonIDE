@@ -46,10 +46,16 @@ export default {
       }
     },
     transform() {
-      if (this.isVertical) {
+      if (this.top) {
         return "translateY(-50%)";
-      } else {
+      } else if (this.bottom) {
+        return "translateY(50%)";
+      } else if (this.right) {
         return "translateX(50%)";
+      } else if (this.left) {
+        return "translateX(-50%)";
+      } else {
+        return "";
       }
     },
     cursor() {
