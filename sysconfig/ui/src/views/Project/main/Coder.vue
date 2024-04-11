@@ -91,7 +91,7 @@ export default {
     background-color: var(--pallete-color-black-1);
     border-left: 1px solid var(--pallete-color-black-1);
     flex-basis: 0;
-    @apply flex overflow-y-scroll flex-grow;
+    @apply flex overflow-y-scroll flex-grow select-none;
 }
 
 .coder__lines {

@@ -33,9 +33,11 @@ export default {
     methods: {
         show() {
             if (this.showing) {
+                this.$refs.showButton.$el.style.transform = "rotate(0deg)";
                 this.$el.style.height = this.openHeight;
                 this.showing = false;
             } else {
+                this.$refs.showButton.$el.style.transform = "rotate(180deg)";
                 this.$el.style.height = this.closedHeight;
                 this.showing = true;
             }
@@ -49,23 +51,23 @@ export default {
 </script>
 
 <template>
-    <div class="console flex flex-col">
+    <div class="console flex flex-col" v-show="domain != null">
         <div class="project__header-bar">
             <span class="project__header-bar__title">Agent Tracer</span>
             <div class="flex gap-2.6" v-if="domain != null">
-                <Button icon="refresh.svg" icon-ratio="13px" side-padding="12px" @click="reload"/>
+                <Button icon="refresh.svg" icon-ratio="13px" @click="reload"/>
                 <Button
-                        icon="terminal.svg"
-                        icon-ratio="16px"
+                        icon="arrow.svg"
+                        icon-ratio="12px"
 
                         @click="show"
 
-                        class="console__show-button"
+                        class="console__show-button" ref="showButton"
                 />
-                <Button :link="logsUrl" text="Tab"/>
+                <Button :link="logsUrl" icon="tab.svg" icon-ratio="11px"/>
             </div>
         </div>
-        <iframe v-show="domain != null" :src="logsUrl" frameborder="0" ref="iframe"></iframe>
+        <iframe :src="logsUrl" frameborder="0" ref="iframe"></iframe>
         <Dragger top/>
     </div>
 </template>
@@ -77,7 +79,7 @@ export default {
     border-right: 0;
     min-height: v-bind(closedHeight);
     height: v-bind(openHeight);
-    @apply relative;
+    @apply relative select-none;
 }
 
 .console > iframe {
