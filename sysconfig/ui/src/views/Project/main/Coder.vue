@@ -88,22 +88,20 @@ export default {
 
 .coder {
     font-family: 'JetBrains Mono', monospace;
-    background-color: var(--pallete-color-black-1);
     border-left: 1px solid var(--pallete-color-black-1);
     flex-basis: 0;
-    @apply flex overflow-y-scroll flex-grow select-none;
+    @apply flex overflow-y-auto flex-grow select-none;
 }
 
 .coder__lines {
     min-width: 68px;
     background-color: var(--pallete-color-black-2);
     color: var(--pallete-text-aside);
-    border-right: 5px solid var(--pallete-color-black-3);
     @apply min-h-full h-fit flex flex-col py-5;
 }
 
 .coder__text {
-    background-color: var(--pallete-color-black-1);
+    background-color: var(--pallete-color-black-2);
     color: var(--pallete-text-main);
     font-size: 14px;
     line-height: 1;

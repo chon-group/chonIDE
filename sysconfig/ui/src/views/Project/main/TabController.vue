@@ -170,33 +170,41 @@ export default {
             </template>
         </Popup>
 
-        <div type="text" class="tab-controller__file">
-            <div class="tab-controller__selected-file"></div>
-            <span class="tab-controller__file__name">
-              {{ currentFile.name }}
-            </span>
-            <div class="project-action-separator" v-if="currentFile.name !== 'No file'"></div>
+        <div class="flex w-full h-full">
+            <div type="text" class="tab-controller__file">
+                <div class="tab-controller__selected-file"></div>
+                <span class="tab-controller__file__name">
+                  {{ currentFile.name }}
+                </span>
+                <div class="project-action-separator" v-if="currentFile.name !== 'No file'"></div>
 
-            <Button icon="toggle.svg" icon-ratio="8px" icon-sense="right" v-if="currentFileType === FileType.AGENT">
-                <template v-slot:content>
-                    {{ this.currentFile.archClass }}
-                    <Toggle parent-position select
-                            @select="(selected) => $emit('changeArchClass', selected)"
-                            :selected="this.currentFile.archClass">
-                        <template v-slot:options>
-                            <button v-for="(agentType, index) in AgentTypes()"
-                                    :key="index">
-                                {{ agentType }}
-                            </button>
-                        </template>
-                    </Toggle>
-                </template>
-            </Button>
-            <div class="flex" v-if="currentFileType === FileType.FIRMWARE">
-                <Button icon="check.svg" icon-ratio="11px" @click="compileSketch" :is-loading="compilingSketch"
-                        text="Compile"/>
-                <Button icon="upload.svg" icon-ratio="11px" @click="deploySketch" :is-loading="deployingSketch"
-                        v-if="currentBoard != null" text="Deploy"/>
+                <Button icon="toggle.svg" icon-ratio="8px" icon-sense="right" v-if="currentFileType === FileType.AGENT">
+                    <template v-slot:content>
+                        {{ this.currentFile.archClass }}
+                        <Toggle parent-position select
+                                @select="(selected) => $emit('changeArchClass', selected)"
+                                :selected="this.currentFile.archClass">
+                            <template v-slot:options>
+                                <button v-for="(agentType, index) in AgentTypes()"
+                                        :key="index">
+                                    {{ agentType }}
+                                </button>
+                            </template>
+                        </Toggle>
+                    </template>
+                </Button>
+                <div class="flex" v-if="currentFileType === FileType.FIRMWARE">
+                    <Button icon="check.svg" icon-ratio="11px" @click="compileSketch" :is-loading="compilingSketch"
+                            text="Compile"/>
+                    <Button icon="upload.svg" icon-ratio="11px" @click="deploySketch" :is-loading="deployingSketch"
+                            v-if="currentBoard != null" text="Deploy"/>
+                </div>
+            </div>
+            <div class="tab-controller-background">
+
+            </div>
+            <div class="tab-controller__right">
+
             </div>
         </div>
     </div>
@@ -206,17 +214,44 @@ export default {
 @import "@/views/Project/style.css";
 
 .tab-controller {
-    width: 100%;
     height: var(--bar-height);
+    @apply flex items-center justify-between relative w-full;
+}
+
+.tab-controller-background {
+    @apply absolute h-full w-full;
+}
+
+.tab-controller-background::before {
+    content: "";
+    display: block;
+    background-color: var(--pallete-color-black-1);
+    height: 50%;
+    bottom: 0;
+    width: 100%;
+}
+
+.tab-controller-background::after {
+    content: "";
+    display: block;
     background-color: var(--pallete-color-black-2);
-    border-bottom: 1px solid var(--pallete-color-black-1);
-    border-left: 1px solid var(--pallete-color-black-1);
-    @apply flex items-center justify-between;
+    top: 0;
+    height: 50%;
+    width: 100%;
+}
+
+.tab-controller__right {
+    background-color: var(--pallete-color-black-1);
+    border-bottom-left-radius: 10px;
+    z-index: 2;
+    @apply w-full h-full;
 }
 
 .tab-controller__file {
-    background-color: var(--pallete-color-black-3);
-    @apply flex h-full items-center p-1.5 pl-2.5 gap-1.5 rounded-r-md;
+    background-color: var(--pallete-color-black-2);
+    border-top-right-radius: 10px;
+    z-index: 2;
+    @apply flex h-full items-center p-1.5 pl-2.5 gap-1.5;
 }
 
 .tab-controller__selected-file {
@@ -228,7 +263,6 @@ export default {
 
 .tab-controller__file__name {
     max-width: 125px;
-    background-color: var(--pallete-color-black-3);
     color: var(--pallete-text-main);
     text-overflow: ellipsis;
     @apply overflow-hidden whitespace-nowrap shrink-0 mr-2.5 select-none;

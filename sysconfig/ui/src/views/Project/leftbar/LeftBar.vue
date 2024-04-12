@@ -39,6 +39,8 @@ export default {
 .project__left-bar {
     min-width: 300px;
     max-width: 50vw;
+    background-color: var(--pallete-color-black-1);
+    border-right: 1px solid var(--pallete-color-black-4);
     @apply flex flex-col h-full relative;
 }
 

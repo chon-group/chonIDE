@@ -23,7 +23,7 @@
                     @setFileType="currentFileType = $event"
             />
 
-            <div class="flex flex-col flex-grow">
+            <div class="flex flex-col flex-grow" v-if="currentFile != null">
                 <TabController
                         :current-file="currentFile"
                         :current-board="currentBoard"
@@ -37,6 +37,9 @@
                         @sourceCode="currentFile.sourceCode = $event"
                 />
                 <Console :domain="domain"/>
+            </div>
+            <div class="flex items-center justify-center w-full h-full" v-else>
+                <span class="text-aside">Start creating a new agent or firmware file</span>
             </div>
 
             <RightBar
@@ -67,7 +70,7 @@ export default {
     data() {
         return {
             project: {name: "", agents: [], firmwares: []},
-            currentFile: this.mountNoSelectedFile(),
+            currentFile: null,
             currentBoard: null,
             currentFileType: FileType.AGENT,
             domain: null,
@@ -97,9 +100,6 @@ export default {
         }
     },
     methods: {
-        mountNoSelectedFile() {
-            return {name: "No file", sourceCode: ""};
-        },
         addAgent(agent) {
             this.project.agents.push(agent);
         },
@@ -117,7 +117,7 @@ export default {
                 if (index === 0) {
                     files.splice(index, 1);
                     if (files.length === 0) {
-                        this.currentFile = this.mountNoSelectedFile();
+                        this.currentFile = null;
                     }
                 } else {
                     this.currentFile = files[index - 1];
@@ -144,6 +144,8 @@ export default {
 
                 if (this.project.agents.length > 0) {
                     this.currentFile = this.project.agents[0];
+                } else if (this.project.firmwares.length > 0) {
+                    this.currentFile = this.project.firmwares[0];
                 }
             }
         }).catch(() => {

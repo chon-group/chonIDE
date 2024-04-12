@@ -22,8 +22,8 @@ export default {
 <style scoped>
 
 .header {
-  background-color: var(--pallete-color-black-3);
-  border-bottom: 1px solid var(--pallete-color-black-1);
+  background-color: var(--pallete-color-black-2);
+  border-bottom: 1px solid var(--pallete-color-black-4);
   @apply shrink-0 flex justify-between items-center w-full h-fit sticky top-0 p-1.5;
 }
 

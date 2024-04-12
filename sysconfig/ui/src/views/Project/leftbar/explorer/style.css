@@ -5,7 +5,7 @@
 }
 
 .coder__explorer__item:hover{
-    background-color: var(--pallete-color-black-3);
+    background-color: var(--pallete-color-black-2);
 }
 
 .coder__explorer__action-button {

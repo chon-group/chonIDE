@@ -1,6 +1,5 @@
 .project__header-bar {
-    background-color: var(--pallete-color-black-3);
-    border-bottom: 1px solid var(--pallete-color-black-1);
+    background-color: var(--pallete-color-black-1);
     min-height: var(--bar-height);
     height: var(--bar-height);
     @apply flex justify-between items-center p-1.5;
@@ -13,5 +12,5 @@
 .project-action-separator {
     height: 20px;
     width: 1px;
-    background-color: var(--pallete-color-black-5);
+    background-color: var(--pallete-color-black-4);
 }

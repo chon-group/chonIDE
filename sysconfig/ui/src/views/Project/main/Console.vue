@@ -75,8 +75,7 @@ export default {
 <style>
 
 .console {
-    border: 1px solid var(--pallete-color-black-1);
-    border-right: 0;
+    border-top: 1px solid var(--pallete-color-black-4);
     min-height: v-bind(closedHeight);
     height: v-bind(openHeight);
     @apply relative select-none;

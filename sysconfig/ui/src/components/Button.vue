@@ -29,7 +29,7 @@ export default {
     text: String,
     mainColor: Boolean,
     color: {
-      default: "var(--pallete-color-black-3)",
+      default: "transparent",
       required: false,
       type: String
     },

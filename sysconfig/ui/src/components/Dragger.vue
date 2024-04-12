@@ -112,23 +112,11 @@ export default {
 .dragger {
   height: v-bind(height);
   width: v-bind(width);
-  opacity: 0;
-  background-color: rgba(255, 255, 255, 0.2);
   position: absolute;
-  transition: opacity 0.1s;
   inset: v-bind(inset);
   transform: v-bind(transform);
+  cursor: v-bind(cursor);
   @apply z-10;
-}
-
-.dragger:hover {
-  opacity: 100%;
-  cursor: v-bind(cursor);
-}
-
-.dragger:active {
-  opacity: 100%;
-  cursor: v-bind(cursor);
 }
 
 </style>

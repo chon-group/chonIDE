@@ -154,6 +154,8 @@ export default {
                         icon-ratio="15px"
 
                         @add="addAgentFileAction"
+
+                        :class="currentFile == null ? 'select' : ''"
                 >
                     <template v-slot:content>
                         <ExplorerFile
