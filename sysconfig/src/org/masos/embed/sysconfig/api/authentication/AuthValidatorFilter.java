@@ -26,9 +26,6 @@ public class AuthValidatorFilter implements Filter {
     /** Padrão do valor de cabeçalho de autenticação */
     private static final Pattern AUTHORIZATION_HEADER_VALUE_PATTERN = Pattern.compile("Bearer ([\\s\\S]+)");
 
-    /** Tempo seguro da última requisição em relação ao tempo de expiração. */
-    private static final long LAST_REQUISITION_SAFE_TIME = 300000;
-
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
@@ -74,17 +71,15 @@ public class AuthValidatorFilter implements Filter {
             return;
         }
         long expirationTime = authenticatedUser.getExpirationDate().getTime();
-        if (date.getTime() >= expirationTime) {
-            long lastRequisitionTime = authenticatedUser.getLastRequisitionDate().getTime();
-            if (expirationTime - LAST_REQUISITION_SAFE_TIME <= lastRequisitionTime) {
-                resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                responseEntity.status(HttpServletResponse.SC_FORBIDDEN).message("Session ended.").date(date);
-                ResponseUtil.writeText(resp, JsonManager.get().toJson(responseEntity));
-                resp.getOutputStream().close();
-                SecurityContextHolder.get().getAuthenticatedUsersByToken().remove(jwt);
-                return;
-            }
-            authenticatedUser.setExpirationDate(new Date(System.currentTimeMillis() + EXPIRATION_TIME));
+        if (date.getTime() > expirationTime) {
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            responseEntity.status(HttpServletResponse.SC_FORBIDDEN).message("Session ended.").date(date);
+            ResponseUtil.writeText(resp, JsonManager.get().toJson(responseEntity));
+            resp.getOutputStream().close();
+            SecurityContextHolder.get().getAuthenticatedUsersByToken().remove(jwt);
+            return;
+        } else {
+            authenticatedUser.setExpirationDate(new Date(date.getTime() + EXPIRATION_TIME));
         }
         req.setAttribute("user", authenticatedUser);
         chain.doFilter(request, response);

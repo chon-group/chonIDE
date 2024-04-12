@@ -61,7 +61,6 @@ public class AuthGeneratorServlet extends ApiController {
             }
             AuthenticatedUser newAuthenticatedUser = new AuthenticatedUser(executor, jwt);
             newAuthenticatedUser.setExpirationDate(date);
-            newAuthenticatedUser.setLastRequisitionDate(date);
             SecurityContextHolder.get().getAuthenticatedUsersByToken().put(jwt, newAuthenticatedUser);
             return responseEntity.status(HttpServletResponse.SC_OK).message("Authenticated user").data(jwt);
         } else {

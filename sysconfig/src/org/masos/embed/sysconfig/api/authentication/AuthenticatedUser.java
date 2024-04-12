@@ -21,7 +21,4 @@ public class AuthenticatedUser {
     /** Data de expiração de acesso ao sistema. */
     private Date expirationDate;
 
-    /** Data da última requisição feita. */
-    private Date lastRequisitionDate;
-
 }
