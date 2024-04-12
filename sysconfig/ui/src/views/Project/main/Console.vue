@@ -32,14 +32,14 @@ export default {
     },
     methods: {
         show() {
-            if (this.showing) {
+            if (!this.showing) {
                 this.$refs.showButton.$el.style.transform = "rotate(0deg)";
                 this.$el.style.height = this.openHeight;
-                this.showing = false;
+                this.showing = true;
             } else {
                 this.$refs.showButton.$el.style.transform = "rotate(180deg)";
                 this.$el.style.height = this.closedHeight;
-                this.showing = true;
+                this.showing = false;
             }
         },
         reload() {
