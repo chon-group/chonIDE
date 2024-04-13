@@ -25,6 +25,7 @@ export default {
         return {
             startingMas: false,
             stopingMas: false,
+            smaRunning: false
         }
     },
     computed: {
@@ -48,6 +49,7 @@ export default {
                     type: MessageType.SUCCESS
                 });
             }).finally(() => {
+                this.$emit("smaRunning", true);
                 this.startingMas = false;
             });
         },
@@ -60,6 +62,7 @@ export default {
                     this.$emit(AppEvent.MESSAGE, {content: response.data.message, type: MessageType.SUCCESS});
                 }
             }).finally(() => {
+                this.$emit("smaRunning", false);
                 this.stopingMas = false;
             });
         },

@@ -7,6 +7,7 @@
                 :saving-project="savingProject"
 
                 @message="$emit(AppEvent.MESSAGE, $event)"
+                @smaRunning="smaRunning = $event"
         />
 
         <div class="flex w-full h-full">
@@ -44,6 +45,8 @@
 
             <RightBar
                     :current-file-type="currentFileType"
+                    :domain="domain"
+                    :sma-running="smaRunning"
                     @selectedBoard="currentBoard = $event"
             />
         </div>
@@ -70,12 +73,13 @@ export default {
     data() {
         return {
             project: {name: "", agents: [], firmwares: []},
-            currentFile: null,
+            currentFile: {name:"", sourceCode: ""},
             currentBoard: null,
             currentFileType: FileType.AGENT,
             domain: null,
             savingProject: false,
             configuration: {},
+            smaRunning: false
         }
     },
     watch: {
@@ -117,7 +121,7 @@ export default {
                 if (index === 0) {
                     files.splice(index, 1);
                     if (files.length === 0) {
-                        this.currentFile = null;
+                        this.currentFile = {name:"", sourceCode: ""};
                     }
                 } else {
                     this.currentFile = files[index - 1];

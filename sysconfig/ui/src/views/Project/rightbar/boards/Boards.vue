@@ -66,7 +66,6 @@ export default {
 
 .boards {
     background-color: var(--pallete-color-black-1);
-    border-left: 1px solid var(--pallete-color-black-4);
     @apply flex flex-col overflow-y-auto h-full w-full;
 }
 </style>
