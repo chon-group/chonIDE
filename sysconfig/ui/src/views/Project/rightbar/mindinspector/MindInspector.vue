@@ -1,14 +1,13 @@
 <script>
-import Button from "@/components/Button.vue";
 import axios from "axios";
 import Agent from "@/views/Project/rightbar/mindinspector/Agent.vue";
 
 const DEFAULT_LINKS_PROTOCOL = "http://";
-const PORT = ":3273";
+const PORT = ":3275";
 
 export default {
     name: "MindInpector",
-    components: {Agent, Button},
+    components: {Agent},
     props: {
         domain: {}
     },
@@ -23,7 +22,7 @@ export default {
             if (this.domain == null) {
                 return null;
             }
-            return DEFAULT_LINKS_PROTOCOL + this.domain.domain + PORT + "/api/agents";
+            return DEFAULT_LINKS_PROTOCOL + this.domain.domain + PORT + "/mindinspector/agents";
         }
     },
     beforeUnmount() {
@@ -49,10 +48,16 @@ export default {
     <div class="flex flex-col h-full w-full">
         <div class="project__header-bar">
             <span class="project__header-bar__title">Mind Inspector</span>
-            <Button icon="refresh.svg" icon-ratio="13px" side-padding="12px"/>
         </div>
         <div v-if="agents != null" class="mindinspector__agents">
-            <Agent v-for="(agent, index) in agents" :agent="agent" :key="index"/>
+            <Agent
+                v-for="(agent, index) in agents"
+
+                :agent="agent"
+                :key="index"
+
+                @highlightAgentFile="$emit('highlightAgentFile', $event)"
+            />
         </div>
         <div v-else class="flex justify-center items-center h-full w-full">
             <span class="text-aside">Collecting data...</span>
@@ -64,7 +69,7 @@ export default {
 
 .mindinspector__agents {
     flex-basis: 0;
-    @apply flex flex-col flex-grow overflow-y-auto;
+    @apply flex flex-col flex-grow overflow-y-auto select-none;
 }
 
 .mindinspector__agents:last-child {

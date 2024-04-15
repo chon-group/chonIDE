@@ -34,8 +34,12 @@
                 />
                 <Coder
                         :sourceCode="currentFile.sourceCode"
+                        :selected-lines="selectedLines"
+                        :sma-running="smaRunning"
 
                         @sourceCode="currentFile.sourceCode = $event"
+
+                        @message="$emit(AppEvent.MESSAGE, $event)"
                 />
                 <Console :domain="domain"/>
             </div>
@@ -47,6 +51,8 @@
                     :current-file-type="currentFileType"
                     :domain="domain"
                     :sma-running="smaRunning"
+
+                    @highlightAgentFile="highlightAgentFile"
                     @selectedBoard="currentBoard = $event"
             />
         </div>
@@ -56,6 +62,8 @@
 </template>
 
 <script>
+/* eslint-disable */
+
 import Util from "@/domain/Util";
 import {AppEvent, FileType} from "@/domain/Enums";
 import {API, EndPoints} from "@/domain/API";
@@ -79,7 +87,8 @@ export default {
             domain: null,
             savingProject: false,
             configuration: {},
-            smaRunning: false
+            smaRunning: false,
+            selectedLines: { beginLine: 0, endLine: 0}
         }
     },
     watch: {
@@ -104,6 +113,21 @@ export default {
         }
     },
     methods: {
+        highlightAgentFile(agentFile) {
+            for(let i = 0; i < this.project.agents.length; i++) {
+                let agent = this.project.agents[i];
+                if (agent.name === agentFile.agentName) {
+                    this.currentFile = agent;
+                    break;
+                }
+            }
+            this.selectedLines.beginLine = agentFile.beginLine;
+            this.selectedLines.endLine = agentFile.endLine;
+            setTimeout(() => {
+                this.selectedLines.beginLine = 0;
+                this.selectedLines.endLine = 0;
+            }, 500);
+        },
         addAgent(agent) {
             this.project.agents.push(agent);
         },

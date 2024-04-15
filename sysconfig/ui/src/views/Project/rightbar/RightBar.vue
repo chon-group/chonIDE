@@ -31,7 +31,7 @@ export default {
 
 <template>
     <div class="right-bar" v-if="show">
-        <MindInpector v-if="showMindInspector" :domain="domain"/>
+        <MindInpector v-if="showMindInspector" :domain="domain" @highlightAgentFile="$emit('highlightAgentFile', $event)"/>
         <Boards @selectedBoard="$emit('selectedBoard', $event)" v-else-if="showBoards"/>
         <Dragger left/>
     </div>
@@ -40,7 +40,6 @@ export default {
 <style scoped>
 
 .right-bar {
-    max-width: 50vw;
     min-width: 300px;
     border-left: 1px solid var(--pallete-color-black-4);
     @apply flex flex-col h-full relative;
