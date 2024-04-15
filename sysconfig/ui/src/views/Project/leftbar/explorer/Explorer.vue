@@ -237,7 +237,7 @@ export default {
 <style scoped>
 
 .explorer {
-    flex-basis: 0;
+    min-width: 300px;
     @apply overflow-y-auto p-1.5 w-full flex-grow;
 }
 

@@ -2,8 +2,8 @@
 import Button from "@/components/Button.vue";
 import Dragger from "@/components/Dragger.vue";
 
-const DEFAULT_LINKS_PROTOCOL = "http://";
-const SMA_PORT = ":3271";
+const DEFAULT_LINKS_PROTOCOL = "https://";
+const SMA_PORT = ":3371";
 
 export default {
     name: "Console",

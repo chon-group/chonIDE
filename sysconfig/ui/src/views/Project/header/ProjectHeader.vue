@@ -100,22 +100,16 @@ export default {
                 <div class="project__project-status">
                     <Loading v-if="savingProject" border-width="1px" ratio="11px"
                              main-color="var(--pallete-text-main)"/>
-                    <img v-else src="../../../assets/media/icon/check.svg" style="width: 11px" alt="check-icon">
+                    <img v-else src="@/assets/media/icon/check.svg" style="width: 11px" alt="check-icon">
                 </div>
             </div>
         </template>
         <template v-slot:right>
             <div class="flex items-center gap-1.5 h-full">
-                <Button v-if="configuration.startMAS" icon="start.svg" icon-ratio="11px" @click="startMas"
+                <Button v-if="configuration.startMAS" icon="start.svg" icon-ratio="12px" @click="startMas"
                         :is-loading="startingMas"/>
-                <Button v-if="configuration.stopMAS" icon="stop.svg" icon-ratio="11px" @click="stopMas"
+                <Button v-if="configuration.stopMAS" icon="stop.svg" icon-ratio="12px" @click="stopMas"
                         :is-loading="stopingMas"/>
-                <div class="project-action-separator"></div>
-                <Button v-if="domain != null && configuration.mindInspector"
-                        :link="mindInspectorUrl"
-                        icon="mindinspector.svg"
-                        icon-ratio="14px"
-                        text="Mind Inspector"/>
             </div>
         </template>
     </Header>

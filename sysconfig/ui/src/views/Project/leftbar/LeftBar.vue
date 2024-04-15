@@ -14,7 +14,7 @@ export default {
 </script>
 
 <template>
-    <div class="project__left-bar">
+    <div class="left-bar">
         <div class="project__header-bar">
             <span class="project__header-bar__title">Explorer</span>
         </div>
@@ -36,10 +36,11 @@ export default {
 
 <style scoped>
 
-.project__left-bar {
-    min-width: 300px;
+.left-bar {
     background-color: var(--pallete-color-black-1);
     border-right: 1px solid var(--pallete-color-black-4);
+    min-width: 50px;
+    width: 300px;
     @apply flex flex-col h-full relative;
 }
 

@@ -24,7 +24,8 @@
                     @setFileType="currentFileType = $event"
             />
 
-            <div class="flex flex-col flex-grow" v-if="currentFile != null">
+            <div class="main"
+                 v-if="currentFile.name.length !== 0 && currentFile.sourceCode.length !== 0 ">
                 <TabController
                         :current-file="currentFile"
                         :current-board="currentBoard"
@@ -41,7 +42,7 @@
 
                         @message="$emit(AppEvent.MESSAGE, $event)"
                 />
-                <Console :domain="domain"/>
+                <Console :domain="domain" ref="console"/>
             </div>
             <div class="flex items-center justify-center w-full h-full" v-else>
                 <span class="text-aside">Start creating a new agent or firmware file</span>
@@ -146,6 +147,8 @@ export default {
                     files.splice(index, 1);
                     if (files.length === 0) {
                         this.currentFile = {name:"", sourceCode: ""};
+                    } else {
+                        this.currentFile = files[index];
                     }
                 } else {
                     this.currentFile = files[index - 1];
@@ -198,6 +201,11 @@ export default {
 .project {
     --bar-height: 42px;
     @apply overflow-y-hidden;
+}
+
+.main {
+    min-width: 50px;
+    @apply flex flex-col flex-grow;
 }
 
 </style>

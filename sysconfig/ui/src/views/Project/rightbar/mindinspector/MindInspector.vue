@@ -69,6 +69,7 @@ export default {
 
 .mindinspector__agents {
     flex-basis: 0;
+    z-index: 5;
     @apply flex flex-col flex-grow overflow-y-auto select-none;
 }
 
