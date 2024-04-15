@@ -24,7 +24,8 @@
                     @setFileType="currentFileType = $event"
             />
 
-            <div class="flex flex-col flex-grow" v-if="currentFile != null">
+            <div class="flex flex-col flex-grow"
+                 v-if="currentFile.name.length !== 0 && currentFile.sourceCode.length !== 0 ">
                 <TabController
                         :current-file="currentFile"
                         :current-board="currentBoard"
@@ -146,6 +147,8 @@ export default {
                     files.splice(index, 1);
                     if (files.length === 0) {
                         this.currentFile = {name:"", sourceCode: ""};
+                    } else {
+                        this.currentFile = files[index];
                     }
                 } else {
                     this.currentFile = files[index - 1];

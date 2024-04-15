@@ -21,16 +21,12 @@ export default {
     },
     watch: {
         sourceCode() {
-            this.$refs.coder.value = this.sourceCode;
-            if (this.sourceCode === '') {
-                this.lineQuantity = 1;
-            } else {
-                this.lineQuantity = this.sourceCode.split(LINE_BREAK_CHAR).length;
-            }
-            this.$refs.coder.style.height = ((this.lineQuantity * 18) + 40) + "px";
+            this.loadSourceCode();
         }
     },
     mounted() {
+        this.loadSourceCode();
+
         this.$refs.coder.addEventListener("keyup", (event) => {
             let currentSourceCode = event.target.value;
             this.$emit("sourceCode", currentSourceCode);
@@ -62,6 +58,15 @@ export default {
         });
     },
     methods: {
+        loadSourceCode() {
+            this.$refs.coder.value = this.sourceCode;
+            if (this.sourceCode === '') {
+                this.lineQuantity = 1;
+            } else {
+                this.lineQuantity = this.sourceCode.split(LINE_BREAK_CHAR).length;
+            }
+            this.$refs.coder.style.height = ((this.lineQuantity * 18) + 40) + "px";
+        },
         writeAction(event, text, setPositionInner) {
             event.preventDefault();
             setTimeout(() => {
