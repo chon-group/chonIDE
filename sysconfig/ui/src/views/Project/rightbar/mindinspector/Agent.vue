@@ -203,7 +203,6 @@ export default {
 }
 
 .agent__plan__show {
-    font-size: 11px;
     color: var(--pallete-text-aside);
     @apply whitespace-nowrap font-bold;
 }

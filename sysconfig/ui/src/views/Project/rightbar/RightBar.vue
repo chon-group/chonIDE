@@ -42,6 +42,7 @@ export default {
 .right-bar {
     min-width: 300px;
     border-left: 1px solid var(--pallete-color-black-4);
+    z-index: 5;
     @apply flex flex-col h-full relative;
 }
 

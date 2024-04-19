@@ -24,8 +24,11 @@
                     @setFileType="currentFileType = $event"
             />
 
-            <div class="main"
-                 v-if="currentFile.name.length !== 0 && currentFile.sourceCode.length !== 0 ">
+            <div v-if="currentFile.name.length === 0 && currentFile.sourceCode.length === 0"
+             class="flex items-center justify-center w-full h-full">
+                <span class="text-aside">Start creating a new agent or firmware file</span>
+            </div>
+            <div class="main" v-else>
                 <TabController
                         :current-file="currentFile"
                         :current-board="currentBoard"
@@ -43,9 +46,6 @@
                         @message="$emit(AppEvent.MESSAGE, $event)"
                 />
                 <Console :domain="domain" ref="console"/>
-            </div>
-            <div class="flex items-center justify-center w-full h-full" v-else>
-                <span class="text-aside">Start creating a new agent or firmware file</span>
             </div>
 
             <RightBar

@@ -25,12 +25,8 @@ export default {
         return {
             startingMas: false,
             stopingMas: false,
-            smaRunning: false
-        }
-    },
-    computed: {
-        mindInspectorUrl() {
-            return DEFAULT_LINKS_PROTOCOL + this.domain.domain + MIND_INSPECTOR_PORT;
+            smaRunning: false,
+            restart: false
         }
     },
     methods: {
@@ -50,6 +46,7 @@ export default {
                 });
             }).finally(() => {
                 this.$emit("smaRunning", true);
+                this.smaRunning = true;
                 this.startingMas = false;
             });
         },
@@ -63,6 +60,7 @@ export default {
                 }
             }).finally(() => {
                 this.$emit("smaRunning", false);
+                this.smaRunning = false;
                 this.stopingMas = false;
             });
         },
@@ -106,7 +104,8 @@ export default {
         </template>
         <template v-slot:right>
             <div class="flex items-center gap-1.5 h-full">
-                <Button v-if="configuration.startMAS" icon="start.svg" icon-ratio="12px" @click="startMas"
+                <Button v-if="configuration.startMAS" icon="start.svg" icon-ratio="12px"
+                        @click="startMas"
                         :is-loading="startingMas"/>
                 <Button v-if="configuration.stopMAS" icon="stop.svg" icon-ratio="12px" @click="stopMas"
                         :is-loading="stopingMas"/>

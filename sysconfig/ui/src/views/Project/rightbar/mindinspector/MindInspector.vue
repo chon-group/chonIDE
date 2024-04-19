@@ -2,8 +2,8 @@
 import axios from "axios";
 import Agent from "@/views/Project/rightbar/mindinspector/Agent.vue";
 
-const DEFAULT_LINKS_PROTOCOL = "http://";
-const PORT = ":3275";
+const DEFAULT_LINKS_PROTOCOL = "https://";
+const PORT = ":3375";
 
 export default {
     name: "MindInpector",
@@ -45,7 +45,7 @@ export default {
 </script>
 
 <template>
-    <div class="flex flex-col h-full w-full">
+    <div class="mindinspector">
         <div class="project__header-bar">
             <span class="project__header-bar__title">Mind Inspector</span>
         </div>
@@ -67,9 +67,12 @@ export default {
 
 <style scoped>
 
+.mindinspector {
+    @apply flex flex-col h-full w-full;
+}
+
 .mindinspector__agents {
     flex-basis: 0;
-    z-index: 5;
     @apply flex flex-col flex-grow overflow-y-auto select-none;
 }
 

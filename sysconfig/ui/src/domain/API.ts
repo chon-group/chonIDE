@@ -3,10 +3,6 @@ import {uuid} from "vue-uuid"
 import router from "@/router";
 import {Routes} from "@/router/routes";
 
-axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
-axios.defaults.headers.put['Access-Control-Allow-Origin'] = '*';
-axios.defaults.headers.delete['Access-Control-Allow-Origin'] = '*';
-axios.defaults.headers.get['Access-Control-Allow-Origin'] = '*';
 
 export class API {
 

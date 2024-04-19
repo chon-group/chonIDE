@@ -83,6 +83,7 @@ export default {
 
 .console > iframe {
     height: 100%;
+    @apply ml-3;
 }
 
 </style>

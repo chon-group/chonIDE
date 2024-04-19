@@ -3,7 +3,7 @@
              :is="element" :href="link" target="_blank" draggable="false">
     <Loading v-if="isLoading" ratio="14px" border-width="1px" aside-color="rgba(255,255,255,0.2)"
              main-color="white"/>
-    <img v-else-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)" class="button__icon">
+    <img v-else-if="icon != null" :src="iconUrl" class="button__icon">
     <span v-if="this.$slots.content == null && this.text != null">{{text}}</span>
     <slot name="content"></slot>
   </component>
@@ -54,6 +54,9 @@ export default {
     },
   },
   computed: {
+    iconUrl() {
+      return require(`@/assets/media/icon/${this.icon}`);
+    },
     element() {
       return this.link != null ? "a" : "span";
     },

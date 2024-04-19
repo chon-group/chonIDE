@@ -132,7 +132,7 @@ export default {
     font-size: 14px;
     line-height: 18px;
     box-sizing: border-box;
-    white-space: nowrap;
+    white-space: pre;
     @apply min-h-full w-full border-none resize-none overflow-y-hidden p-5;
 }
 
