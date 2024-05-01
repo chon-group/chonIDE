@@ -166,7 +166,7 @@ export default {
     mounted() {
         const id = this.$route.params.id;
 
-        API.get(EndPoints.PROJECTS, true, {params: {projectId: id, getType: 1}}).then((response) => {
+        API.get(EndPoints.PROJECTS, {params: {projectId: id, getType: 1}}).then((response) => {
             if (response.data.status === 200) {
                 this.project = response.data.data;
                 this.project.id = id;
@@ -183,7 +183,7 @@ export default {
             router.push(Routes.HOME);
         });
 
-        API.get(EndPoints.CONFIGURATION, false).then((response) => {
+        API.get(EndPoints.CONFIGURATION).then((response) => {
             if (response.data.status === 200) {
                 this.configuration = response.data.data;
             }

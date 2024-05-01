@@ -29,14 +29,7 @@ export class API {
         axios.defaults.headers.common["Authorization"] = "Bearer " + token;
     }
 
-    public static get(url: string, update = true, config = {}) {
-        const urlKey = uuid.v5(url, API.NAMESPACE);
-        const cacheResponse = localStorage.getItem(urlKey);
-        if (cacheResponse != null && !update) {
-            const response = {data: {}};
-            response.data = JSON.parse(cacheResponse);
-            return Promise.resolve(response);
-        }
+    public static get(url: string, config = {}) {
         return this.validate(axios.get(url, config)).then((response) => {
             if (response.status >= 200 && response.status < 300) {
                 try {
@@ -44,14 +37,9 @@ export class API {
                 } catch (ignored) {
                     //
                 }
-                localStorage.setItem(urlKey, JSON.stringify(response.data));
             }
             return response;
         });
-    }
-
-    public static getWithoutLocalStorage(url: string, config = {}) {
-        return this.validate(axios.get(url, config));
     }
 
     public static post(url: string, config = {}, data = {}) {

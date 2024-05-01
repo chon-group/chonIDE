@@ -201,7 +201,7 @@ export default {
 
         <div class="agent__content">
             <span class="agent__content__title">Plans</span>
-            <div class="agent__content__items flex-col" v-if="agent.plans.length > 0">
+            <div class="agent__content__items" v-if="agent.plans.length > 0">
                 <div :class="['agent__content__item', 'agent__plan', plan.triggered ? 'triggered' : '']"
                      v-for="(plan, index) in agent.plans"
 
@@ -289,7 +289,7 @@ export default {
 }
 
 .agent__content__items {
-    @apply flex flex-wrap ml-2 gap-2 items-start;
+    @apply flex flex-col ml-2 gap-2 items-start;
 }
 
 .agent__content__item {

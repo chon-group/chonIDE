@@ -221,7 +221,7 @@ export default {
         useRipple(button);
       })
     });
-    API.get(EndPoints.CONFIGURATION, false).then((response) => {
+    API.get(EndPoints.CONFIGURATION).then((response) => {
       if (response.data.status == 200) {
         this.configuration = response.data.data;
       }
@@ -302,7 +302,7 @@ export default {
       }
     },
     downloadProject(project) {
-        API.getWithoutLocalStorage(EndPoints.PROJECTS, {params: {projectId: project.id, getType: 2}, responseType:
+        API.get(EndPoints.PROJECTS,{params: {projectId: project.id, getType: 2}, responseType:
                 'blob'})
             .then((response) => {
             if (response.status === 200) {
