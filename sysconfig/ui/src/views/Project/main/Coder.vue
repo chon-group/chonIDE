@@ -4,7 +4,7 @@ import {AppEvent, Key, MessageType} from "@/domain/Enums";
 
 const LINE_BREAK_CHAR = "\n";
 const TAB_CHAR = "\t";
-const POS_CHAR = "$";
+const POS_CHAR = "~$~";
 
 export default {
     name: "Coder",
