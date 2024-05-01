@@ -53,7 +53,8 @@ export default {
             <Agent
                 v-for="(agent, index) in agents"
 
-                :agent="agent"
+                :agentData="agent"
+                :agents-url="url"
                 :key="index"
 
                 @highlightAgentFile="$emit('highlightAgentFile', $event)"
