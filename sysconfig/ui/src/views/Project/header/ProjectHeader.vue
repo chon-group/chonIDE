@@ -1,9 +1,10 @@
 <script>
 
 import Button from "@/components/Button.vue";
-import Header from "@/layout/Header.vue";
-import {API, EndPoints} from "@/domain/API";
-import {AppEvent, MessageType} from "@/domain/Enums";
+import Header from "@/components/layout/Header.vue";
+import {Api} from "@/services/chonide/api";
+import {EndPoints} from "@/services/chonide/endPoints";
+import {AppEvent, MessageType} from "@/utils/enums";
 import Loading from "@/components/Loading.vue";
 import validateProject from "@/views/Project/util";
 
@@ -35,7 +36,7 @@ export default {
                 return;
             }
             this.startingMas = true;
-            API.put(EndPoints.MAS, {
+            Api.put(EndPoints.MAS, {
                 params: {
                     action: "start"
                 }
@@ -52,7 +53,7 @@ export default {
         },
         stopMas() {
             this.stopingMas = true;
-            API.put(EndPoints.MAS, {params: {action: "stop"}}).then((response) => {
+            Api.put(EndPoints.MAS, {params: {action: "stop"}}).then((response) => {
                 if (response.data.status === 202) {
                     this.$emit(AppEvent.MESSAGE, {content: response.data.message, type: MessageType.WARNING});
                 } else {

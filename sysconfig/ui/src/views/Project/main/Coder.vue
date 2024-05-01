@@ -1,6 +1,6 @@
 <script>
 
-import {AppEvent, Key, MessageType} from "@/domain/Enums";
+import {AppEvent, Key, MessageType} from "@/utils/enums";
 
 const LINE_BREAK_CHAR = "\n";
 const TAB_CHAR = "\t";

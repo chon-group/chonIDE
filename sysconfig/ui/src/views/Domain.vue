@@ -35,11 +35,12 @@
 
 <script>
 
-import Util from "@/domain/Util";
+import GeneralUtil from "@/utils/generalUtil";
 import Button from "@/components/Button";
-import {AppEvent, MessageType} from "@/domain/Enums"
-import {API, EndPoints} from "@/domain/API";
-import Header from "@/layout/Header";
+import {AppEvent, MessageType} from "@/utils/enums"
+import {Api} from "@/services/chonide/api";
+import {EndPoints} from "@/services/chonide/endPoints";
+import Header from "@/components/layout/Header";
 import {Routes} from "@/router/routes";
 
 
@@ -64,15 +65,15 @@ export default {
   },
   watch: {
     domain(newValue) {
-      this.domain = Util.mantainJustRegularCharacters(newValue).toLowerCase();
+      this.domain = GeneralUtil.mantainJustRegularCharacters(newValue).toLowerCase();
     }
   },
   setup() {
-    Util.setTitle("Bot name");
-    API.loadToken();
+    GeneralUtil.setTitle("Bot name");
+    Api.loadToken();
   },
   mounted() {
-    API.get(EndPoints.USERS_FIRST_ACCESS).then((response) => {
+    Api.get(EndPoints.USERS_FIRST_ACCESS).then((response) => {
       this.isFirstAccess = Boolean(response.data.data);
     });
   },
@@ -86,7 +87,7 @@ export default {
         return;
       }
       this.loading = true;
-      API.post(EndPoints.DOMAINS, {params: {domain: this.domain}}).then(() => {
+      Api.post(EndPoints.DOMAINS, {params: {domain: this.domain}}).then(() => {
         this.$emit(AppEvent.MESSAGE, {content: "Your bot name was successfully saved", type: MessageType.SUCCESS});
         this.$router.push(Routes.CONNECT);
       });

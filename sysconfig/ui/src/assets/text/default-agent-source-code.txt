@@ -1,0 +1,9 @@
+/* Initial beliefs and rules */
+
+/* Initial goals */
+
+!start.
+
+/* Plans */
+
++!start <- .print("Never Send A Human To Do A Machine's Job!").

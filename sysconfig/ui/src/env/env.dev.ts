@@ -1,0 +1,1 @@
+export const backendUrl = "https://labredes.bot.chon.group:3270/chonide";

@@ -11,7 +11,7 @@
 
 <script>
 import Loading from "@/components/Loading";
-import {removeRipple, useRipple} from "@/composable/Ripple";
+import {removeRipple, useRipple} from "@/assets/js/effects/ripple";
 
 export default {
   name: 'Button',

@@ -1,4 +1,4 @@
-export default class Util {
+export default class GeneralUtil {
 
     private static TITLE_SUFFIX = " - chonIDE";
 

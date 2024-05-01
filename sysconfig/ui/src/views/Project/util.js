@@ -1,4 +1,4 @@
-import {AppEvent, MessageType} from "@/domain/Enums";
+import {AppEvent, MessageType} from "@/utils/enums";
 
 export default function validateProject(emitter, project) {
     if (project.agents.length === 0) {

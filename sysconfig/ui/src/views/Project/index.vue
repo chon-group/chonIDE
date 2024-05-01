@@ -65,9 +65,10 @@
 <script>
 /* eslint-disable */
 
-import Util from "@/domain/Util";
-import {AppEvent, FileType} from "@/domain/Enums";
-import {API, EndPoints} from "@/domain/API";
+import GeneralUtil from "@/utils/generalUtil";
+import {AppEvent, FileType} from "@/utils/enums";
+import {Api} from "@/services/chonide/api";
+import {EndPoints} from "@/services/chonide/endPoints";
 import router, {Routes} from "@/router";
 import Coder from "@/views/Project/main/Coder.vue";
 import TabController from "@/views/Project/main/TabController.vue";
@@ -96,7 +97,7 @@ export default {
         project: {
             async handler(newProjectValue) {
                 this.savingProject = true;
-                await API.put(EndPoints.PROJECTS, {}, newProjectValue).then(() => {
+                await Api.put(EndPoints.PROJECTS, {}, newProjectValue).then(() => {
                     setTimeout(() => {
                         this.savingProject = false;
                     }, 100);
@@ -160,18 +161,18 @@ export default {
         }
     },
     setup() {
-        Util.setTitle("Project");
-        API.loadToken();
+        GeneralUtil.setTitle("Project");
+        Api.loadToken();
     },
     mounted() {
         const id = this.$route.params.id;
 
-        API.get(EndPoints.PROJECTS, {params: {projectId: id, getType: 1}}).then((response) => {
+        Api.get(EndPoints.PROJECTS, {params: {projectId: id, getType: 1}}).then((response) => {
             if (response.data.status === 200) {
                 this.project = response.data.data;
                 this.project.id = id;
 
-                Util.setTitle(this.project.name);
+                GeneralUtil.setTitle(this.project.name);
 
                 if (this.project.agents.length > 0) {
                     this.currentFile = this.project.agents[0];
@@ -183,13 +184,13 @@ export default {
             router.push(Routes.HOME);
         });
 
-        API.get(EndPoints.CONFIGURATION).then((response) => {
+        Api.get(EndPoints.CONFIGURATION).then((response) => {
             if (response.data.status === 200) {
                 this.configuration = response.data.data;
             }
         });
 
-        API.get(EndPoints.DOMAINS).then((response) => {
+        Api.get(EndPoints.DOMAINS).then((response) => {
             this.domain = response.data.data;
         });
     }

@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import {removeRipple, useRipple} from "@/composable/Ripple";
+import {removeRipple, useRipple} from "@/assets/js/effects/ripple";
 
 export default {
   name: "Board",

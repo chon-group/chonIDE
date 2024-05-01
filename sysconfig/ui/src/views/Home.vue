@@ -163,15 +163,17 @@
 </template>
 
 <script>
-import {API, EndPoints, Headers} from "@/domain/API";
-import Util from "@/domain/Util";
-import {AppEvent, Key, MessageType} from "@/domain/Enums";
+import {Api} from "@/services/chonide/api";
+import {EndPoints} from "@/services/chonide/endPoints";
+import {Headers} from "@/services/request";
+import GeneralUtil from "@/utils/generalUtil";
+import {AppEvent, Key, MessageType} from "@/utils/enums";
 import Toggle from "@/components/Toggle";
 import projectNamesColor from "@/assets/css/project-names-color.json";
-import Header from "@/layout/Header";
+import Header from "@/components/layout/Header";
 import Button from "@/components/Button";
 import Popup from "@/components/Popup";
-import {removeRipple, useRipple} from "@/composable/Ripple";
+import {removeRipple, useRipple} from "@/assets/js/effects/ripple";
 import {Routes} from "@/router/routes";
 import Loading from "@/components/Loading.vue";
 
@@ -203,8 +205,8 @@ export default {
     }
   },
   setup() {
-    Util.setTitle("Home");
-    API.loadToken();
+    GeneralUtil.setTitle("Home");
+    Api.loadToken();
   },
   beforeUnmount() {
     removeRipple(this.$refs.letterNewProject);
@@ -216,7 +218,7 @@ export default {
     })
   },
   mounted() {
-    API.get(EndPoints.PROJECTS).then((response) => {
+    Api.get(EndPoints.PROJECTS).then((response) => {
       this.projects = response.data.data;
     }).then(() => {
       this.loadingProjects = false;
@@ -228,7 +230,7 @@ export default {
         useRipple(button);
       })
     });
-    API.get(EndPoints.CONFIGURATION).then((response) => {
+    Api.get(EndPoints.CONFIGURATION).then((response) => {
       if (response.data.status == 200) {
         this.configuration = response.data.data;
       }
@@ -258,7 +260,7 @@ export default {
               return;
           }
           let projectFile = files[0];
-          API.post(EndPoints.PROJECTS_IMPORT, Headers.MULTIPART_CONFIG, {file: projectFile}).then((response) => {
+          Api.post(EndPoints.PROJECTS_IMPORT, Headers.MULTIPART_CONFIG, {file: projectFile}).then((response) => {
               if (response.status === 201) {
                   this.projects.push(response.data.data);
                   this.$emit(AppEvent.MESSAGE, {
@@ -294,10 +296,10 @@ export default {
         return;
       }
       if (event.code == Key.ENTER) {
-        API.put(EndPoints.PROJECTS, {}, project);
+        Api.put(EndPoints.PROJECTS, {}, project);
         this.$refs.inputProject[index].blur();
       } else {
-        project.name = Util.mantainJustRegularCharacters(project.name);
+        project.name = GeneralUtil.mantainJustRegularCharacters(project.name);
       }
     },
     selectCreatedProject(index) {
@@ -309,7 +311,7 @@ export default {
       }
     },
     downloadProject(project) {
-        API.get(EndPoints.PROJECTS,{params: {projectId: project.id, getType: 2}, responseType:
+        Api.get(EndPoints.PROJECTS,{params: {projectId: project.id, getType: 2}, responseType:
                 'blob'})
             .then((response) => {
             if (response.status === 200) {
@@ -330,7 +332,7 @@ export default {
         })
     },
     deleteProject(projectId, projectIndex) {
-      API.delete(EndPoints.PROJECTS, {params: {projectId: projectId}}).then((response) => {
+      Api.delete(EndPoints.PROJECTS, {params: {projectId: projectId}}).then((response) => {
         if (response.data.status == 200) {
           this.projects.splice(projectIndex, 1);
         }
@@ -345,7 +347,7 @@ export default {
         this.$emit("message", {type: MessageType.WARNING, content: "A project with that name already exists"});
         return;
       }
-      API.post(EndPoints.PROJECTS, {params: {projectName: this.createProjectName}}).then((response) => {
+      Api.post(EndPoints.PROJECTS, {params: {projectName: this.createProjectName}}).then((response) => {
         if (response.data.status == 200) {
           this.projects.push(response.data.data);
           this.setDefaultNewProjet();
@@ -359,20 +361,20 @@ export default {
     },
     turnOffSystem() {
       this.$emit(AppEvent.MESSAGE, {content: "Shutting down system", type: MessageType.WARNING});
-      API.put(EndPoints.SYSTEM_POWEROFF);
+      Api.put(EndPoints.SYSTEM_POWEROFF);
       setTimeout(() => {
           this.$router.push(Routes.LOGIN);
       }, 2000);
     },
     resetSystem() {
       this.$emit(AppEvent.MESSAGE, {content: "Rebooting system", type: MessageType.WARNING});
-      API.put(EndPoints.SYSTEM_REBOOT);
+      Api.put(EndPoints.SYSTEM_REBOOT);
       setTimeout(() => {
           this.$router.push(Routes.LOGIN);
       }, 2000);
     },
     logout() {
-      API.delete(EndPoints.USERS).then(() => {
+      Api.delete(EndPoints.USERS).then(() => {
           this.$router.push(Routes.LOGIN);
       });
     },

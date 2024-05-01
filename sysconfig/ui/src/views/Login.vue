@@ -45,11 +45,12 @@
 </template>
 
 <script>
-import Util from "@/domain/Util";
-import {AppEvent, MessageType} from "@/domain/Enums"
+import GeneralUtil from "@/utils/generalUtil";
+import {AppEvent, MessageType} from "@/utils/enums"
 import Popup from "@/components/Popup";
 import Loading from "@/components/Loading";
-import {API, EndPoints} from "@/domain/API";
+import {Api} from "@/services/chonide/api";
+import {EndPoints} from "@/services/chonide/endPoints";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import {Routes} from "@/router/routes";
@@ -72,8 +73,8 @@ export default {
     }
   },
   setup() {
-    Util.setTitle("Entrar");
-    API.loadToken();
+    GeneralUtil.setTitle("Entrar");
+    Api.loadToken();
   },
   beforeUnmount() {
     document.removeEventListener("keypress", this.keyPressListener);
@@ -81,10 +82,10 @@ export default {
   mounted() {
     this.awaitConnection = localStorage.getItem("connecting");
     if (this.awaitConnection === 'true') {
-      API.get(EndPoints.DOMAINS).then((response) => {
+      Api.get(EndPoints.DOMAINS).then((response) => {
         this.$refs.conecting.showing(true);
         this.currentDomain = response.data.data.domain;
-        API.delete(EndPoints.USERS);
+        Api.delete(EndPoints.USERS);
         let interval = setInterval(() => {
           this.awaitConnectionCounter--;
           if (this.awaitConnectionCounter === 0) {
@@ -114,13 +115,13 @@ export default {
       }
 
       this.loading = true;
-      API.auth(this.username, this.password, this.currentHost).then((response) => {
+      Api.auth(this.username, this.password, this.currentHost).then((response) => {
         if (response.data.status == 200) {
-          API.get(EndPoints.USERS_FIRST_ACCESS).then((response) => {
+          Api.get(EndPoints.USERS_FIRST_ACCESS).then((response) => {
             if (response.data.data == true) {
               this.$router.push(Routes.DOMAIN);
             } else {
-              API.get(EndPoints.CONFIGURATION);
+              Api.get(EndPoints.CONFIGURATION);
               this.$router.push(Routes.HOME);
             }
           });

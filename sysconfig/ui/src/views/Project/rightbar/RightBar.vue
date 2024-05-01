@@ -1,6 +1,6 @@
 <script>
 import Boards from "@/views/Project/rightbar/boards/Boards.vue";
-import {FileType} from "@/domain/Enums";
+import {FileType} from "@/utils/enums";
 import Dragger from "@/components/Dragger.vue";
 import MindInpector from "@/views/Project/rightbar/mindinspector/MindInspector.vue";
 

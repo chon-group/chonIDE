@@ -33,7 +33,6 @@ export default {
         if (messageInMemory.content === message.content) {
           messageInMemoryIndex = index;
           hasSameMessageInMemory = true;
-          return;
         }
       });
       if (hasSameMessageInMemory) {

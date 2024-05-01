@@ -1,9 +1,12 @@
 <script>
 import ExplorerFolder from "@/views/Project/leftbar/explorer/ExplorerFolder.vue";
 import ExplorerFile from "@/views/Project/leftbar/explorer/ExplorerFile.vue";
-import {AgentType, AppEvent, FileType, MessageType} from "@/domain/Enums";
-import defaultSourceCode from "@/domain/content/default-source-codes.json";
-import {API, EndPoints, Headers} from "@/domain/API";
+import {AgentType, AppEvent, FileType, MessageType} from "@/utils/enums";
+import defaultAgentSourceCode from "raw-loader!@/assets/text/default-agent-source-code.txt";
+import defaultFirmwareSourceCode from "raw-loader!@/assets/text/default-firmware-source-code.txt";
+import {Api} from "@/services/chonide/api";
+import {EndPoints} from "@/services/chonide/endPoints";
+import {Headers} from "@/services/request";
 import validateProject from "@/views/Project/util";
 
 const AGENT_DEFAULT_FILE_NAME = "newAgent", FIRMWARE_DEFAULT_FILE_NAME = "newSketch";
@@ -37,7 +40,7 @@ export default {
             if (validateProject(this.$emit, this.project)) {
                 return;
             }
-            API.post(EndPoints.MAS, {responseType: 'blob'}, this.project).then((response) => {
+            Api.post(EndPoints.MAS, {responseType: 'blob'}, this.project).then((response) => {
                 if (response.status === 200) {
                     const filename = this.project.name + ".zip";
                     const blob = new Blob([response.data]);
@@ -60,13 +63,13 @@ export default {
                 name: AGENT_DEFAULT_FILE_NAME + (this.project.agents.length === 0 ? '' : this.project.agents.length +
                  1),
                 archClass: AgentType.JASON,
-                sourceCode: defaultSourceCode.agent
+                sourceCode: defaultAgentSourceCode
             });
         },
         addFirmwareFileAction() {
             this.$emit("addFirmware", {
                 name: FIRMWARE_DEFAULT_FILE_NAME,
-                sourceCode: defaultSourceCode.firmware
+                sourceCode: defaultFirmwareSourceCode
             });
         },
         isFileInvalid(file) {
@@ -90,7 +93,7 @@ export default {
                     return;
                 }
 
-                API.post(EndPoints.LIBRARIES_IMPORT, Headers.MULTIPART_CONFIG, {file: libraryFile}).then((response) => {
+                Api.post(EndPoints.LIBRARIES_IMPORT, Headers.MULTIPART_CONFIG, {file: libraryFile}).then((response) => {
                     if (response.data.status === 200) {
                         this.$emit(AppEvent.MESSAGE, {
                             content: response.data.data,
@@ -107,12 +110,12 @@ export default {
             }
         },
         loadLibraries(refresh = false) {
-            API.get(EndPoints.LIBRARIES, refresh).then((response) => {
+            Api.get(EndPoints.LIBRARIES, refresh).then((response) => {
                 this.libraries = response.data.data;
             });
         },
         deleteLibrary(library) {
-            API.delete(EndPoints.LIBRARIES, {params: {name: library.name}}).then(() => {
+            Api.delete(EndPoints.LIBRARIES, {params: {name: library.name}}).then(() => {
                 this.loadLibraries(true);
             }).catch(() => {
                 this.$emit(AppEvent.MESSAGE, {content: `It was not possible delete library ${library.name}`, type:

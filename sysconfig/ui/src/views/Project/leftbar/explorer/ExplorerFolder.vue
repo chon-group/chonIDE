@@ -27,7 +27,7 @@
 
 <script>
 import Toggle from "@/components/Toggle.vue";
-import {removeRipple, useRipple} from "@/composable/Ripple";
+import {removeRipple, useRipple} from "@/assets/js/effects/ripple";
 
 export default {
   name: "ExplorerFolder",

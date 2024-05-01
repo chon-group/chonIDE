@@ -1,8 +1,9 @@
 <script>
 import Button from "@/components/Button.vue";
 import Toggle from "@/components/Toggle.vue";
-import {AgentTypes, AppEvent, FileType, MessageType} from "@/domain/Enums";
-import {API, EndPoints} from "@/domain/API";
+import {AgentTypes, AppEvent, FileType, MessageType} from "@/utils/enums";
+import {Api} from "@/services/chonide/api";
+import {EndPoints} from "@/services/chonide/endPoints";
 import Popup from "@/components/Popup.vue";
 
 const UNKNOW_BOARD_MODEL_STRING = 'unknown:unknown:unknown';
@@ -50,7 +51,7 @@ export default {
             }
 
             this.compilingSketch = true;
-            API.post(EndPoints.SKETCH_COMPILE, {}, {
+            Api.post(EndPoints.SKETCH_COMPILE, {}, {
                 boardName: this.board.fqbn,
                 code: this.currentFile.sourceCode
             }).then((response) => {
@@ -73,7 +74,7 @@ export default {
             }
 
             this.deployingSketch = true;
-            API.post(EndPoints.SKETCH_DEPLOY, {
+            Api.post(EndPoints.SKETCH_DEPLOY, {
                 params: {
                     serialPort: this.board.port,
                     boardName: this.board.fqbn

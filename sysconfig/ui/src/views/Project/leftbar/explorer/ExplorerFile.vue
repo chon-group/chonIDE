@@ -69,12 +69,12 @@
 </template>
 
 <script>
-import {Key} from "@/domain/Enums";
+import {Key} from "@/utils/enums";
 import Popup from "@/components/Popup.vue";
 import Button from "@/components/Button.vue";
-import Util from "@/domain/Util";
+import GeneralUtil from "@/utils/generalUtil";
 import Toggle from "@/components/Toggle.vue";
-import {removeRipple, useRipple} from "@/composable/Ripple";
+import {removeRipple, useRipple} from "@/assets/js/effects/ripple";
 
 export default {
   name: "ExplorerFile",
@@ -103,7 +103,7 @@ export default {
         this.finishEditNameAction();
         return;
       }
-      let formattedName = Util.mantainJustRegularCharacters(this.$refs.filename.value);
+      let formattedName = GeneralUtil.mantainJustRegularCharacters(this.$refs.filename.value);
       this.$refs.filename.value = formattedName.substring(0, 1).toLowerCase() + formattedName.substring(1);
     }
     this.$refs.filename.onblur = () => {

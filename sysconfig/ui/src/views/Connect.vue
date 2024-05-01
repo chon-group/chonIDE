@@ -129,11 +129,12 @@
 import Button from "@/components/Button";
 import Popup from "@/components/Popup";
 import Input from "@/components/Input";
-import Util from "@/domain/Util";
+import GeneralUtil from "@/utils/generalUtil";
 import Loading from "@/components/Loading";
-import {AppEvent, MessageType} from "@/domain/Enums"
-import {API, EndPoints} from "@/domain/API";
-import Header from "@/layout/Header";
+import {AppEvent, MessageType} from "@/utils/enums"
+import {Api} from "@/services/chonide/api";
+import {EndPoints} from "@/services/chonide/endPoints";
+import Header from "@/components/layout/Header";
 import {Routes} from "@/router/routes";
 
 export default {
@@ -151,17 +152,17 @@ export default {
     }
   },
   mounted() {
-    API.get(EndPoints.USERS_FIRST_ACCESS).then((response) => {
+    Api.get(EndPoints.USERS_FIRST_ACCESS).then((response) => {
       this.isFirstAccess = response.data.data;
     });
-    API.get(EndPoints.NETWORKS_STATUS).then((response) => {
+    Api.get(EndPoints.NETWORKS_STATUS).then((response) => {
       this.connectedNetwork = response.data.data;
     });
     this.getNetworks();
   },
   setup() {
-    Util.setTitle("Connect");
-    API.loadToken();
+    GeneralUtil.setTitle("Connect");
+    Api.loadToken();
   },
   methods: {
     backToCoder() {
@@ -169,7 +170,7 @@ export default {
     },
     getNetworks() {
       this.isSearching = true;
-      API.get(EndPoints.NETWORKS).then((response) => {
+      Api.get(EndPoints.NETWORKS).then((response) => {
         this.networks = response.data.data;
         this.isSearching = false;
       });
@@ -187,7 +188,7 @@ export default {
       }
 
       this.isConnecting = true;
-      API.post(EndPoints.NETWORKS_AP, {
+      Api.post(EndPoints.NETWORKS_AP, {
         params: {
           essid: essid,
           password: password
@@ -204,7 +205,7 @@ export default {
       let password = this.$refs['network'][networkIndex].$el.querySelector("input[name='password']").value;
 
       this.isConnecting = true;
-      API.post(EndPoints.NETWORKS_CLIENT, {
+      Api.post(EndPoints.NETWORKS_CLIENT, {
         params: {
           essid: essid,
           password: password
@@ -221,7 +222,7 @@ export default {
       let password = this.$refs['manual-network-password-input'].$refs.input.value;
 
       this.isConnecting = true;
-      API.post(EndPoints.NETWORKS_CLIENT, {
+      Api.post(EndPoints.NETWORKS_CLIENT, {
         params: {
           essid: essid,
           password: password

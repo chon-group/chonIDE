@@ -1,7 +1,8 @@
 <script>
 import Button from "@/components/Button.vue";
 import Loading from "@/components/Loading.vue";
-import {API, EndPoints} from "@/domain/API";
+import {Api} from "@/services/chonide/api";
+import {EndPoints} from "@/services/chonide/endPoints";
 import Board from "@/views/Project/rightbar/boards/Board.vue";
 
 export default {
@@ -21,7 +22,7 @@ export default {
         loadBoards(refresh = false) {
             this.currentBoard = null;
             this.loadingBoards = true;
-            API.get(EndPoints.BOARDS, refresh).then((response) => {
+            Api.get(EndPoints.BOARDS, refresh).then((response) => {
                 this.boards = response.data.data;
                 if (this.boards.length !== 0) {
                     this.currentBoard = this.boards[0];
