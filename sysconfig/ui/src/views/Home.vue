@@ -191,7 +191,14 @@ export default {
   watch: {
     createProjectName(newValue) {
       if (newValue !== "New project") {
-        this.createProjectName = newValue.replace(/[^a-z]/g, "");
+        let projectName = newValue.replace(/[^a-zA-Z0-9]/g, "");
+        let firstLetter = projectName.substring(0, 1);
+
+        if (isNaN(Number(firstLetter))) {
+          this.createProjectName = firstLetter.toLowerCase() + projectName.substring(1);
+        } else {
+          this.createProjectName = projectName.substring(1);
+        }
       }
     }
   },
