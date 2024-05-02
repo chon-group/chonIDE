@@ -18,3 +18,4 @@ resources
 
 ### Others ###
 *.lock
+env.dev.ts
