@@ -8,9 +8,6 @@ import {AppEvent, MessageType} from "@/utils/enums";
 import Loading from "@/components/Loading.vue";
 import validateProject from "@/views/Project/util";
 
-const DEFAULT_LINKS_PROTOCOL = "http://";
-const MIND_INSPECTOR_PORT = ":3272";
-
 export default {
     name: "ProjectHeader",
     components: {Loading, Header, Button},

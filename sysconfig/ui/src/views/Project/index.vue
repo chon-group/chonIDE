@@ -116,12 +116,17 @@ export default {
     },
     methods: {
         highlightAgentFile(agentFile) {
+            let agentWasFind = false;
             for(let i = 0; i < this.project.agents.length; i++) {
                 let agent = this.project.agents[i];
                 if (agent.name === agentFile.agentName) {
+                    agentWasFind = true;
                     this.currentFile = agent;
                     break;
                 }
+            }
+            if (!agentWasFind) {
+                return;
             }
             this.selectedLines.beginLine = agentFile.beginLine;
             this.selectedLines.endLine = agentFile.endLine;

@@ -1,10 +1,11 @@
 <script>
 import Button from "@/components/Button.vue";
 import axios from "axios";
+import Loading from "@/components/Loading.vue";
 
 export default {
     name: "Agent",
-    components: {Button},
+    components: {Loading, Button},
     props: {
         agentData: {},
         agentsUrl: String
@@ -36,6 +37,10 @@ export default {
         }
     },
     methods: {
+        editCycle() {
+          this.moving = true;
+          this.$refs.cycleInput.focus();
+        },
         goToRealTime() {
             this.moving = false;
         },
@@ -54,6 +59,8 @@ export default {
         typeCycle(event) {
             if (event.target.value <= 0 || !this.canMove) {
                 event.target.value = 1;
+            } else if (event.target.value > this.agent.totalCycleNumber) {
+                event.target.value = this.agent.totalCycleNumber;
             }
             this.cycle = event.target.value;
             this.moving = true;
@@ -117,35 +124,42 @@ export default {
         <div class="flex justify-between gap-2">
             <span class="agent__name">{{ agent.name }}</span>
             <div class="agent__controller">
+                <Loading v-if="!canMove" border-width="1px" ratio="15px"
+                         main-color="var(--pallete-text-main)" class="mx-2"/>
                 <Button
                         style="border: 1px solid var(--pallete-color-black-3)"
                         v-if="moving"
-                        text="Real time"
+                        icon="back.svg"
+                        icon-ratio="11px"
 
                         @click="goToRealTime"
                 />
-                <span class="px-3">Cycle</span>
-                <div class="agent__cycle">
-                    <input
-                     type="number"
-                     min="1"
-                     :max="agent.totalCycleNumber"
-                     maxlength="4"
+                <div class="agent__cycle" @click="editCycle">
+                    <div class="agent__cycle__current-cycle">
+                        <div class="agent__cycle__current-cycle__text">
+                            <span>Cycle</span>
+                        </div>
+                        <input
+                         type="number"
+                         min="1"
+                         :max="agent.totalCycleNumber"
+                         maxlength="4"
+                         :size="cycle.toString().length"
 
-                     class="agent__current-cycle"
+                         class="agent__cycle__current-cycle__input"
 
-                     v-model="cycle"
-                     @focus="this.moving = true"
+                         v-model="cycle"
 
-                     @keyup.enter="typeCycle"
-                    />
+                         @keyup.enter="typeCycle"
+                         ref="cycleInput"
+                        />
+                    </div>
                     <span
-                        v-if="cycle !== agent.totalCycleNumber"
-
+                        v-if="moving"
                         class="agent__total-cycle"
                     >{{ agent.totalCycleNumber }}</span>
                 </div>
-                <div class="flex gap-1" v-if="moving">
+                <div :class="['agent__controller__buttons', !canMove ? 'pointer-events-none select-none' : '']" v-if="moving">
                     <Button
                      style="border: 1px solid var(--pallete-color-black-3)"
                      icon="arrow.svg"
@@ -246,30 +260,45 @@ export default {
     @apply flex gap-2 items-center;
 }
 
+.agent__controller__buttons {
+    @apply flex gap-1;
+}
+
 .agent__cycle {
     border: 1px solid var(--pallete-color-black-3);
+    background-color: var(--pallete-color-black-2);
     height: 32px;
-    @apply flex justify-center items-center rounded-md;
+    @apply flex justify-center items-center rounded-md cursor-pointer;
+}
+
+.agent__cycle__current-cycle {
+    @apply flex gap-1.5 justify-center items-center h-full pr-1.5;
+}
+
+.agent__cycle__current-cycle__text {
+    @apply flex items-center h-full ml-3;
+}
+
+.agent__cycle__current-cycle__input {
+    color: var(--pallete-text-main);
+    text-align: center;
+    border: 0;
+    background-color: transparent;
+    @apply cursor-pointer rounded-md py-0.5;
+}
+
+.agent__cycle__current-cycle__input:hover {
+    background-color: var(--pallete-color-black-3);
+}
+
+.agent__cycle__current-cycle__input:focus {
+    background-color: var(--pallete-color-black-3);
 }
 
 .agent__total-cycle {
     color: var(--pallete-text-aside);
     border-left: 1px solid var(--pallete-color-black-3);
-    @apply px-3;
-}
-
-.agent__current-cycle {
-    color: var(--pallete-text-main);
-    width: 60px;
-    text-align: center;
-    border: 0;
-    background-color: transparent;
-    border-left: 1px solid var(--pallete-color-black-3);
-    @apply h-full;
-}
-
-.agent__current-cycle:hover, .agent__current-cycle:focus {
-    background-color: var(--pallete-color-black-2);
+    @apply mr-3 pl-3;
 }
 
 .agent__next-cycle {
