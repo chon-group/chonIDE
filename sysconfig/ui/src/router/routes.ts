@@ -4,8 +4,9 @@ import Connect from "@/views/Connect.vue";
 import Domain from "@/views/Domain.vue";
 import Home from "@/views/Home.vue";
 import Project from "@/views/Project/index.vue";
+
 export class Routes {
-    public static LOGIN = "/login.html";
+    public static LOGIN = "/login";
     public static CONNECT = "/connect";
     public static DOMAIN = "/domain";
     public static HOME = "/home";

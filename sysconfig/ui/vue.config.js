@@ -1,10 +1,11 @@
-const isDev = process.env.NODE_ENV === 'dev';
+const isDev = process.env.NODE_ENV === 'development';
 
 const {defineConfig} = require('@vue/cli-service')
-module.exports = defineConfig({
+
+module.exports = defineConfig(isDev ? {
     transpileDependencies: true,
     outputDir: "../resources/",
-    publicPath: isDev ? "/" : "/chonide",
+    publicPath: "/chonide",
     pages: {
         login: {
             entry: "src/main.ts",
@@ -43,4 +44,10 @@ module.exports = defineConfig({
             chunks: ['chunk-vendors', 'chunk-common', 'home']
         }
     }
-})
+} : {
+    transpileDependencies: true,
+    outputDir: "../resources/",
+    publicPath: "/chonide"
+});
+
+
