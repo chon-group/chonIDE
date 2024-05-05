@@ -13,7 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>br.com.chonide</groupId>
-            <artifactId>deploy.core</artifactId>
+            <artifactId>dist.labredes.core</artifactId>
             <version>0.0.1</version>
         </dependency>
         <dependency>
