@@ -1,5 +1,5 @@
 <template>
-  <div class="trace" :class="[state === 'entire' ? 'is-entire' : '', type == 'vertical' ? 'is-vertical' : '']"></div>
+  <div :class="[state === 'entire' ? 'is-entire' : '', type == 'vertical' ? 'is-vertical' : '']" class="trace"></div>
 </template>
 
 <script>

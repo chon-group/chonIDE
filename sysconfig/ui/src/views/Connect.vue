@@ -3,24 +3,25 @@
     <Header>
       <template v-slot:left>
         <router-link to="/home">
-          <Button icon-ratio="11px" icon="back.svg"/>
+          <Button icon="back.svg" icon-ratio="11px"/>
         </router-link>
       </template>
     </Header>
     <div class="flex flex-col items-center gap-5 m-auto">
       <h2 class="connect__message">Connect to a wifi network for internet access</h2>
       <div class="flex gap-2.5 justify-center">
-        <Popup title="Raise an own AP network" for="network-customized" ref="customized-network-pop-up">
+        <Popup ref="customized-network-pop-up" for="network-customized" title="Raise an own AP network">
           <template v-slot:content>
             <div class="flex flex-col gap-2.5">
-              <Input placeholder="Network name (SSID)" type="text" name="essid" ref="customized-network-essid-input"/>
-              <Input placeholder="Network password (Minimum 8 characters)" type="password" name="password"
-                     ref="customized-network-password-input"/>
+              <Input ref="customized-network-essid-input" name="essid" placeholder="Network name (SSID)" type="text"/>
+              <Input ref="customized-network-password-input" name="password"
+                     placeholder="Network password (Minimum 8 characters)"
+                     type="password"/>
             </div>
           </template>
           <template v-slot:action>
             <div class="flex gap-5 items-center">
-              <Button @click="createNetwork" :is-loading="isConnecting">
+              <Button :is-loading="isConnecting" @click="createNetwork">
                 <template v-slot:content>
                   Create network
                 </template>
@@ -28,17 +29,17 @@
             </div>
           </template>
         </Popup>
-        <Popup title="Connect manually" for="network-manual" ref="manual-network-pop-up">
+        <Popup ref="manual-network-pop-up" for="network-manual" title="Connect manually">
           <template v-slot:content>
             <div class="flex flex-col gap-2.5">
-              <Input placeholder="Network name (SSID)" type="text" name="essid" ref="manual-network-essid-input"/>
-              <Input placeholder="Network password" type="password" name="password"
-                     ref="manual-network-password-input"/>
+              <Input ref="manual-network-essid-input" name="essid" placeholder="Network name (SSID)" type="text"/>
+              <Input ref="manual-network-password-input" name="password" placeholder="Network password"
+                     type="password"/>
             </div>
           </template>
           <template v-slot:action>
             <div class="flex gap-5 items-center">
-              <Button @click="connectManualNetwork" :is-loading="isConnecting">
+              <Button :is-loading="isConnecting" @click="connectManualNetwork">
                 <template v-slot:content>
                   Connect to network
                 </template>
@@ -56,7 +57,7 @@
             Create own network (AP)
           </template>
         </Button>
-        <Button @click="getNetworks" icon="refresh.svg" icon-ratio="12px">
+        <Button icon="refresh.svg" icon-ratio="12px" @click="getNetworks">
           <template v-slot:content>
             Refresh
           </template>
@@ -70,9 +71,9 @@
         <span v-if="networks.length === 0" class="text-aside text-base">
           No available networks found
         </span>
-        <div class="network flex justify-between items-center"
-             v-for="(network, index) in networks" :key="index"
-             :class="'network-'+index" @click="networkPopUpIsOpen =
+        <div v-for="(network, index) in networks"
+             :key="index" :class="'network-'+index"
+             class="network flex justify-between items-center" @click="networkPopUpIsOpen =
            true">
           <div class="flex gap-5 items-center">
             <div style="position: relative">
@@ -88,24 +89,24 @@
             </div>
             <span class="network__essid">{{ network.essid }}</span>
           </div>
-          <span class="network__connected font-black"
-                v-if="connectedNetwork.essid == network.essid && connectedNetwork.frequency == network.frequency">
+          <span v-if="connectedNetwork.essid == network.essid && connectedNetwork.frequency == network.frequency"
+                class="network__connected font-black">
             Connected
           </span>
-          <Popup title="Connect to network" :for="'network-'+index" ref="network">
+          <Popup ref="network" :for="'network-'+index" title="Connect to network">
             <template v-slot:content>
               <div class="flex flex-col gap-2.5">
-                <Input type="text" readonly="true"
-                       :model-value="network.essid" name="essid"/>
+                <Input :model-value="network.essid" name="essid"
+                       readonly="true" type="text"/>
                 <Input v-show="network.encryption === true" :model-value="network.password"
+                       name="password"
                        placeholder="Network password"
-                       type="password"
-                       name="password"/>
+                       type="password"/>
               </div>
             </template>
             <template v-slot:action>
               <div class="flex gap-5 items-center">
-                <Button @click="connectNetwork(index)" :is-loading="isConnecting">
+                <Button :is-loading="isConnecting" @click="connectNetwork(index)">
                   <template v-slot:content>
                     Connect to network
                   </template>
@@ -115,7 +116,7 @@
           </Popup>
         </div>
       </div>
-      <Button @click="backToCoder" v-if="!isFirstAccess">
+      <Button v-if="!isFirstAccess" @click="backToCoder">
         <template v-slot:content>
           Back
         </template>

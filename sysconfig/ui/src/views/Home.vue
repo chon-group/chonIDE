@@ -2,16 +2,16 @@
   <div class="page flex flex-col items-center">
     <Header>
       <template v-slot:left>
-        <div class="flex items-center h-full" v-if="configuration.ddns || configuration.network">
-          <router-link to="/connect" v-if="configuration.network">
-            <Button icon-ratio="12px" icon="wifi-quality-4.svg">
+        <div v-if="configuration.ddns || configuration.network" class="flex items-center h-full">
+          <router-link v-if="configuration.network" to="/connect">
+            <Button icon="wifi-quality-4.svg" icon-ratio="12px">
               <template v-slot:content>
                 Networks
               </template>
             </Button>
           </router-link>
-          <router-link to="/domain" v-if="configuration.ddns">
-            <Button icon-ratio="12px" icon="domain.svg">
+          <router-link v-if="configuration.ddns" to="/domain">
+            <Button icon="domain.svg" icon-ratio="12px">
               <template v-slot:content>
                 Bot Name
               </template>
@@ -48,11 +48,12 @@
                     </template>
                   </Popup>
                 </button>
-                <button class="severe" v-if="configuration.shutdown">
+                <button v-if="configuration.shutdown" class="severe">
                   Shutdown
                   <Popup is-children title="Desligar sistema">
                     <template v-slot:content>
-                      Shutting down the system will carry out the standard shutdown procedure of the system where it is located.
+                      Shutting down the system will carry out the standard shutdown procedure of the system where it is
+                      located.
                       allocated the chonOS operating system.
                     </template>
                     <template v-slot:action>
@@ -75,20 +76,20 @@
         </Button>
       </template>
     </Header>
-    <div class="flex justify-center items-center h-full w-full m-auto" v-if="loadingProjects">
-      <Loading main-color="var(--pallete-text-main)" border-width="2px"/>
+    <div v-if="loadingProjects" class="flex justify-center items-center h-full w-full m-auto">
+      <Loading border-width="2px" main-color="var(--pallete-text-main)"/>
     </div>
-    <div class="project__list" v-show="!loadingProjects">
-      <div class="project"
-           v-for="(project, index) in projects" :key="project.id"
+    <div v-show="!loadingProjects" class="project__list">
+      <div v-for="(project, index) in projects"
+           :key="project.id" class="project"
       >
         <div class="project__image-container">
-          <div class="project__image" :style="getProjectColor(project.name[0].toUpperCase())" ref="project"
+          <div ref="project" :style="getProjectColor(project.name[0].toUpperCase())" class="project__image"
                @click="goProject(project.id)">
             {{ project.name[0].toUpperCase() }}
           </div>
-          <button class="project__options" ref="projectOptionsButton">
-            <Toggle type="click" parent-position>
+          <button ref="projectOptionsButton" class="project__options">
+            <Toggle parent-position type="click">
               <template v-slot:options>
                 <button @click="downloadProject(project)">Export</button>
                 <button @click="selectCreatedProject(index)">Rename</button>
@@ -105,8 +106,8 @@
                           Cancel
                         </template>
                       </Button>
-                      <Button color="var(--pallete-color-red-1)" @click="deleteProject(project.id, index)"
-                              role="pop-up-closer">
+                      <Button color="var(--pallete-color-red-1)" role="pop-up-closer"
+                              @click="deleteProject(project.id, index)">
                         <template v-slot:content>
                           Yes, delete project.
                         </template>
@@ -118,9 +119,9 @@
             </Toggle>
           </button>
         </div>
-        <input class="project__name" v-model="project.name" @keyup="renamingProject(project, $event, index)" readonly
-               ref="inputProject" spellcheck="false"/>
-        <Toggle type="contextmenu" click-position>
+        <input ref="inputProject" v-model="project.name" class="project__name" readonly
+               spellcheck="false" @keyup="renamingProject(project, $event, index)"/>
+        <Toggle click-position type="contextmenu">
           <template v-slot:options>
             <button @click="downloadProject(project)">Export</button>
             <button @click="selectCreatedProject(index)">Rename</button>
@@ -137,8 +138,8 @@
                       Cancel
                     </template>
                   </Button>
-                  <Button color="var(--pallete-color-red-1)" @click="deleteProject(project.id, index)"
-                          role="pop-up-closer">
+                  <Button color="var(--pallete-color-red-1)" role="pop-up-closer"
+                          @click="deleteProject(project.id, index)">
                     <template v-slot:content>
                       Yes, delete project.
                     </template>
@@ -150,14 +151,14 @@
         </Toggle>
       </div>
       <div class="project">
-        <div class="project__image" ref="letterNewProject" @click="selectNewProject">+</div>
-        <input class="project__name" v-model="createProjectName" readonly="true"
-               ref="inputNewProject" spellcheck="false"/>
+        <div ref="letterNewProject" class="project__image" @click="selectNewProject">+</div>
+        <input ref="inputNewProject" v-model="createProjectName" class="project__name"
+               readonly="true" spellcheck="false"/>
       </div>
-        <div class="project">
-            <div class="project__image" @click="importProject">+</div>
-            <span class="project__name">Import project</span>
-        </div>
+      <div class="project">
+        <div class="project__image" @click="importProject">+</div>
+        <span class="project__name">Import project</span>
+      </div>
     </div>
   </div>
 </template>
@@ -254,26 +255,26 @@ export default {
       projectInput.type = 'file';
       projectInput.click();
       projectInput.onchange = (event) => {
-          let files = event.target.files;
-          if (files.length === 0) {
-              this.$emit(AppEvent.MESSAGE, {content: "No file selected", type: MessageType.WARNING});
-              return;
+        let files = event.target.files;
+        if (files.length === 0) {
+          this.$emit(AppEvent.MESSAGE, {content: "No file selected", type: MessageType.WARNING});
+          return;
+        }
+        let projectFile = files[0];
+        Api.post(EndPoints.PROJECTS_IMPORT, Headers.MULTIPART_CONFIG, {file: projectFile}).then((response) => {
+          if (response.status === 201) {
+            this.projects.push(response.data.data);
+            this.$emit(AppEvent.MESSAGE, {
+              content: response.data.message,
+              type: MessageType.SUCCESS
+            });
           }
-          let projectFile = files[0];
-          Api.post(EndPoints.PROJECTS_IMPORT, Headers.MULTIPART_CONFIG, {file: projectFile}).then((response) => {
-              if (response.status === 201) {
-                  this.projects.push(response.data.data);
-                  this.$emit(AppEvent.MESSAGE, {
-                      content: response.data.message,
-                      type: MessageType.SUCCESS
-                  });
-              }
-          }).catch((error) => {
-              this.$emit(AppEvent.MESSAGE, {
-                  content: error.response.data.message,
-                  type: MessageType.ERROR
-              });
+        }).catch((error) => {
+          this.$emit(AppEvent.MESSAGE, {
+            content: error.response.data.message,
+            type: MessageType.ERROR
           });
+        });
       }
     },
     setDefaultNewProjet() {
@@ -311,25 +312,27 @@ export default {
       }
     },
     downloadProject(project) {
-        Api.get(EndPoints.PROJECTS,{params: {projectId: project.id, getType: 2}, responseType:
-                'blob'})
-            .then((response) => {
+      Api.get(EndPoints.PROJECTS, {
+        params: {projectId: project.id, getType: 2}, responseType:
+            'blob'
+      })
+          .then((response) => {
             if (response.status === 200) {
-                const filename = project.name + PROJECT_EXTESION;
-                const blob = new Blob([response.data]);
+              const filename = project.name + PROJECT_EXTESION;
+              const blob = new Blob([response.data]);
 
-                const url = window.URL.createObjectURL(blob);
+              const url = window.URL.createObjectURL(blob);
 
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
+              const a = document.createElement('a');
+              a.style.display = 'none';
+              a.href = url;
+              a.download = filename;
+              document.body.appendChild(a);
+              a.click();
 
-                window.URL.revokeObjectURL(url);
+              window.URL.revokeObjectURL(url);
             }
-        })
+          })
     },
     deleteProject(projectId, projectIndex) {
       Api.delete(EndPoints.PROJECTS, {params: {projectId: projectId}}).then((response) => {
@@ -363,19 +366,19 @@ export default {
       this.$emit(AppEvent.MESSAGE, {content: "Shutting down system", type: MessageType.WARNING});
       Api.put(EndPoints.SYSTEM_POWEROFF);
       setTimeout(() => {
-          this.$router.push(Routes.LOGIN);
+        this.$router.push(Routes.LOGIN);
       }, 2000);
     },
     resetSystem() {
       this.$emit(AppEvent.MESSAGE, {content: "Rebooting system", type: MessageType.WARNING});
       Api.put(EndPoints.SYSTEM_REBOOT);
       setTimeout(() => {
-          this.$router.push(Routes.LOGIN);
+        this.$router.push(Routes.LOGIN);
       }, 2000);
     },
     logout() {
       Api.delete(EndPoints.USERS).then(() => {
-          this.$router.push(Routes.LOGIN);
+        this.$router.push(Routes.LOGIN);
       });
     },
   }
@@ -425,7 +428,7 @@ export default {
   @apply border-none bg-transparent cursor-default text-center p-0.5 rounded-lg;
 }
 
-.project__options{
+.project__options {
   opacity: 0;
   background-image: url("@/assets/media/icon/vertical-dots.svg");
   background-repeat: no-repeat;

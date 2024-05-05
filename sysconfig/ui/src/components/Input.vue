@@ -1,15 +1,15 @@
 <template>
-  <div class="flex gap-2.5 input" :class="[readonly ===
+  <div :class="[readonly ===
     'true' ?
-    'ready-only' : '', type === 'file' ? 'is-file' : '']">
-    <input v-if="type !== 'file'" :readonly="readonly" :value="modelValue" @input="$emit('update:modelValue',
-      $event.target.value)"
+    'ready-only' : '', type === 'file' ? 'is-file' : '']" class="flex gap-2.5 input">
+    <input v-if="type !== 'file'" ref="input" :name="name" :placeholder="placeholder"
+           :readonly="readonly"
            :type="type"
-           :name="name"
-           :placeholder="placeholder"
-           class="w-full" ref="input" autocomplete="off">
+           :value="modelValue"
+           autocomplete="off" class="w-full" @input="$emit('update:modelValue',
+      $event.target.value)">
     <label v-else class="input__file-label flex items-center justify-center">
-      <input type="file" :name="name" @change="mountFileName($event)" ref="input" :accept="accept">
+      <input ref="input" :accept="accept" :name="name" type="file" @change="mountFileName($event)">
       <span class="input__file-label__fileName">{{ fileName }}</span>
     </label>
   </div>

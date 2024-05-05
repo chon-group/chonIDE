@@ -6,79 +6,79 @@ const DEFAULT_LINKS_PROTOCOL = "https://";
 const PORT = ":3375";
 
 export default {
-    name: "MindInpector",
-    components: {Agent},
-    props: {
-        domain: {}
-    },
-    data() {
-        return {
-            interval: 0,
-            agents: null
-        }
-    },
-    computed: {
-        url() {
-            if (this.domain == null) {
-                return null;
-            }
-            return DEFAULT_LINKS_PROTOCOL + this.domain.domain + PORT + "/mindinspector/agents";
-        }
-    },
-    beforeUnmount() {
-        clearInterval(this.interval);
-    },
-    mounted() {
-        this.interval = setInterval(() => {
-            if (this.url != null) {
-                axios.get(this.url).then((response) => {
-                   if (response.status === 200) {
-                       this.agents = response.data;
-                   }
-                }).catch((error) => {
-                    this.agents = null;
-                });
-            }
-        }, 1000);
+  name: "MindInpector",
+  components: {Agent},
+  props: {
+    domain: {}
+  },
+  data() {
+    return {
+      interval: 0,
+      agents: null
     }
+  },
+  computed: {
+    url() {
+      if (this.domain == null) {
+        return null;
+      }
+      return DEFAULT_LINKS_PROTOCOL + this.domain.domain + PORT + "/mindinspector/agents";
+    }
+  },
+  beforeUnmount() {
+    clearInterval(this.interval);
+  },
+  mounted() {
+    this.interval = setInterval(() => {
+      if (this.url != null) {
+        axios.get(this.url).then((response) => {
+          if (response.status === 200) {
+            this.agents = response.data;
+          }
+        }).catch((error) => {
+          this.agents = null;
+        });
+      }
+    }, 1000);
+  }
 }
 </script>
 
 <template>
-    <div class="mindinspector">
-        <div class="project__header-bar">
-            <span class="project__header-bar__title">Mind Inspector</span>
-        </div>
-        <div v-if="agents != null" class="mindinspector__agents">
-            <Agent
-                v-for="(agent, index) in agents"
-
-                :agentData="agent"
-                :agents-url="url"
-                :key="index"
-
-                @highlightAgentFile="$emit('highlightAgentFile', $event)"
-            />
-        </div>
-        <div v-else class="flex justify-center items-center h-full w-full">
-            <span class="text-aside">Collecting data...</span>
-        </div>
+  <div class="mindinspector">
+    <div class="project__header-bar">
+      <span class="project__header-bar__title">Mind Inspector</span>
     </div>
+    <div v-if="agents != null" class="mindinspector__agents">
+      <Agent
+          v-for="(agent, index) in agents"
+
+          :key="index"
+          :agentData="agent"
+          :agents-url="url"
+
+          @highlightAgentFile="$emit('highlightAgentFile', $event)"
+      />
+    </div>
+    <div v-else class="flex justify-center items-center h-full w-full">
+      <span class="text-aside">Collecting data...</span>
+    </div>
+  </div>
 </template>
 
 <style scoped>
 
 .mindinspector {
-    @apply flex flex-col h-full w-full;
+  @apply flex flex-col h-full w-full;
 }
 
 .mindinspector__agents {
-    flex-basis: 0;
-    @apply flex flex-col flex-grow overflow-y-auto select-none;
+  flex-basis: 0;
+  @apply flex flex-col flex-grow overflow-y-auto select-none;
 }
 
 .mindinspector__agents:last-child {
-    @apply mb-2
+  @apply mb-2
 }
 
 

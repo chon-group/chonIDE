@@ -7,24 +7,24 @@
     </h1>
     <div class="flex flex-col gap-5 items-center">
       <div class="login__form">
-        <Input v-model="username" placeholder="User" center/>
-        <Input v-model="password" placeholder="Password" center type="password"/>
-        <Input v-model="currentHost" placeholder="Hostname" v-if="!useLocalHost" center/>
+        <Input v-model="username" center placeholder="User"/>
+        <Input v-model="password" center placeholder="Password" type="password"/>
+        <Input v-if="!useLocalHost" v-model="currentHost" center placeholder="Hostname"/>
       </div>
       <div class="flex items-center gap-5">
         <div class="flex gap-2.5 items-center justify-center">
         <span class="text-aside">
           Localhost
         </span>
-          <input type="checkbox" class="login__check-box" v-model="useLocalHost">
+          <input v-model="useLocalHost" class="login__check-box" type="checkbox">
         </div>
-        <Button @click="submit" :is-loading="loading" text="Enter"/>
+        <Button :is-loading="loading" text="Enter" @click="submit"/>
       </div>
     </div>
 
-    <Popup :title="'Connecting to the network'" :can-close="false" ref="conecting">
+    <Popup ref="conecting" :can-close="false" :title="'Connecting to the network'">
       <template v-slot:content>
-        <div class="flex flex-col gap-5 items-center" v-if="awaitConnectionCounter != 0">
+        <div v-if="awaitConnectionCounter != 0" class="flex flex-col gap-5 items-center">
           <span>
             Please wait...
             <span v-if="currentDomain != null">{{ awaitConnectionCounter }}</span>
@@ -33,8 +33,8 @@
         </div>
         <div v-else class="flex flex-col gap-2.5 items-center text-base">
           Your new access link to chonide
-          <a :href="'https://' + currentDomain + ':3270/chonide/login'" target="_blank"
-             class="login__new-link">{{
+          <a :href="'https://' + currentDomain + ':3270/chonide/login'" class="login__new-link"
+             target="_blank">{{
               'https://' + currentDomain + ':3270/chonide/login'
             }}</a>
         </div>
@@ -94,9 +94,11 @@ export default {
           }
         }, 1000);
       }).catch(() => {
-          this.$emit(AppEvent.MESSAGE, {content: "It was not possible generate new access link to chonide", type:
-              MessageType.ERROR});
-          localStorage.setItem("connecting", "false");
+        this.$emit(AppEvent.MESSAGE, {
+          content: "It was not possible generate new access link to chonide", type:
+          MessageType.ERROR
+        });
+        localStorage.setItem("connecting", "false");
       });
     }
 

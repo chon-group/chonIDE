@@ -5,7 +5,7 @@
         <span>{{ board.board }}</span>
         <span class="text-aside">{{ board.fqbn }}</span>
       </span>
-      <div class="coder__board__select" :class="isCurrent ? 'is-selected' : ''"></div>
+      <div :class="isCurrent ? 'is-selected' : ''" class="coder__board__select"></div>
     </div>
     <span class="text-aside">{{ board.port }}</span>
   </div>

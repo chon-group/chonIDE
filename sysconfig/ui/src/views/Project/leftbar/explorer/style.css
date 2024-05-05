@@ -4,7 +4,7 @@
     @apply flex w-full shrink-0 select-none rounded-md;
 }
 
-.coder__explorer__item:hover{
+.coder__explorer__item:hover {
     background-color: var(--pallete-color-black-2);
 }
 

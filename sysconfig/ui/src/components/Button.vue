@@ -1,10 +1,10 @@
 <template>
-  <component :class="[buttonClasses,'button items-center justify-center']"
-             :is="element" :href="link" target="_blank" draggable="false">
-    <Loading v-if="isLoading" ratio="14px" border-width="1px" aside-color="rgba(255,255,255,0.2)"
-             main-color="white"/>
+  <component :is="element"
+             :class="[buttonClasses,'button items-center justify-center']" :href="link" draggable="false" target="_blank">
+    <Loading v-if="isLoading" aside-color="rgba(255,255,255,0.2)" border-width="1px" main-color="white"
+             ratio="14px"/>
     <img v-else-if="icon != null" :src="iconUrl" class="button__icon">
-    <span v-if="this.$slots.content == null && this.text != null">{{text}}</span>
+    <span v-if="this.$slots.content == null && this.text != null">{{ text }}</span>
     <slot name="content"></slot>
   </component>
 </template>

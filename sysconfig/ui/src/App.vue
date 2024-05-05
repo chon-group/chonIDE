@@ -1,6 +1,6 @@
 <template>
   <div class="page flex items-center justify-center">
-    <div class="response flex flex-col gap-2.5 top-5" ref="response">
+    <div ref="response" class="response flex flex-col gap-2.5 top-5">
       <Message v-for="(message, index) in messages" :key="index" :message="message"/>
     </div>
     <router-view @message="(event) => message(event)" @removeMessage="(event) => removeMessage(event)"/>

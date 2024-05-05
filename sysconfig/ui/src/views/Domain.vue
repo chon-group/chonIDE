@@ -3,26 +3,26 @@
     <Header>
       <template v-slot:left>
         <router-link to="/home">
-          <Button icon-ratio="11px" icon="back.svg"/>
+          <Button icon="back.svg" icon-ratio="11px"/>
         </router-link>
       </template>
     </Header>
     <div class="flex flex-col gap-10 items-center m-auto">
       <h2 class="text-xl">Enter the name of your bot</h2>
       <div class="flex flex-col items-center gap-5">
-        <input type="text" class="domain__name" v-model="domain" placeholder="Bot name"
-               maxlength="30">
+        <input v-model="domain" class="domain__name" maxlength="30" placeholder="Bot name"
+               type="text">
         <div class="domain__new-url">
           <span class="text-base">chonIDE Access URL</span>
-          <span class="text-xl text-aside">{{domainUrl}}</span>
+          <span class="text-xl text-aside">{{ domainUrl }}</span>
         </div>
         <div class="flex gap-2.5">
-          <Button @click="backToHome" v-if="!isFirstAccess">
+          <Button v-if="!isFirstAccess" @click="backToHome">
             <template v-slot:content>
               Back
             </template>
           </Button>
-          <Button @click="submit" :isLoading="loading" main-color>
+          <Button :isLoading="loading" main-color @click="submit">
             <template v-slot:content>
               Save name
             </template>
@@ -56,7 +56,7 @@ export default {
   },
   computed: {
     domainUrl() {
-      if(this.domain.length > 0) {
+      if (this.domain.length > 0) {
         return this.domain + '.bot.chon.group:3270/chonide';
       } else {
         return "<nome>.bot.chon.group:3270/chonide"

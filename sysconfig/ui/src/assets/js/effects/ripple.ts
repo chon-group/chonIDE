@@ -41,7 +41,7 @@ const mouseUpRipple = (ripple: HTMLElement, element: HTMLElement) => {
             ripple.style.opacity = "0";
             setTimeout(() => {
                 ripple.remove();
-                if(!element.querySelector(".ripple")) {
+                if (!element.querySelector(".ripple")) {
                     element.style.removeProperty("position");
                 }
             }, 300);

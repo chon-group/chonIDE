@@ -1,22 +1,22 @@
 <template>
-  <div :class="['coder__explorer__file coder__explorer__item', this.selected ? 'selected' : '']"
-       ref="item"
+  <div ref="item"
+       :class="['coder__explorer__file coder__explorer__item', this.selected ? 'selected' : '']"
        @click="showFile($event)">
     <div class="h-full w-full flex gap-2.5 items-center justify-between">
       <div class="flex items-center grow gap-2.5">
-        <img v-if="icon != null" class="coder__explorer__item__icon" :src="require(`@/assets/media/icon/${icon}`)"/>
-        <input type="text" class="coder__explorer__item__name w-full" :value="file.name" @change="editFile"
-               ref="filename" readonly spellcheck="false"/>
+        <img v-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)" class="coder__explorer__item__icon"/>
+        <input ref="filename" :value="file.name" class="coder__explorer__item__name w-full" readonly
+               spellcheck="false" type="text" @change="editFile"/>
       </div>
-      <button class="coder__explorer__action-button dots" ref="dotsButton" tabindex="0" v-if="canRename || canDelete">
+      <button v-if="canRename || canDelete" ref="dotsButton" class="coder__explorer__action-button dots" tabindex="0">
         <Toggle parent-position>
           <template v-slot:options>
             <button v-if="canRename" @click="editNameAction">
               Rename
             </button>
-            <button class="severe" v-if="canDelete">
+            <button v-if="canDelete" class="severe">
               Delete
-              <Popup :title="`Delete ${file.name}`" is-children ref="dots-delete-file">
+              <Popup ref="dots-delete-file" :title="`Delete ${file.name}`" is-children>
                 <template v-slot:content>
                   Are you sure you want to delete {{ file.name }}?
                 </template>
@@ -38,14 +38,14 @@
         </Toggle>
       </button>
     </div>
-    <Toggle type="contextmenu" click-position v-if="canRename || canDelete">
+    <Toggle v-if="canRename || canDelete" click-position type="contextmenu">
       <template v-slot:options>
         <button v-if="canRename" @click="editNameAction">
           Rename
         </button>
-        <button class="severe" v-if="canDelete">
+        <button v-if="canDelete" class="severe">
           Delete
-          <Popup :title="`Delete ${file.name}`" is-children ref="delete-file">
+          <Popup ref="delete-file" :title="`Delete ${file.name}`" is-children>
             <template v-slot:content>
               Are you sure you want to delete {{ file.name }}?
             </template>
@@ -111,12 +111,12 @@ export default {
     }
 
     if (this.$refs.dotsButton != null) {
-        useRipple(this.$refs.dotsButton);
+      useRipple(this.$refs.dotsButton);
     }
   },
   beforeUnmount() {
     if (this.$refs.dotsButton != null) {
-        removeRipple(this.$refs.dotsButton);
+      removeRipple(this.$refs.dotsButton);
     }
   },
   methods: {
@@ -126,7 +126,7 @@ export default {
       this.$refs["dots-delete-file"].close();
     },
     showFile(event) {
-      if(event.target !== this.$refs.dotsButton) {
+      if (event.target !== this.$refs.dotsButton) {
         this.$emit("show");
       }
     },

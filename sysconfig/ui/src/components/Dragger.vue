@@ -37,7 +37,7 @@ export default {
         return "0 auto auto auto";
       } else if (this.right) {
         return "auto 0 auto auto";
-      } else if (this.left){
+      } else if (this.left) {
         return "auto auto auto 0";
       } else if (this.bottom) {
         return "auto auto auto 0";

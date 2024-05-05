@@ -1,5 +1,5 @@
 <template>
-  <div class="message" :class="mountResponseClasses()">
+  <div :class="mountResponseClasses()" class="message">
     {{ message.content }}
   </div>
 </template>

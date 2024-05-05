@@ -1,12 +1,12 @@
 <template>
-  <div style='display: none' class="pop-up-background">
-    <div class="pop-up flex flex-col gap-5" ref="popup">
+  <div class="pop-up-background" style='display: none'>
+    <div ref="popup" class="pop-up flex flex-col gap-5">
       <div class="flex items-center justify-between">
         <span class="pop-up__title">{{ title }}</span>
-        <div class="pop-up__close-action" @click="close" v-if="canClose"></div>
+        <div v-if="canClose" class="pop-up__close-action" @click="close"></div>
       </div>
       <slot name="content"></slot>
-      <div class="flex gap-1.5 justify-end" v-if="$slots.action != null">
+      <div v-if="$slots.action != null" class="flex gap-1.5 justify-end">
         <slot name="action"></slot>
       </div>
     </div>
@@ -36,7 +36,7 @@ export default {
   methods: {
     close() {
       this.showing(false);
-      if(this.triggerElement != null && this.for != null) {
+      if (this.triggerElement != null && this.for != null) {
         this.triggerElement.appendChild(this.$el);
       }
     },
@@ -51,7 +51,7 @@ export default {
     }
   },
   mounted() {
-    if(this.isChildren) {
+    if (this.isChildren) {
       this.triggerElement = this.$el.parentElement;
     } else {
       this.triggerElement = document.querySelector(`.${this.for}`);

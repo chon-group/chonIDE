@@ -3,23 +3,23 @@
     <div class="coder__explorer__folder-name coder__explorer__item flex items-center pr-1">
       <div class="h-full w-full flex justify-between items-center" @click="folderOpen = !folderOpen">
         <div class="flex gap-2.5 items-center w-full">
-          <img src="../../../../assets/media/icon/toggle.svg" :class="`coder__explorer__item__toggle
-             ${folderOpen ? 'open' : ''}`">
-          <img class="coder__explorer__folder__icon" v-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)"/>
+          <img :class="`coder__explorer__item__toggle
+             ${folderOpen ? 'open' : ''}`" src="../../../../assets/media/icon/toggle.svg">
+          <img v-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)" class="coder__explorer__folder__icon"/>
           <span>{{ name }}</span>
         </div>
       </div>
-      <button class="coder__explorer__action-button add" ref="dotsButton" v-if="hasAdd" @click="addFile"></button>
-      <button class="coder__explorer__action-button download" v-if="hasDownload" @click="download"></button>
-      <button class="coder__explorer__action-button refresh" v-if="hasRefresh" @click="refresh"></button>
-      <Toggle click-position type="contextmenu" v-if="hasAdd || hasRefresh">
+      <button v-if="hasAdd" ref="dotsButton" class="coder__explorer__action-button add" @click="addFile"></button>
+      <button v-if="hasDownload" class="coder__explorer__action-button download" @click="download"></button>
+      <button v-if="hasRefresh" class="coder__explorer__action-button refresh" @click="refresh"></button>
+      <Toggle v-if="hasAdd || hasRefresh" click-position type="contextmenu">
         <template v-slot:options>
           <button v-if="hasAdd" @click="addFile">{{ addMessage }}</button>
           <button v-if="hasRefresh" @click="refresh">Refresh</button>
         </template>
       </Toggle>
     </div>
-    <div class="coder__explorer__folder__content" v-show="folderOpen">
+    <div v-show="folderOpen" class="coder__explorer__folder__content">
       <slot name="content"></slot>
     </div>
   </div>
@@ -55,7 +55,7 @@ export default {
     }
   },
   mounted() {
-    if(this.$refs.dotsButton != null) {
+    if (this.$refs.dotsButton != null) {
       useRipple(this.$refs.dotsButton);
     }
     let currentParent = this.$parent;
@@ -65,7 +65,7 @@ export default {
     }
   },
   beforeUnmount() {
-    if(this.$refs.dotsButton != null) {
+    if (this.$refs.dotsButton != null) {
       removeRipple(this.$refs.dotsButton)
     }
   },
@@ -89,9 +89,9 @@ export default {
     refresh() {
       this.$emit("refresh");
     },
-      download() {
-        this.$emit("download");
-      }
+    download() {
+      this.$emit("download");
+    }
   }
 }
 </script>
@@ -116,10 +116,10 @@ export default {
 }
 
 .coder__explorer__action-button.download {
-    background-image: url("@/assets/media/icon/download.svg");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 42%;
+  background-image: url("@/assets/media/icon/download.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 42%;
 }
 
 .coder__explorer__action-button.refresh {
