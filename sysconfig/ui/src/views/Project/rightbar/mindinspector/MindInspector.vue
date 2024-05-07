@@ -1,6 +1,7 @@
 <script>
 import axios from "axios";
 import Agent from "@/views/Project/rightbar/mindinspector/Agent.vue";
+import {mindInspectorUrl} from "@/env/env.dev";
 
 const DEFAULT_LINKS_PROTOCOL = "https://";
 const PORT = ":3375";
@@ -22,7 +23,11 @@ export default {
       if (this.domain == null) {
         return null;
       }
-      return DEFAULT_LINKS_PROTOCOL + this.domain.domain + PORT + "/mindinspector/agents";
+      if (process.env.NODE_ENV === 'development') {
+        return mindInspectorUrl;
+      } else {
+        return DEFAULT_LINKS_PROTOCOL + this.domain.domain + PORT + "/mindinspector/agents";
+      }
     }
   },
   beforeUnmount() {

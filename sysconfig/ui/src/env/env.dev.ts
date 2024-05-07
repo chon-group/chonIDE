@@ -1,1 +1,2 @@
-export const backendUrl = "https://labredes.bot.chon.group:3270/chonide";
+export const backendUrl = "http://localhost:3270/chonide";
+export const mindInspectorUrl = "http://localhost:3275/mindinspector/agents"
