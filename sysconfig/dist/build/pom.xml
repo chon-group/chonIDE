@@ -6,13 +6,13 @@
 
     <packaging>war</packaging>
 
-    <groupId>br.com.chonide</groupId>
+    <groupId>group.chon.ide</groupId>
     <artifactId>dist.build</artifactId>
     <version>0.0.1</version>
 
     <dependencies>
         <dependency>
-            <groupId>br.com.chonide</groupId>
+            <groupId>group.chon.ide</groupId>
             <artifactId>api</artifactId>
             <version>0.0.1</version>
         </dependency>

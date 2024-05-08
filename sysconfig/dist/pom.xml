@@ -6,13 +6,12 @@
 
     <packaging>pom</packaging>
 
-    <groupId>br.com.chonide</groupId>
+    <groupId>group.chon.ide</groupId>
     <artifactId>dist</artifactId>
     <version>0.0.1</version>
 
     <modules>
         <module>build</module>
-        <module>labredes</module>
     </modules>
 
 </project>

@@ -6,7 +6,7 @@
 
     <packaging>pom</packaging>
 
-    <groupId>br.com.chonide</groupId>
+    <groupId>group.chon.ide</groupId>
     <artifactId>chonide</artifactId>
     <version>0.0.1</version>
 
