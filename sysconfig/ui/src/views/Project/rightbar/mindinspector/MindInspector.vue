@@ -1,10 +1,8 @@
 <script>
 import axios from "axios";
 import Agent from "@/views/Project/rightbar/mindinspector/Agent.vue";
-import {mindInspectorUrl} from "@/env/env.dev";
-
-const DEFAULT_LINKS_PROTOCOL = "https://";
-const PORT = ":3375";
+import {EndPoints} from "@/services/chonide/endPoints";
+import {Api} from "@/services/chonide/api";
 
 export default {
   name: "MindInpector",
@@ -15,19 +13,8 @@ export default {
   data() {
     return {
       interval: 0,
-      agents: null
-    }
-  },
-  computed: {
-    url() {
-      if (this.domain == null) {
-        return null;
-      }
-      if (process.env.NODE_ENV === 'development') {
-        return mindInspectorUrl;
-      } else {
-        return DEFAULT_LINKS_PROTOCOL + this.domain.domain + PORT + "/mindinspector/agents";
-      }
+      agents: null,
+      isUnavailable: false
     }
   },
   beforeUnmount() {
@@ -35,15 +22,14 @@ export default {
   },
   mounted() {
     this.interval = setInterval(() => {
-      if (this.url != null) {
-        axios.get(this.url).then((response) => {
-          if (response.status === 200) {
-            this.agents = response.data;
-          }
-        }).catch((error) => {
-          this.agents = null;
-        });
-      }
+      Api.get(EndPoints.MINDINSPECTOR).then((response) => {
+        if (response.status === 200) {
+          this.agents = response.data.data;
+        }
+      }).catch((error) => {
+        this.isUnavailable = error.response.status === 503;
+        this.agents = null;
+      });
     }, 1000);
   }
 }
@@ -54,13 +40,15 @@ export default {
     <div class="project__header-bar">
       <span class="project__header-bar__title">Mind Inspector</span>
     </div>
-    <div v-if="agents != null" class="mindinspector__agents">
+    <div v-if="isUnavailable" class="flex justify-center items-center h-full w-full">
+      <span class="text-aside">MindInspector is unavailable</span>
+    </div>
+    <div v-else-if="agents != null" class="mindinspector__agents">
       <Agent
           v-for="(agent, index) in agents"
 
           :key="index"
           :agentData="agent"
-          :agents-url="url"
 
           @highlightAgentFile="$emit('highlightAgentFile', $event)"
       />

@@ -1,14 +1,14 @@
 <script>
 import Button from "@/components/Button.vue";
-import axios from "axios";
 import Loading from "@/components/Loading.vue";
+import {EndPoints} from "@/services/chonide/endPoints";
+import {Api as API} from "@/services/chonide/api";
 
 export default {
   name: "Agent",
   components: {Loading, Button},
   props: {
-    agentData: {},
-    agentsUrl: String
+    agentData: {}
   },
   data() {
     return {
@@ -23,7 +23,7 @@ export default {
       return 20;
     },
     url() {
-      return this.agentsUrl + "?agent=" + this.agent.name + "&cycle=" + this.cycle;
+      return EndPoints.MINDINSPECTOR + "?agent=" + this.agent.name + "&cycle=" + this.cycle;
     }
   },
   watch: {
@@ -47,9 +47,9 @@ export default {
     moveToNewCycle() {
       if (this.canMove) {
         this.canMove = false;
-        axios.get(this.url).then((response) => {
+        API.get(this.url).then((response) => {
           if (response.status === 200) {
-            this.agent = response.data;
+            this.agent = response.data.data;
           }
         }).then(() => {
           this.canMove = true;
