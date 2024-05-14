@@ -30,9 +30,10 @@ export default {
     agentData() {
       if (!this.moving) {
         this.agent = this.agentData;
-        this.cycle = this.agentData.currentCycleNumber
+        this.cycle = this.agentData.currentCycleNumber;
       } else {
-        this.agent.totalCycleNumber = this.agentData.totalCycleNumber
+        this.agent.newerCycleNumber = this.agentData.newerCycleNumber;
+        this.agent.olderCycleNumber = this.agentData.olderCycleNumber;
       }
     }
   },
@@ -57,17 +58,17 @@ export default {
       }
     },
     typeCycle(event) {
-      if (event.target.value <= 0 || !this.canMove) {
-        event.target.value = 1;
-      } else if (event.target.value > this.agent.totalCycleNumber) {
-        event.target.value = this.agent.totalCycleNumber;
+      if (event.target.value < this.agent.olderCycleNumber || !this.canMove) {
+        event.target.value = this.agent.olderCycleNumber;
+      } else if (event.target.value > this.agent.newerCycleNumber) {
+        event.target.value = this.agent.newerCycleNumber;
       }
       this.cycle = event.target.value;
       this.moving = true;
       this.moveToNewCycle();
     },
     previousCycle() {
-      if (this.cycle <= 1 || !this.canMove) {
+      if (this.cycle < this.agent.olderCycleNumber || !this.canMove) {
         return;
       }
       this.cycle--;
@@ -75,7 +76,7 @@ export default {
       this.moveToNewCycle();
     },
     nextCycle() {
-      if (this.cycle === this.agent.totalCycleNumber) {
+      if (this.cycle === this.agent.newerCycleNumber) {
         return;
       }
       this.cycle++;
@@ -142,13 +143,9 @@ export default {
             <input
                 ref="cycleInput"
                 v-model="cycle"
-                :max="agent.totalCycleNumber"
-                :size="cycle.toString().length"
+                :max="agent.newerCycleNumber"
+                :size="agent.newerCycleNumber.toString().length"
                 class="agent__cycle__current-cycle__input"
-
-                maxlength="4"
-
-                min="1"
 
                 type="number"
                 @keyup.enter="typeCycle"
@@ -157,7 +154,11 @@ export default {
           <span
               v-if="moving"
               class="agent__total-cycle"
-          >{{ agent.totalCycleNumber }}</span>
+          >Mín. {{ agent.olderCycleNumber }}</span>
+          <span
+              v-if="moving"
+              class="agent__total-cycle"
+          >Máx. {{ agent.newerCycleNumber }}</span>
         </div>
         <div v-if="moving" :class="['agent__controller__buttons', !canMove ? 'pointer-events-none select-none' : '']">
           <Button
