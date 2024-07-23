@@ -32,7 +32,7 @@ public class ImportLibrary extends ApiController {
 
         boolean wasImported = false;
         try {
-            wasImported = FirmwareContentManager.buildLibrary(submittedLibrary, authenticatedUser.getExecutor());
+            wasImported = FirmwareContentManager.importLibrary(submittedLibrary, authenticatedUser.getExecutor());
         } catch (IOException ignored) {
         }
 

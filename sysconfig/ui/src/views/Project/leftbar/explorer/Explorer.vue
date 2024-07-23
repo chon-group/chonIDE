@@ -101,12 +101,12 @@ export default {
               type: MessageType.SUCCESS
             });
             this.loadLibraries(true);
-          } else {
-            this.$emit(AppEvent.MESSAGE, {
-              content: response.data.data,
-              type: MessageType.ERROR
-            });
           }
+        }).catch((response) => {
+          this.$emit(AppEvent.MESSAGE, {
+            content: response.response.data.data,
+            type: MessageType.ERROR
+          });
         });
       }
     },

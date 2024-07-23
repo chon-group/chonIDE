@@ -2,7 +2,6 @@ package group.chon.ide.api.domain.file.content;
 
 import group.chon.ide.api.domain.file.FileConstants;
 import group.chon.ide.api.domain.file.FileUtils;
-import group.chon.ide.api.domain.file.model.Firmware;
 import group.chon.ide.api.domain.model.Executor;
 import group.chon.ide.api.domain.model.RuntimeExecutor;
 import group.chon.ide.api.domain.model.SSHExecutor;
@@ -13,8 +12,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
 
 public class FirmwareContentManager {
 
@@ -26,14 +23,7 @@ public class FirmwareContentManager {
 
     private static final String LIBRARY_PREFIX_PATH = FileConstants.TMP_DIRECTORY + LIB_FILE_PREFIX;
 
-    private static final String LIBRARY_BUILD_DIRECTORY = FileConstants.ROOT_DIRECTORY + File.separator + "Arduino"
-            + File.separator + "libraries";
-
-    public static List<Firmware> createDefaultFirmwares() {
-        return Arrays.asList(new Firmware("sketch 1",
-                "void setup() {\n" + "  // put your setup code here, to run once:\n" + "\n" + "}\n" + "\n"
-                        + "void loop() {\n" + "  // put your main code here, to run repeatedly:\n" + "\n" + "}"));
-    }
+    private static final String IMPORTED_LIBRARY_MESSAGE = "Library installed";
 
     public static String buildSketch(String code, Executor executor) {
         File sketchFile = new File(SKETCH_BUILD_FILE);
@@ -45,33 +35,26 @@ public class FirmwareContentManager {
         return SKETCH_BUILD_FILE;
     }
 
-    public static boolean buildLibrary(Part submittedLibrary, Executor executor) throws IOException {
+    public static boolean importLibrary(Part submittedLibrary, Executor executor) throws IOException {
         String libraryPath = LIBRARY_PREFIX_PATH + submittedLibrary.getSubmittedFileName();
         File libraryFile = new File(libraryPath);
         FileUtils.createFile(libraryFile, submittedLibrary.getInputStream());
-        try {
-            if (executor instanceof RuntimeExecutor) {
-                return FileUtils.unzipFiles(libraryFile, LIBRARY_BUILD_DIRECTORY);
-            } else {
-                ((SSHExecutor) executor).setResourceInRemote(libraryFile);
-                String importResponse = executor.execute(FirmwareScriptManager.mountArduinoImportLibScript(libraryPath),
-                        false);
-                return wasImportedInRemote(importResponse);
-            }
-        } finally {
-            libraryFile.delete();
+
+        String command = FirmwareScriptManager.mountArduinoImportLibScript(libraryPath);
+        if (executor instanceof RuntimeExecutor) {
+            String response = executor.execute(command,
+                    false);
+            return response.contains(IMPORTED_LIBRARY_MESSAGE);
+        } else {
+            ((SSHExecutor) executor).setResourceInRemote(libraryFile);
+            String response = executor.execute(command,
+                    false);
+            return wasImportedInRemote(response);
         }
     }
 
-    public static void deleteLibrary(String libName) {
-        File libFile = new File(FileConstants.ARDUINO_LIB_DIRECTORIES + File.separator + libName);
-        if (libFile.exists()) {
-            if (libFile.isFile()) {
-                FileUtils.deleteFile(libFile);
-            } else {
-                FileUtils.deleteFolder(libFile);
-            }
-        }
+    public static void deleteLibrary(String libName, Executor executor) {
+        executor.execute(FirmwareScriptManager.mountRemoveArduinoLibScript(libName), false);
     }
 
     public static boolean isValidSubmittedLibrary(Part submittedLibrary) {

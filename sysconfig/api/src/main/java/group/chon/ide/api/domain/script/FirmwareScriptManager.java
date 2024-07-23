@@ -23,6 +23,9 @@ public class FirmwareScriptManager {
     /** Script para dar deploy em uma placa. */
     private static final String ARDUINO_DEPLOY_SKETCH = FIRMWARE_MANAGER_COMMAND + "-d tempSketchSysConf -b %s -p %s";
 
+    /** Script para remover uma bilbioteca. */
+    private static final String ARDUINO_REMOVE_LIBRARY = FIRMWARE_MANAGER_COMMAND + "--removeLibrary '%s'";
+
     /**
      * Retorna o script formatado para importação de biblioteca.
      *
@@ -31,6 +34,16 @@ public class FirmwareScriptManager {
      */
     public static String mountArduinoImportLibScript(String filePath) {
         return String.format(ARDUINO_IMPORT_LIBRARY, filePath);
+    }
+
+    /**
+     * Retorna o script para remover uma biblioteca.
+     *
+     * @param libName Nome da biblioteca.
+     * @return Script formatado.
+     */
+    public static String mountRemoveArduinoLibScript(String libName) {
+        return String.format(ARDUINO_REMOVE_LIBRARY, libName);
     }
 
     /**

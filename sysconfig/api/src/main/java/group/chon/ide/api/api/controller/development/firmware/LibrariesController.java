@@ -23,14 +23,11 @@ public class LibrariesController extends ApiController {
 
     @Override
     protected ResponseEntity delete(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
-        if (authenticatedUser.getExecutor() instanceof SSHExecutor) {
-            return ResponseEntity.get().status(HttpServletResponse.SC_BAD_REQUEST);
-        }
         String libName = (String) parameters.get("name");
         if (libName == null || libName.isEmpty() || libName.equals("Javino")) {
             return ResponseEntity.get().status(HttpServletResponse.SC_BAD_REQUEST);
         }
-        FirmwareContentManager.deleteLibrary(libName);
+        FirmwareContentManager.deleteLibrary(libName, authenticatedUser.getExecutor());
         return ResponseEntity.get().status(HttpServletResponse.SC_OK);
     }
 }
