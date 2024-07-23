@@ -6,7 +6,7 @@
       <div class="flex items-center grow gap-2.5">
         <img v-if="icon != null" :src="require(`@/assets/media/icon/${icon}`)" class="coder__explorer__item__icon"/>
         <input ref="filename" :value="file.name" class="coder__explorer__item__name w-full" readonly
-               spellcheck="false" type="text" @change="editFile"/>
+               spellcheck="false" type="text" @change="editFile" @dblclick="editNameAction"/>
       </div>
       <button v-if="canRename || canDelete" ref="dotsButton" class="coder__explorer__action-button dots" tabindex="0">
         <Toggle parent-position>
