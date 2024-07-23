@@ -6,7 +6,7 @@ package group.chon.ide.api.domain.script;
 public class SystemScriptManager {
 
     /** Comando para retornar a configuração do sistema. */
-    public static final String GET_CONFIGURATION = "cat /opt/chonos-embMAS/conf/release.conf";
+    public static final String GET_CONFIGURATION = "cat /opt/group.chon/conf/release.conf";
 
     /** Desliga o sistema. */
     public static final String POWER_OFF = "poweroff";
