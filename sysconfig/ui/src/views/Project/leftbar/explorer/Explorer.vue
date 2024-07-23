@@ -1,7 +1,7 @@
 <script>
 import ExplorerFolder from "@/views/Project/leftbar/explorer/ExplorerFolder.vue";
 import ExplorerFile from "@/views/Project/leftbar/explorer/ExplorerFile.vue";
-import {AgentType, AppEvent, FileType, MessageType} from "@/utils/enums";
+import {AppEvent, FileType, MessageType} from "@/utils/enums";
 import defaultAgentSourceCode from "raw-loader!@/assets/text/default-agent-source-code.txt";
 import defaultFirmwareSourceCode from "raw-loader!@/assets/text/default-firmware-source-code.txt";
 import {Api} from "@/services/chonide/api";
@@ -10,6 +10,7 @@ import {Headers} from "@/services/request";
 import validateProject from "@/views/Project/util";
 
 const AGENT_DEFAULT_FILE_NAME = "newAgent", FIRMWARE_DEFAULT_FILE_NAME = "newSketch";
+const DEFAULT_AGENT_TYPE = "Jason";
 
 export default {
   name: "Explorer",
@@ -62,7 +63,7 @@ export default {
       this.$emit("addAgent", {
         name: AGENT_DEFAULT_FILE_NAME + (this.project.agents.length === 0 ? '' : this.project.agents.length +
             1),
-        archClass: AgentType.JASON,
+        archClass: DEFAULT_AGENT_TYPE,
         sourceCode: defaultAgentSourceCode
       });
     },

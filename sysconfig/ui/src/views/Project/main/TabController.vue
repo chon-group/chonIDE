@@ -1,7 +1,7 @@
 <script>
 import Button from "@/components/Button.vue";
 import Toggle from "@/components/Toggle.vue";
-import {AgentTypes, AppEvent, FileType, MessageType} from "@/utils/enums";
+import {AppEvent, FileType, MessageType} from "@/utils/enums";
 import {Api} from "@/services/chonide/api";
 import {EndPoints} from "@/services/chonide/endPoints";
 import Popup from "@/components/Popup.vue";
@@ -25,7 +25,8 @@ export default {
   props: {
     currentFile: {},
     currentFileType: {},
-    currentBoard: {}
+    currentBoard: {},
+    configuration: {}
   },
   data() {
     return {
@@ -41,9 +42,6 @@ export default {
     }
   },
   methods: {
-    AgentTypes() {
-      return AgentTypes
-    },
     compileSketch() {
       if (this.board == null || this.isCurrentBoardUnknown) {
         this.$refs.compileBoardUnknownPopup.showing(true);
@@ -186,7 +184,7 @@ export default {
                     select
                     @select="(selected) => $emit('changeArchClass', selected)">
               <template v-slot:options>
-                <button v-for="(agentType, index) in AgentTypes()"
+                <button v-for="(agentType, index) in this.configuration.agentTypes"
                         :key="index">
                   {{ agentType }}
                 </button>

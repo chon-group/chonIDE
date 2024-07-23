@@ -33,6 +33,7 @@
             :current-board="currentBoard"
             :current-file="currentFile"
             :current-file-type="currentFileType"
+            :configuration="configuration"
 
             @changeArchClass="currentFile.archClass = $event"
         />

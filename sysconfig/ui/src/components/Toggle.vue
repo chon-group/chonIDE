@@ -51,18 +51,20 @@ export default {
     this.applyClickEvent();
 
     if (this.select) {
-      this.buttons = this.$el.querySelectorAll("button");
-      this.check = this.createCheckImage();
-      this.buttons[0].append(this.check);
-      this.buttons.forEach((button) => {
-        if (this.selected == button.textContent) {
-          button.append(this.check);
-        }
-        button.addEventListener("click", () => {
-          this.$emit("select", button.textContent);
-          button.append(this.check);
+      setTimeout(() => {
+        this.buttons = this.$el.querySelectorAll("button");
+        this.check = this.createCheckImage();
+        this.buttons[0].append(this.check);
+        this.buttons.forEach((button) => {
+          if (this.selected == button.textContent) {
+            button.append(this.check);
+          }
+          button.addEventListener("click", () => {
+            this.$emit("select", button.textContent);
+            button.append(this.check);
+          });
         });
-      });
+      }, 50);
     }
   },
   methods: {
