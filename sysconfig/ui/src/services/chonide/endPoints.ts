@@ -5,6 +5,10 @@ const API_URL = backendUrl + API_PREFIX;
 
 export class EndPoints {
     public static AUTH = backendUrl + "/auth";
+    public static NEIGHBORS = backendUrl + "/neighbors";
+    public static CONFIGURATION = backendUrl + "/system/configuration";
+    public static ATTRIBUTES = backendUrl + "/system/attributes";
+
     public static PROJECTS = API_URL + "/projects";
     public static PROJECTS_IMPORT = API_URL + "/projects/import";
     public static DOMAINS = API_URL + "/domains";
@@ -22,6 +26,5 @@ export class EndPoints {
     public static NETWORKS_STATUS = API_URL + "/networks/status";
     public static NETWORKS_AP = API_URL + "/networks/ap";
     public static NETWORKS_CLIENT = API_URL + "/networks/client";
-    public static CONFIGURATION = API_URL + "/system/configuration";
     public static MINDINSPECTOR = API_URL + "/sma/agents"
 }

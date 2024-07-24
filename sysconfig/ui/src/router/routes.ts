@@ -1,5 +1,5 @@
 import {RouteRecordRaw} from "vue-router";
-import Login from "@/views/Login.vue";
+import Login from "@/views/Login/index.vue";
 import Connect from "@/views/Connect.vue";
 import Domain from "@/views/Domain.vue";
 import Home from "@/views/Home.vue";

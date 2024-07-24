@@ -22,7 +22,21 @@ import java.util.stream.Collectors;
 
 public abstract class ApiController extends HttpServlet {
 
+    private final boolean userLogged;
+
+    public ApiController(boolean userLogged) {
+        this.userLogged = userLogged;
+    }
+
+    public ApiController() {
+        this.userLogged = true;
+    }
+
     protected ResponseEntity get(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
+        return null;
+    }
+
+    protected ResponseEntity get(Map<String, Object> parameters) {
         return null;
     }
 
@@ -110,8 +124,13 @@ public abstract class ApiController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        AuthenticatedUser authenticatedUser = (AuthenticatedUser) req.getAttribute("user");
-        ResponseEntity responseEntity = this.get(authenticatedUser, this.getParameters(req));
+        ResponseEntity responseEntity;
+        if (this.userLogged) {
+            AuthenticatedUser authenticatedUser = (AuthenticatedUser) req.getAttribute("user");
+            responseEntity = this.get(authenticatedUser, this.getParameters(req));
+        } else {
+            responseEntity = this.get(this.getParameters(req));
+        }
         this.flush(resp, responseEntity);
     }
 

@@ -42,7 +42,7 @@ export default {
       <Button icon="refresh.svg" icon-ratio="13px" side-padding="12px" @click="loadBoards(true)"/>
     </div>
     <div v-if="loadingBoards" class="flex items-center justify-center h-full w-full">
-      <Loading border-width="2px" main-color="var(--pallete-text-main)" ratio="25px"/>
+      <Loading  ratio="25px"/>
     </div>
     <div v-else-if="boards.length === 0 && !loadingBoards" class="flex items-center justify-center h-full w-full">
       <span class="text-aside">No available boards found</span>

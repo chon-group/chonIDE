@@ -7,7 +7,7 @@ export default {
   name: "Loading",
   props: {
     mainColor: {
-      default: "var(--pallete-color-main-1)"
+      default: "vvar(--pallete-text-main)"
     },
     asideColor: {
       default: "var(--pallete-color-black-3)"
@@ -16,7 +16,7 @@ export default {
       default: "30px"
     },
     borderWidth: {
-      default: "4px"
+      default: "2px"
     }
   }
 }
