@@ -1,6 +1,6 @@
 <script>
-import Button from "@/components/Button.vue";
-import Loading from "@/components/Loading.vue";
+import Button from "@/components/general/Button.vue";
+import Loading from "@/components/general/Loading.vue";
 import {Api} from "@/services/chonide/api";
 import {EndPoints} from "@/services/chonide/endPoints";
 import Board from "@/views/Project/rightbar/boards/Board.vue";
@@ -8,25 +8,30 @@ import Board from "@/views/Project/rightbar/boards/Board.vue";
 export default {
   name: "Boards",
   components: {Board, Loading, Button},
+  props: {
+    currentBoard: {}
+  },
   data() {
     return {
       loadingBoards: false,
-      boards: [],
-      currentBoard: {}
+      boards: []
     }
   },
   mounted() {
-    this.loadBoards(true);
+    this.loadBoards();
   },
   methods: {
-    loadBoards(refresh = false) {
-      this.currentBoard = null;
+    select(board) {
+      if (board === this.currentBoard) {
+        this.$emit("selectBoard", null);
+      } else {
+        this.$emit("selectBoard", board);
+      }
+    },
+    loadBoards() {
       this.loadingBoards = true;
-      Api.get(EndPoints.BOARDS, refresh).then((response) => {
+      Api.get(EndPoints.BOARDS).then((response) => {
         this.boards = response.data.data;
-        if (this.boards.length !== 0) {
-          this.currentBoard = this.boards[0];
-        }
       }).finally(() => {
         this.loadingBoards = false;
       });
@@ -47,17 +52,14 @@ export default {
     <div v-else-if="boards.length === 0 && !loadingBoards" class="flex items-center justify-center h-full w-full">
       <span class="text-aside">No available boards found</span>
     </div>
-    <div v-else class="flex flex-col gap-1.5 p-1.5">
+    <div v-else class="flex flex-col">
       <Board
           v-for="(board, index) in boards" :key="index"
 
           :board="board"
           :is-current="currentBoard === board"
 
-          @click="$emit('selectedBoard', board)"
-          @select="() => {
-                        currentBoard = currentBoard === board ? null : board
-                    }"/>
+          @select="select(board)"/>
     </div>
   </div>
 </template>

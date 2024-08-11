@@ -4,6 +4,11 @@ import router from "@/router";
 import {Routes} from "@/router/routes";
 import {EndPoints} from "@/services/chonide/endPoints";
 
+export class DataHandler {
+
+    static configuration: any;
+
+}
 
 export class Api {
 
@@ -57,7 +62,7 @@ export class Api {
 
     private static validate(requisition: Promise<any>): Promise<any> {
         return requisition.catch((error) => {
-            if (error.response.status == 401) {
+            if (error.response.status === 401) {
                 router.push(Routes.LOGIN);
             }
             throw error;

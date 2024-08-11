@@ -41,7 +41,7 @@ export default {
   watch: {
     selected(selected) {
       this.buttons.forEach((button) => {
-        if (selected == button.textContent) {
+        if (selected === button.textContent) {
           button.append(this.check);
         }
       });
@@ -56,7 +56,7 @@ export default {
         this.check = this.createCheckImage();
         this.buttons[0].append(this.check);
         this.buttons.forEach((button) => {
-          if (this.selected == button.textContent) {
+          if (this.selected === button.textContent) {
             button.append(this.check);
           }
           button.addEventListener("click", () => {

@@ -6,16 +6,16 @@ package group.chon.ide.api.domain.script;
 public class FirmwareScriptManager {
 
     /** Comando para interação com o(s) firmware(s) do sistema. */
-    private static final String FIRMWARE_MANAGER_COMMAND = "chonosFirmwareManager ";
+    private static final String FIRMWARE_MANAGER_COMMAND = "sudo chonosFirmwareManager ";
 
     /** Script para listar as placas do sistema. */
-    public static final String ARDUINO_LIST_BOARDS = FIRMWARE_MANAGER_COMMAND + "--list";
+    public static final String ARDUINO_LIST_BOARDS = FIRMWARE_MANAGER_COMMAND + "--listBoards";
 
     /** Script para listar as bibliotecas das placas do sistema. */
     public static final String ARDUINO_LIST_LIBRARIES = FIRMWARE_MANAGER_COMMAND + "--listLibraries";
 
     /** Script para importação biblioteca para as placas do sistema. */
-    private static final String ARDUINO_IMPORT_LIBRARY = FIRMWARE_MANAGER_COMMAND + "-i '%s'";
+    private static final String ARDUINO_IMPORT_LIBRARY = FIRMWARE_MANAGER_COMMAND + "--importLibrary -f %s";
 
     /** Script para compilar um sketch para uma placa. */
     private static final String ARDUINO_COMPILE_SKETCH = FIRMWARE_MANAGER_COMMAND + "-s tempSketchSysConf -f %s -b %s";
@@ -24,7 +24,7 @@ public class FirmwareScriptManager {
     private static final String ARDUINO_DEPLOY_SKETCH = FIRMWARE_MANAGER_COMMAND + "-d tempSketchSysConf -b %s -p %s";
 
     /** Script para remover uma bilbioteca. */
-    private static final String ARDUINO_REMOVE_LIBRARY = FIRMWARE_MANAGER_COMMAND + "--removeLibrary '%s'";
+    private static final String ARDUINO_REMOVE_LIBRARY = FIRMWARE_MANAGER_COMMAND + "--removeLibrary %s";
 
     /**
      * Retorna o script formatado para importação de biblioteca.

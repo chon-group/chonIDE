@@ -1,12 +1,12 @@
 <script>
-import Button from "@/components/Button.vue";
-import Toggle from "@/components/Toggle.vue";
+import Button from "@/components/general/Button.vue";
+import Toggle from "@/components/general/Toggle.vue";
 import {AppEvent, FileType, MessageType} from "@/utils/enums";
 import {Api} from "@/services/chonide/api";
 import {EndPoints} from "@/services/chonide/endPoints";
-import Popup from "@/components/Popup.vue";
+import Popup from "@/components/general/Popup.vue";
 
-const UNKNOW_BOARD_MODEL_STRING = 'unknown:unknown:unknown';
+const UNKNOWN_BOARD_MODEL_STRING = 'unknown:unknown:unknown';
 
 export default {
   name: "TabController",
@@ -18,7 +18,7 @@ export default {
       if (this.board == null || this.board.fqbn == null) {
         return false;
       }
-      return this.board.fqbn.toLowerCase().includes(UNKNOW_BOARD_MODEL_STRING);
+      return this.board.fqbn.toLowerCase().includes(UNKNOWN_BOARD_MODEL_STRING);
     }
   },
   components: {Popup, Toggle, Button},
@@ -33,15 +33,45 @@ export default {
       compilingSketch: false,
       deployingSketch: false,
       boardResponse: null,
-      board: null
+      board: null,
+      agentTypeName: ""
+    }
+  },
+  mounted() {
+    if (this.currentFileType === FileType.AGENT) {
+      this.setAgentTypeName();
     }
   },
   watch: {
+    currentFile: {
+      deep: true,
+      handler() {
+        if (this.currentFileType === FileType.AGENT) {
+          this.setAgentTypeName();
+        }
+      }
+    },
     currentBoard(newValue) {
       this.board = newValue;
     }
   },
   methods: {
+    getAgentClassByName(agentName) {
+      for (let i in this.configuration.agentTypes) {
+        let type = this.configuration.agentTypes[i];
+        if (type.name === agentName) {
+          return type.class;
+        }
+      }
+    },
+    setAgentTypeName() {
+      for (let i in this.configuration.agentTypes) {
+        let type = this.configuration.agentTypes[i];
+        if (type.class === this.currentFile.archClass) {
+          this.agentTypeName = type.name;
+        }
+      }
+    },
     compileSketch() {
       if (this.board == null || this.isCurrentBoardUnknown) {
         this.$refs.compileBoardUnknownPopup.showing(true);
@@ -101,7 +131,7 @@ export default {
       if (this.board.name == null) {
         this.board = null;
       } else {
-        this.board.fqbn = UNKNOW_BOARD_MODEL_STRING;
+        this.board.fqbn = UNKNOWN_BOARD_MODEL_STRING;
       }
     }
   }
@@ -117,19 +147,19 @@ export default {
         <p> Perform deploy as...</p>
       </template>
       <template v-slot:action>
-        <div class="flex gap-2 flex-col w-full">
+        <div class="flex gap-2.5 w-full">
           <Button width-full
-                  @click="this.performBoardOperationWithDifferentFqbn('arduino:avr:uno', this.deploySketch,
-                            $refs.deployBoardUnknownPopup)">
+                  @click="this.performBoardOperationWithDifferentFqbn('arduino:avr:mega', this.deploySketch,
+                            $refs.deployBoardUnknownPopup)" color="var(--pallete-color-black-3)">
             <template v-slot:content>
-              Arduino Uno
+              Arduino Mega
             </template>
           </Button>
           <Button width-full
-                  @click="this.performBoardOperationWithDifferentFqbn('arduino:avr:mega', this.deploySketch,
-                            $refs.deployBoardUnknownPopup)">
+                  @click="this.performBoardOperationWithDifferentFqbn('arduino:avr:uno', this.deploySketch,
+                            $refs.deployBoardUnknownPopup)" color="var(--pallete-color-black-3)">
             <template v-slot:content>
-              Arduino Mega
+              Arduino Uno
             </template>
           </Button>
         </div>
@@ -139,22 +169,22 @@ export default {
     <Popup ref="compileBoardUnknownPopup" can-close title="Choose board model">
       <template v-slot:content>
         <p v-if="this.isCurrentBoardUnknown">The Arduino board model cannot be identified.</p>
-        <p> Perform compile as...</p>
+        <p>Perform compile as...</p>
       </template>
       <template v-slot:action>
-        <div class="flex gap-2 flex-col w-full">
+        <div class="flex gap-2.5 w-full">
           <Button width-full
-                  @click="this.performBoardOperationWithDifferentFqbn('arduino:avr:uno', this.compileSketch,
-                            $refs.compileBoardUnknownPopup)">
+                  @click="this.performBoardOperationWithDifferentFqbn('arduino:avr:mega', this.compileSketch,
+                            $refs.compileBoardUnknownPopup)" color="var(--pallete-color-black-3)">
             <template v-slot:content>
-              Arduino Uno
+              Arduino Mega
             </template>
           </Button>
           <Button width-full
-                  @click="this.performBoardOperationWithDifferentFqbn('arduino:avr:mega', this.compileSketch,
-                            $refs.compileBoardUnknownPopup)">
+                  @click="this.performBoardOperationWithDifferentFqbn('arduino:avr:uno', this.compileSketch,
+                            $refs.compileBoardUnknownPopup)" color="var(--pallete-color-black-3)">
             <template v-slot:content>
-              Arduino Mega
+              Arduino Uno
             </template>
           </Button>
         </div>
@@ -179,14 +209,14 @@ export default {
 
         <Button v-if="currentFileType === FileType.AGENT" icon="toggle.svg" icon-ratio="8px" icon-sense="right">
           <template v-slot:content>
-            {{ this.currentFile.archClass }}
-            <Toggle :selected="this.currentFile.archClass" parent-position
+            {{ this.agentTypeName }}
+            <Toggle :selected="this.agentTypeName" parent-position
                     select
-                    @select="(selected) => $emit('changeArchClass', selected)">
+                    @select="(selected) => $emit('changeArchClass', getAgentClassByName(selected))">
               <template v-slot:options>
                 <button v-for="(agentType, index) in this.configuration.agentTypes"
                         :key="index">
-                  {{ agentType }}
+                  {{ agentType.name }}
                 </button>
               </template>
             </Toggle>

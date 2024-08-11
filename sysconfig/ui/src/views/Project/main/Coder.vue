@@ -11,7 +11,8 @@ export default {
   props: {
     sourceCode: {},
     selectedLines: {},
-    smaRunning: Boolean
+    smaRunning: Boolean,
+    configuration: {}
   },
   data() {
     return {
@@ -32,7 +33,7 @@ export default {
       this.$emit("sourceCode", currentSourceCode);
 
 
-      if (!this.impreciseMindinspectorHightWarned && this.smaRunning) {
+      if (!this.impreciseMindinspectorHightWarned && this.smaRunning && this.configuration.mindInspector === 2) {
         this.$emit(AppEvent.MESSAGE,
             {
               content: "Editing source code while SMA runs causes Mind Inspector highlighting to be inaccurate",

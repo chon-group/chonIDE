@@ -1,9 +1,7 @@
 <template>
   <div class="header">
     <div class="flex items-center h-full gap-2.5">
-      <router-link to="/home">
-        <h2 class="header__logo">chonIDE</h2>
-      </router-link>
+      <h2 class="header__logo">chonIDE</h2>
       <slot name="left"></slot>
     </div>
     <div class="header__center">

@@ -1,16 +1,21 @@
 <script>
 
-import Button from "@/components/Button.vue";
-import Header from "@/components/layout/Header.vue";
+import Button from "@/components/general/Button.vue";
+import Header from "@/components/Header.vue";
 import {Api} from "@/services/chonide/api";
 import {EndPoints} from "@/services/chonide/endPoints";
 import {AppEvent, MessageType} from "@/utils/enums";
-import Loading from "@/components/Loading.vue";
+import Loading from "@/components/general/Loading.vue";
 import validateProject from "@/views/Project/util";
+import NetworksPopup from "@/components/popups/networksPopup/NetworksPopup.vue";
+import DomainPopup from "@/components/popups/DomainPopup.vue";
+
+const DEFAULT_LINKS_PROTOCOL = "http://";
+const MINDINSPECTOR_PORT = ":3272";
 
 export default {
   name: "ProjectHeader",
-  components: {Loading, Header, Button},
+  components: {DomainPopup, NetworksPopup, Loading, Header, Button},
   props: {
     configuration: {},
     domain: {},
@@ -24,8 +29,17 @@ export default {
       startingMas: false,
       stopingMas: false,
       smaRunning: false,
-      restart: false
+      restart: false,
+      networkOpen: false
     }
+  },
+  computed: {
+    mindInspectorUrl() {
+      if (this.domain == null) {
+        return "";
+      }
+      return DEFAULT_LINKS_PROTOCOL + this.domain.domain + MINDINSPECTOR_PORT;
+    },
   },
   methods: {
     startMas() {
@@ -68,26 +82,21 @@ export default {
 </script>
 
 <template>
+  <NetworksPopup @message="$emit('message', $event)" v-if="networkOpen" @closed="networkOpen = false"/>
   <Header>
     <template v-slot:left>
       <div class="flex items-center h-full">
         <router-link to="/home">
           <Button icon="back.svg" icon-ratio="11px"/>
         </router-link>
-        <router-link v-if="configuration.network" to="/connect">
-          <Button icon="wifi-quality-4.svg" icon-ratio="12px">
-            <template v-slot:content>
-              Networks
-            </template>
-          </Button>
-        </router-link>
-        <router-link v-if="configuration.ddns" to="/domain">
-          <Button icon="domain.svg" icon-ratio="12px">
-            <template v-slot:content>
-              Bot name
-            </template>
-          </Button>
-        </router-link>
+        <Button icon="wifi-quality-3.svg" icon-ratio="15px" v-if="configuration != null && configuration.network"
+                text="Network" @click="networkOpen = true"/>
+        <Button icon="domain.svg" icon-ratio="13px" text="Bot name" v-if="configuration != null && configuration.ddns">
+          <template v-slot:content>
+            Domain
+            <DomainPopup @message="$emit('message', $event)"/>
+          </template>
+        </Button>
       </div>
     </template>
     <template v-slot:center>
@@ -107,6 +116,8 @@ export default {
                 @click="startMas"/>
         <Button v-if="configuration.stopMAS" :is-loading="stopingMas" icon="stop.svg" icon-ratio="12px"
                 @click="stopMas"/>
+        <Button v-if="configuration.mindInspector === 1" icon="terminal.svg" icon-ratio="16px"
+                :link="mindInspectorUrl"/>
       </div>
     </template>
   </Header>

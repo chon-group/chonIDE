@@ -10,7 +10,7 @@ import {Headers} from "@/services/request";
 import validateProject from "@/views/Project/util";
 
 const AGENT_DEFAULT_FILE_NAME = "newAgent", FIRMWARE_DEFAULT_FILE_NAME = "newSketch";
-const DEFAULT_AGENT_TYPE = "Jason";
+const DEFAULT_AGENT_TYPE_NAME = "Jason";
 
 export default {
   name: "Explorer",
@@ -63,7 +63,7 @@ export default {
       this.$emit("addAgent", {
         name: AGENT_DEFAULT_FILE_NAME + (this.project.agents.length === 0 ? '' : this.project.agents.length +
             1),
-        archClass: DEFAULT_AGENT_TYPE,
+        archClass: DEFAULT_AGENT_TYPE_NAME,
         sourceCode: defaultAgentSourceCode
       });
     },

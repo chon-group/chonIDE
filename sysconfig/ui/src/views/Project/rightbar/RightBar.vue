@@ -1,15 +1,12 @@
 <script>
 import Boards from "@/views/Project/rightbar/boards/Boards.vue";
 import {FileType} from "@/utils/enums";
-import Dragger from "@/components/Dragger.vue";
-import MindInpector from "@/views/Project/rightbar/mindinspector/MindInspector.vue";
+import Dragger from "@/components/general/Dragger.vue";
+import MindInspector from "@/views/Project/rightbar/mindinspector/MindInspector.vue";
 
 export default {
   name: "RightBar",
   computed: {
-    FileType() {
-      return FileType
-    },
     show() {
       return this.showBoards || this.showMindInspector;
     },
@@ -17,22 +14,24 @@ export default {
       return this.currentFileType === FileType.FIRMWARE.valueOf();
     },
     showMindInspector() {
-      return this.smaRunning && this.currentFileType === FileType.AGENT.valueOf();
+      return this.smaRunning && this.configuration.mindInspector === 2 && this.currentFileType === FileType.AGENT.valueOf();
     }
   },
-  components: {MindInpector, Dragger, Boards},
+  components: {MindInspector: MindInspector, Dragger, Boards},
   props: {
     currentFileType: {},
     domain: {},
+    currentBoard: {},
+    configuration: {},
     smaRunning: Boolean
   }
 }
 </script>
 
 <template>
-  <div v-if="show" class="right-bar">
-    <MindInpector v-if="showMindInspector" :domain="domain" @highlightAgentFile="$emit('highlightAgentFile', $event)"/>
-    <Boards v-else-if="showBoards" @selectedBoard="$emit('selectedBoard', $event)"/>
+  <div v-show="show" class="right-bar">
+    <MindInspector v-if="showMindInspector" :domain="domain" @highlightAgentFile="$emit('highlightAgentFile', $event)"/>
+    <Boards v-show="showBoards" @selectBoard="$emit('selectBoard', $event)" :current-board="currentBoard"/>
     <Dragger left/>
   </div>
 </template>

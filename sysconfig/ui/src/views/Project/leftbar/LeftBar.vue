@@ -1,5 +1,5 @@
 <script>
-import Dragger from "@/components/Dragger.vue";
+import Dragger from "@/components/general/Dragger.vue";
 import Explorer from "@/views/Project/leftbar/explorer/Explorer.vue";
 
 export default {
@@ -29,6 +29,7 @@ export default {
         @removeFirmware="$emit('removeFirmware', $event)"
         @setCurrentFile="$emit('setCurrentFile', $event)"
         @setFileType="$emit('setFileType', $event)"
+        @message="$emit('message', $event)"
     />
     <Dragger right/>
   </div>

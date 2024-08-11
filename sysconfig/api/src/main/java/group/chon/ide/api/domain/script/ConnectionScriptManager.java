@@ -9,7 +9,7 @@ public class ConnectionScriptManager {
     private static final String DDNS_MANAGER_COMMAND = "chonosDDNSManager ";
 
     /** Script para configurar o domínio DDNS de acesso ao sistema. */
-    private static final String DDNS_CONF = DDNS_MANAGER_COMMAND + "-o conf -d %s -u %s -t %s";
+    private static final String DDNS_CONF = DDNS_MANAGER_COMMAND + "--conf -d %s -u %s -t %s";
 
     /** Script para status do domínio atual. */
     public static final String DDNS_STATUS = DDNS_MANAGER_COMMAND + "--status";
@@ -33,10 +33,10 @@ public class ConnectionScriptManager {
     private static final String WIFI_AP_MODE_WITHOUT_ENCRIPTION = WIFI_CONF_COMMAND + "-m ap -e %s -k NONE";
 
     /** Script para realizar conexão em modo cliente com encriptação do sistema. */
-    private static final String WIFI_CLIENT_MODE_WITH_ENCRIPTION = WIFI_CONF_COMMAND + "-m client -e %s -k %s --reboot";
+    private static final String WIFI_CLIENT_MODE_WITH_ENCRIPTION = WIFI_CONF_COMMAND + "-m client -e %s -k %s";
 
     /** Script para realizar conexão em modo cliente sem encriptação do sistema. */
-    private static final String WIFI_CLIENT_MODE_WITHOUT_ENCRIPTION = WIFI_CONF_COMMAND + "-m client -e %s --reboot";
+    private static final String WIFI_CLIENT_MODE_WITHOUT_ENCRIPTION = WIFI_CONF_COMMAND + "-m client -e %s";
 
     /** Comando para interação de conexão wi-fi. */
     private static final String WIFI_CONN_COMMAND = "chonosWifiConn ";

@@ -5,7 +5,7 @@ import {EndPoints} from "@/services/chonide/endPoints";
 import {Api} from "@/services/chonide/api";
 
 export default {
-  name: "MindInpector",
+  name: "MindInspector",
   components: {Agent},
   props: {
     domain: {}

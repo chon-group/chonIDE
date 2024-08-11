@@ -1,5 +1,5 @@
 <template>
-  <div class="board" @click="select">
+  <div class="board" @click="$emit('select')">
     <div class="flex justify-between">
       <span class="flex flex-col">
         <span>{{ board.board }}</span>
@@ -25,11 +25,6 @@ export default {
   },
   beforeUnmount() {
     removeRipple(this.$el);
-  },
-  methods: {
-    select() {
-      this.$emit("select");
-    }
   }
 }
 </script>
@@ -38,8 +33,7 @@ export default {
 @import "@/views/Project/style.css";
 
 .board {
-  height: 80px;
-  @apply flex flex-col justify-between p-1.5 rounded-lg cursor-pointer;
+  @apply flex flex-col justify-between p-3 cursor-pointer;
 }
 
 .board:hover {
@@ -47,9 +41,9 @@ export default {
 }
 
 .coder__board__select {
-  height: 15px;
+  height: 14px;
   aspect-ratio: 1/1;
-  border: 2px solid var(--pallete-color-black-4);
+  background-color: var(--pallete-color-black-3);
   @apply rounded-full;
 }
 

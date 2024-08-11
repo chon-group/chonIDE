@@ -1,6 +1,6 @@
 <script>
-import Button from "@/components/Button.vue";
-import Loading from "@/components/Loading.vue";
+import Button from "@/components/general/Button.vue";
+import Loading from "@/components/general/Loading.vue";
 import {EndPoints} from "@/services/chonide/endPoints";
 import {Api as API} from "@/services/chonide/api";
 

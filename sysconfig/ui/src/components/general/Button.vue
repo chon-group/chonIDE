@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import Loading from "@/components/Loading";
+import Loading from "@/components/general/Loading.vue";
 import {removeRipple, useRipple} from "@/assets/js/effects/ripple";
 
 export default {
@@ -35,7 +35,10 @@ export default {
     },
     noBorder: Boolean,
     isLoading: Boolean,
-    height: String,
+    height: {
+      default: "var(--action-height)",
+      type: String
+    },
     link: String,
     widthFull: {
       default: false,
@@ -99,7 +102,7 @@ export default {
   color: var(--pallete-text-main);
   padding: 0 v-bind(padding);
   gap: 8px;
-  height: var(--action-height);
+  height: v-bind(height);
   width: v-bind(width);
   @apply whitespace-nowrap overflow-hidden relative cursor-pointer border-none gap-2 rounded-md select-none shrink-0;
 }

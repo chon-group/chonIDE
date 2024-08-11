@@ -1,6 +1,6 @@
 <script>
-import Button from "@/components/Button.vue";
-import Dragger from "@/components/Dragger.vue";
+import Button from "@/components/general/Button.vue";
+import Dragger from "@/components/general/Dragger.vue";
 
 const DEFAULT_LINKS_PROTOCOL = "https://";
 const SMA_PORT = ":3371";

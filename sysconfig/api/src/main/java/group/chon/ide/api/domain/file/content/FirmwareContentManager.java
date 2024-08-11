@@ -58,7 +58,7 @@ public class FirmwareContentManager {
     }
 
     public static boolean isValidSubmittedLibrary(Part submittedLibrary) {
-        return submittedLibrary.getSize() > 0 && submittedLibrary.getSubmittedFileName().endsWith(
+        return submittedLibrary.getSubmittedFileName().endsWith(
                 FileUtils.COMPACTED_FILE_EXTENSION);
     }
 

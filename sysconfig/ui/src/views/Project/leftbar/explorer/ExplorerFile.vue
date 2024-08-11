@@ -70,10 +70,10 @@
 
 <script>
 import {Key} from "@/utils/enums";
-import Popup from "@/components/Popup.vue";
-import Button from "@/components/Button.vue";
+import Popup from "@/components/general/Popup.vue";
+import Button from "@/components/general/Button.vue";
 import GeneralUtil from "@/utils/generalUtil";
-import Toggle from "@/components/Toggle.vue";
+import Toggle from "@/components/general/Toggle.vue";
 import {removeRipple, useRipple} from "@/assets/js/effects/ripple";
 
 export default {

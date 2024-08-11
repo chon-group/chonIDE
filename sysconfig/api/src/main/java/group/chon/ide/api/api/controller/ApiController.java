@@ -36,6 +36,10 @@ public abstract class ApiController extends HttpServlet {
         return null;
     }
 
+    protected ResponseEntity delete(Map<String, Object> parameters) {
+        return null;
+    }
+
     protected ResponseEntity get(Map<String, Object> parameters) {
         return null;
     }
@@ -66,8 +70,8 @@ public abstract class ApiController extends HttpServlet {
             parameters.put(parameterName, request.getParameter(parameterName));
         }
         try {
-            String dataString = new BufferedReader(new InputStreamReader(request.getInputStream())).lines().collect(
-                    Collectors.joining());
+            String dataString = new BufferedReader(new InputStreamReader(request.getInputStream())).lines()
+                                                                                                   .collect(Collectors.joining());
             parameters.put("data", dataString);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -105,14 +109,12 @@ public abstract class ApiController extends HttpServlet {
             ReturnedFile masReturnedFile = ((ReturnedFile) data);
 
             resp.setContentType("application/octet-stream");
-            resp.setHeader("Content-disposition",
-                    String.format("attachment; filename=\"%s.zip\"", masReturnedFile.getFileName()));
+            resp.setHeader("Content-disposition", String.format("attachment; filename=\"%s.zip\"", masReturnedFile.getFileName()));
 
             ResponseUtil.writeBinary(resp, masReturnedFile.getInputStream());
         } else {
             resp.setCharacterEncoding(HttpEncoding.UTF_8.getType());
-            resp.setHeader("Content-Type",
-                    HttpContent.JSON.getType() + "; charset=" + HttpEncoding.ISO_8859_1.getType());
+            resp.setHeader("Content-Type", HttpContent.JSON.getType() + "; charset=" + HttpEncoding.ISO_8859_1.getType());
             ResponseUtil.writeText(resp, JsonManager.get().toJson(responseEntity));
         }
         try {
@@ -150,8 +152,13 @@ public abstract class ApiController extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
-        AuthenticatedUser authenticatedUser = (AuthenticatedUser) req.getAttribute("user");
-        ResponseEntity responseEntity = this.delete(authenticatedUser, this.getParameters(req));
+        ResponseEntity responseEntity;
+        if (this.userLogged) {
+            AuthenticatedUser authenticatedUser = (AuthenticatedUser) req.getAttribute("user");
+            responseEntity = this.delete(authenticatedUser, this.getParameters(req));
+        } else {
+            responseEntity = this.delete(this.getParameters(req));
+        }
         this.flush(resp, responseEntity);
     }
 }

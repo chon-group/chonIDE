@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import Toggle from "@/components/Toggle.vue";
+import Toggle from "@/components/general/Toggle.vue";
 import {removeRipple, useRipple} from "@/assets/js/effects/ripple";
 
 export default {

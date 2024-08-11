@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import Message from "@/components/Message";
+import Message from "@/components/general/Message.vue";
 
 export default {
   name: "App",

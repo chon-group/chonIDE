@@ -43,10 +43,9 @@ public class AuthGeneratorServlet extends ApiController {
             return responseEntity.status(HttpServletResponse.SC_BAD_REQUEST).message(
                     "The 'username' and 'password' parameters are empty or do not exist.");
         }
-        boolean isDefaultHost = false;
+
         if (host == null || host.isEmpty()) {
             host = DEFAULT_HOST;
-            isDefaultHost = true;
         }
 
         SSHExecutor sshExecutor = new SSHExecutor(username, password, host);
@@ -54,7 +53,7 @@ public class AuthGeneratorServlet extends ApiController {
             String jwt = JWT.create().withSubject(username).sign(JWT_ALGORITHM);
             Date date = new Date(System.currentTimeMillis() + EXPIRATION_TIME);
             Executor executor;
-            if (isDefaultHost) {
+            if (host.equals(DEFAULT_HOST)) {
                 executor = new RuntimeExecutor();
             } else {
                 executor = new SSHExecutor(username, password, host);

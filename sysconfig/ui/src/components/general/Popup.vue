@@ -1,6 +1,6 @@
 <template>
-  <div class="pop-up-background" style='display: none'>
-    <div ref="popup" class="pop-up flex flex-col gap-5">
+  <div class="pop-up-background" :style="show ? '' : 'display: none'">
+    <div ref="popup" class="pop-up">
       <div class="flex items-center justify-between">
         <span class="pop-up__title">{{ title }}</span>
         <div v-if="canClose" class="pop-up__close-action" @click="close"></div>
@@ -20,12 +20,15 @@ export default {
   props: {
     title: String,
     type: String,
-    for: String,
     canClose: Boolean,
     isChildren: Boolean,
     width: {
       type: String,
       default: "var(--container-width-2)"
+    },
+    show: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -35,10 +38,8 @@ export default {
   },
   methods: {
     close() {
+      this.$emit("closed");
       this.showing(false);
-      if (this.triggerElement != null && this.for != null) {
-        this.triggerElement.appendChild(this.$el);
-      }
     },
     showing(isShowing) {
       if (isShowing) {
@@ -53,12 +54,12 @@ export default {
   mounted() {
     if (this.isChildren) {
       this.triggerElement = this.$el.parentElement;
-    } else {
-      this.triggerElement = document.querySelector(`.${this.for}`);
     }
+
     if (this.triggerElement == null) {
       return;
     }
+
     this.triggerElement.appendChild(this.$el);
     this.triggerElement.onclick = () => {
       this.showing(true);
@@ -83,21 +84,22 @@ export default {
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
   position: fixed;
-  z-index: 5;
+  z-index: 20;
   overflow-y: hidden;
-  @apply flex items-center justify-center;
+  @apply flex items-center justify-center p-5;
 }
 
 .pop-up {
   width: v-bind(width);
   z-index: 10;
   background-color: var(--pallete-color-black-2);
-  @apply m-auto p-5 rounded-md;
+  max-height: 100%;
+  @apply flex flex-col gap-5 p-5 rounded-md m-auto;
 }
 
 .pop-up__title {
-  font-size: var(--text-size-headline);
   color: var(--pallete-text-main);
+  @apply text-lg
 }
 
 .pop-up__close-action {

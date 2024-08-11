@@ -6,9 +6,9 @@ const API_URL = backendUrl + API_PREFIX;
 export class EndPoints {
     public static AUTH = backendUrl + "/auth";
     public static NEIGHBORS = backendUrl + "/neighbors";
-    public static CONFIGURATION = backendUrl + "/system/configuration";
     public static ATTRIBUTES = backendUrl + "/system/attributes";
 
+    public static CONFIGURATION = API_URL + "/system/configuration";
     public static PROJECTS = API_URL + "/projects";
     public static PROJECTS_IMPORT = API_URL + "/projects/import";
     public static DOMAINS = API_URL + "/domains";

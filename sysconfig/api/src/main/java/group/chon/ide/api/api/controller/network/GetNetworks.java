@@ -19,6 +19,12 @@ import java.util.Map;
 public class GetNetworks extends ApiController {
 
     @Override
+    protected ResponseEntity delete(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
+        authenticatedUser.getExecutor().execute(ConnectionScriptManager.WIFI_FORGET, false);
+        return ResponseEntity.get().status(HttpServletResponse.SC_OK);
+    }
+
+    @Override
     protected ResponseEntity get(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
         String allNetworksResponse = authenticatedUser.getExecutor().execute(ConnectionScriptManager.WIFI_SCAN_LIST,
                 false);
@@ -51,9 +57,9 @@ public class GetNetworks extends ApiController {
             }
             String[] quality = networkJsonElement.get("quality").getAsString().split("/");
             networkJsonElement.remove("quality");
-            Double qualityValue;
+            double qualityValue;
             try {
-                qualityValue = Double.valueOf(Double.parseDouble(quality[0]) / Double.parseDouble(quality[1]));
+                qualityValue = Double.parseDouble(quality[0]) / Double.parseDouble(quality[1]);
             } catch (Exception ignored) {
                 qualityValue = 0.0;
             }

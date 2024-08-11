@@ -1,5 +1,5 @@
 <template>
-  <div class="project flex flex-col h-screen w-full">
+  <div class="project flex flex-col h-screen w-full" v-if="configuration != null">
     <ProjectHeader
         :configuration="configuration"
         :domain="domain"
@@ -22,13 +22,14 @@
           @removeFirmware="removeFirmware"
           @setCurrentFile="currentFile = $event"
           @setFileType="currentFileType = $event"
+          @message="$emit('message', $event)"
       />
 
       <div v-if="currentFile.name.length === 0 && currentFile.sourceCode.length === 0"
            class="flex items-center justify-center w-full h-full">
         <span class="text-aside">Start creating a new agent or firmware file</span>
       </div>
-      <div v-else class="main">
+      <div v-else-if="configuration != null" class="main">
         <TabController
             :current-board="currentBoard"
             :current-file="currentFile"
@@ -36,6 +37,7 @@
             :configuration="configuration"
 
             @changeArchClass="currentFile.archClass = $event"
+            @message="$emit(AppEvent.MESSAGE, $event)"
         />
         <Coder
             :selected-lines="selectedLines"
@@ -53,14 +55,21 @@
           :current-file-type="currentFileType"
           :domain="domain"
           :sma-running="smaRunning"
+          :configuration="configuration"
+          :current-board="currentBoard"
 
           @highlightAgentFile="highlightAgentFile"
-          @selectedBoard="currentBoard = $event"
+          @selectBoard="currentBoard = $event"
       />
     </div>
 
   </div>
-
+  <div v-else class="flex flex-col gap-3 items-center justify-center h-screen w-screen">
+    <Loading/>
+    <span class="text-aside">
+      Loading project environment...
+    </span>
+  </div>
 </template>
 
 <script>
@@ -68,7 +77,7 @@
 
 import GeneralUtil from "@/utils/generalUtil";
 import {AppEvent, FileType} from "@/utils/enums";
-import {Api} from "@/services/chonide/api";
+import {Api, DataHandler} from "@/services/chonide/api";
 import {EndPoints} from "@/services/chonide/endPoints";
 import router, {Routes} from "@/router";
 import Coder from "@/views/Project/main/Coder.vue";
@@ -77,10 +86,11 @@ import ProjectHeader from "@/views/Project/header/ProjectHeader.vue";
 import Console from "@/views/Project/main/Console.vue";
 import LeftBar from "@/views/Project/leftbar/LeftBar.vue";
 import RightBar from "@/views/Project/rightbar/RightBar.vue";
+import Loading from "@/components/general/Loading.vue";
 
 export default {
   name: "Project",
-  components: {RightBar, LeftBar, Console, ProjectHeader, TabController, Coder},
+  components: {Loading, RightBar, LeftBar, Console, ProjectHeader, TabController, Coder},
   data() {
     return {
       project: {name: "", agents: [], firmwares: []},
@@ -89,7 +99,7 @@ export default {
       currentFileType: FileType.AGENT,
       domain: null,
       savingProject: false,
-      configuration: {},
+      configuration: null,
       smaRunning: false,
       selectedLines: {beginLine: 0, endLine: 0}
     }
@@ -110,9 +120,6 @@ export default {
   computed: {
     AppEvent() {
       return AppEvent;
-    },
-    FileType() {
-      return FileType;
     }
   },
   methods: {
@@ -190,11 +197,17 @@ export default {
       router.push(Routes.HOME);
     });
 
-    Api.get(EndPoints.CONFIGURATION).then((response) => {
-      if (response.data.status === 200) {
-        this.configuration = response.data.data;
-      }
-    });
+    if (DataHandler.configuration == null) {
+      Api.get(EndPoints.CONFIGURATION).then((response) => {
+        if (response.data.status === 200) {
+          this.configuration = response.data.data;
+          DataHandler.configuration = this.configuration;
+        }
+      });
+    } else {
+      this.configuration = DataHandler.configuration;
+    }
+
 
     Api.get(EndPoints.DOMAINS).then((response) => {
       this.domain = response.data.data;

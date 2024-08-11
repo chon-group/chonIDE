@@ -158,7 +158,7 @@ public class SSHExecutor implements Executor {
     @Override
     public String execute(String command, boolean mantainLineBreak) {
         String output = this.executeInRemote(command);
-        if (!mantainLineBreak) {
+        if (!mantainLineBreak && output != null) {
             return output.replace(FileUtils.BREAK_LINE, "");
         }
         return output;
