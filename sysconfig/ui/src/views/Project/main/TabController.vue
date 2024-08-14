@@ -85,7 +85,6 @@ export default {
       }).then((response) => {
         this.boardResponse = response.data.data;
         this.$refs.boardResponse.showing(true);
-        this.$emit(AppEvent.MESSAGE, {content: 'Sketch compiled', type: MessageType.SUCCESS});
       }).finally(() => {
         this.compilingSketch = false;
       });
@@ -107,8 +106,9 @@ export default {
           serialPort: this.board.port,
           boardName: this.board.fqbn
         }
-      }).then(() => {
-        this.$emit(AppEvent.MESSAGE, {content: 'Sketch deployed', type: MessageType.SUCCESS});
+      }).then((response) => {
+        this.boardResponse = response.data.data;
+        this.$refs.boardResponse.showing(true);
       }).catch(() => {
         this.$emit(AppEvent.MESSAGE, {content: 'ERROR: Sketch was not deployed', type: MessageType.ERROR});
       }).finally(() => {
@@ -128,9 +128,7 @@ export default {
       this.$refs.deployBoardUnknownPopup.showing(false);
       operation();
 
-      if (this.board.name == null) {
-        this.board = null;
-      } else {
+      if (this.board.name !== null) {
         this.board.fqbn = UNKNOWN_BOARD_MODEL_STRING;
       }
     }
@@ -147,7 +145,7 @@ export default {
         <p> Perform deploy as...</p>
       </template>
       <template v-slot:action>
-        <div class="flex gap-2.5 w-full">
+        <div class="flex flex-col gap-2.5 w-full">
           <Button width-full
                   @click="this.performBoardOperationWithDifferentFqbn('arduino:avr:mega', this.deploySketch,
                             $refs.deployBoardUnknownPopup)" color="var(--pallete-color-black-3)">
@@ -172,7 +170,7 @@ export default {
         <p>Perform compile as...</p>
       </template>
       <template v-slot:action>
-        <div class="flex gap-2.5 w-full">
+        <div class="flex flex-col gap-2.5 w-full">
           <Button width-full
                   @click="this.performBoardOperationWithDifferentFqbn('arduino:avr:mega', this.compileSketch,
                             $refs.compileBoardUnknownPopup)" color="var(--pallete-color-black-3)">
@@ -203,8 +201,8 @@ export default {
       <div class="tab-controller__file" type="text">
         <div class="tab-controller__selected-file"></div>
         <span class="tab-controller__file__name">
-                  {{ currentFile.name }}
-                </span>
+          {{ currentFile.name }}
+        </span>
         <div v-if="currentFile.name !== 'No file'" class="project-action-separator"></div>
 
         <Button v-if="currentFileType === FileType.AGENT" icon="toggle.svg" icon-ratio="8px" icon-sense="right">
@@ -300,7 +298,9 @@ export default {
 .project__compiled-response {
   background-color: var(--pallete-color-black-3);
   word-break: break-word;
-  @apply p-2.5 rounded-sm text-xl;
+  max-height: 100%;
+  overflow: auto;
+  @apply p-2.5 rounded-sm text-lg;
 }
 
 </style>

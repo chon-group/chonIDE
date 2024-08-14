@@ -126,7 +126,7 @@ export default {
       });
     },
     getAgentIcon(agentType) {
-      if (agentType === "Argo") {
+      if (agentType === "jason.Argo") {
         return "argo-agent.svg";
       } else if (agentType === "Communicator") {
         return "communicator-agent.svg";
