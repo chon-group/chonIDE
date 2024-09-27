@@ -5,6 +5,8 @@ import group.chon.ide.api.domain.file.FileConstants;
 import group.chon.ide.api.domain.file.FileUtils;
 import group.chon.ide.api.domain.file.exception.ProjectAlreadyExistsException;
 import group.chon.ide.api.domain.file.exception.ProjectDoesNotExistException;
+import group.chon.ide.api.domain.file.model.Agent;
+import group.chon.ide.api.domain.file.model.Firmware;
 import group.chon.ide.api.domain.file.model.Project;
 import group.chon.ide.api.domain.file.model.ProjectsMapping;
 
@@ -67,14 +69,56 @@ public class ProjectsContentManager {
         } else {
             throw new ProjectAlreadyExistsException();
         }
+
+        Path agentsFolder = projectFolder.resolve("agent");
+        if (!exists(agentsFolder)) {
+            try {
+                createDirectories(agentsFolder);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            throw new ProjectAlreadyExistsException();
+        }
+
+        Path firmwaresFolder = projectFolder.resolve("enviroment/exogenous/firmware");
+        if (!exists(firmwaresFolder)) {
+            try {
+                createDirectories(firmwaresFolder);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            throw new ProjectAlreadyExistsException();
+        }
+
+        Path agentFile = agentsFolder.resolve("agent.asl");
+        try {
+            createFile(agentFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        Path firmwareFile = firmwaresFolder.resolve("file.ino");
+        try {
+            createFile(firmwareFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        /*
         Path projectFile = projectFolder.resolve(PROJECT_FILE);
         try {
             createFile(projectFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        */
+
         try {
-            write(projectFile, JsonManager.get().toJson(project).getBytes());
+            //write(projectFile, JsonManager.get().toJson(project).getBytes());
+            write(agentFile, JsonManager.get().toJson(project.getAgents()).getBytes());
+            write(firmwareFile, JsonManager.get().toJson(project.getFirmwares()).getBytes());
             ProjectsMapping projectsMapping = getProjectMapping();
             long id = projectsMapping.getNextId();
             projectsMapping.getProjects().put(id, project.getName());
@@ -106,14 +150,40 @@ public class ProjectsContentManager {
         if (!exists(projectFolder)) {
             throw new ProjectDoesNotExistException();
         }
-        Path projectFile = projectFolder.resolve(PROJECT_FILE);
+        //Path projectFile = projectFolder.resolve(PROJECT_FILE);
         if (project.getAgents().isEmpty() && project.getFirmwares().isEmpty()) {
             Project fileProject = get(project.getId());
             project.setAgents(fileProject.getAgents());
             project.setFirmwares(fileProject.getFirmwares());
         }
+    
         try {
-            FileUtils.write(projectFile, JsonManager.get().toJson(project));
+            Path agentFolder = projectFolder.resolve("agent");
+            if (!Files.exists(agentFolder)) {
+                Files.createDirectories(agentFolder);
+            }
+            for (Agent agent : project.getAgents()) {
+                Path agentFile = agentFolder.resolve(agent.getName() + ".asl");
+                Files.write(agentFile, agent.getSourceCode().getBytes());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    
+        try {
+            Path firmwareFolder = projectFolder.resolve("enviroment/exogenous/firmware");
+            if (!Files.exists(firmwareFolder)) {
+                Files.createDirectories(firmwareFolder);
+            }
+            for (Firmware firmware : project.getFirmwares()) {
+                Path firmwareFile = firmwareFolder.resolve(firmware.getName() + ".ino");
+                Files.write(firmwareFile, firmware.getSourceCode().getBytes());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
             if (!projectName.equals(project.getName())) {
                 projects.put(project.getId(), project.getName());
                 saveProjectMapping(projectsMapping);
