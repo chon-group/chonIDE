@@ -47,16 +47,7 @@ export default {
       this.loggingIn = true;
       Api.auth(this.user.name, this.user.password, this.user.host).then((response) => {
         if (response.data.status === 200) {
-          Api.get(EndPoints.USERS_FIRST_ACCESS).then((response) => {
-            if (response.data.data === true) {
-              this.$router.push(Routes.DOMAIN);
-            } else {
-              Api.get(EndPoints.CONFIGURATION);
-              this.$router.push(Routes.HOME);
-            }
-          }).finally(() => {
-            this.loggingIn = false;
-          });
+          this.$router.push(Routes.HOME);
         }
       }).catch((error) => {
         if (error.response.status === 401) {

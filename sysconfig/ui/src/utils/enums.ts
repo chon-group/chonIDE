@@ -6,7 +6,6 @@ export enum MessageType {
 
 export enum Key {
     ENTER = "Enter",
-    BACKSPACE = "Backspace",
     BRACKET_RIGHT = "{",
     SQUARE_BRACKET_RIGHT = "[",
     PARENTESIS_RIGHT = "(",
