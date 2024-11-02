@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class Mas2j implements ProjectFile, MasConfiguration {
+public class Mas2j implements MasConfiguration {
 
     public static final String MAS_STRUCTURE_FILE_EXTENSION = ".mas2j";
 

@@ -10,15 +10,15 @@ public class StandardAgentService implements ProjectFileService {
 
     @Override
     public void save(Project project, ProjectFile projectFile) {
-        project.getMas2J().saveAgent((Agent) projectFile);
-        this.standardProjectFileService.save(project, project.getMas2J());
+        project.getMasConfiguration().saveAgent((Agent) projectFile);
+        this.standardProjectFileService.save(project, project.getMasConfiguration());
         this.standardProjectFileService.save(project, projectFile);
     }
 
     @Override
     public void delete(Project project, ProjectFile projectFile) {
-        project.getMas2J().removeAgent((Agent) projectFile);
-        this.standardProjectFileService.save(project, project.getMas2J());
+        project.getMasConfiguration().removeAgent((Agent) projectFile);
+        this.standardProjectFileService.save(project, project.getMasConfiguration());
         this.standardProjectFileService.delete(project, projectFile);
     }
 
