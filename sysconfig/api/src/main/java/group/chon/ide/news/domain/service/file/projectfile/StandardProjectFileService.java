@@ -3,7 +3,7 @@ package group.chon.ide.news.domain.service.file.projectfile;
 import group.chon.ide.news.domain.model.file.Project;
 import group.chon.ide.news.domain.model.file.ProjectFile;
 import group.chon.ide.news.domain.repository.FileRepository;
-import group.chon.ide.news.domain.repository.StandardFileRepository;
+import group.chon.ide.news.domain.repository.LocalFileRepository;
 
 import java.io.File;
 
@@ -16,7 +16,7 @@ public class StandardProjectFileService implements ProjectFileService {
     private final ProjectFileCompletePathBuilder projectFileCompletePathBuilder;
 
     public StandardProjectFileService() {
-        this.fileRepository = new StandardFileRepository();
+        this.fileRepository = new LocalFileRepository();
         this.projectFileCompletePathBuilder = new ProjectFileCompletePathBuilder();
     }
 

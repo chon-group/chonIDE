@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-public class StandardFileRepository implements FileRepository {
+public class LocalFileRepository implements FileRepository {
     @Override
     public byte[] read(String filePath) {
         try {
