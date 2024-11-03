@@ -2,15 +2,17 @@ package group.chon.ide.news.domain.model.file.embeddedmas.agent;
 
 import group.chon.ide.news.domain.model.file.ProjectFile;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.nio.charset.StandardCharsets;
 
 @Data
+@RequiredArgsConstructor
 public class Agent implements ProjectFile {
 
-    private String name;
+    private final String name;
 
-    private String sourceCode;
+    private final String sourceCode;
 
     private AgentArchClass archClass;
 

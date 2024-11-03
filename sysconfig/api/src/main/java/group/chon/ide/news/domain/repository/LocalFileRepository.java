@@ -19,8 +19,13 @@ public class LocalFileRepository implements FileRepository {
     @Override
     public void save(String filePath, byte[] content) {
         Path path = Paths.get(filePath);
+
         if (!Files.exists(path)) {
             try {
+                Path folder = path.getParent();
+                if (!Files.exists(folder)) {
+                    Files.createDirectories(folder);
+                }
                 Files.createFile(path);
             } catch (IOException e) {
                 throw new RuntimeException(e);

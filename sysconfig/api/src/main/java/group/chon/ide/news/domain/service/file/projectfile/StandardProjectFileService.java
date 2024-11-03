@@ -2,6 +2,8 @@ package group.chon.ide.news.domain.service.file.projectfile;
 
 import group.chon.ide.news.domain.model.file.Project;
 import group.chon.ide.news.domain.model.file.ProjectFile;
+import group.chon.ide.news.domain.model.file.embeddedmas.agent.Agent;
+import group.chon.ide.news.domain.model.file.embeddedmas.environment.exogenous.Firmware;
 import group.chon.ide.news.domain.repository.FileRepository;
 import group.chon.ide.news.domain.repository.LocalFileRepository;
 

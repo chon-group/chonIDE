@@ -2,12 +2,14 @@ package group.chon.ide.news.domain.model.file;
 
 import group.chon.ide.news.domain.model.file.embeddedmas.EmbeddedMAS;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Data
+@RequiredArgsConstructor
 public class Project {
 
-    private String name;
+    private final String name;
 
-    private EmbeddedMAS embeddedMAS;
+    private final EmbeddedMAS embeddedMAS;
 
 }
