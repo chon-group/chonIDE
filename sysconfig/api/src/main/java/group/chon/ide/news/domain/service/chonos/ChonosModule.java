@@ -6,7 +6,7 @@ import group.chon.ide.news.domain.service.chonos.firmware.ChonosFirmwareService;
 import group.chon.ide.news.domain.service.chonos.firmware.RemoteChonosFirmwareService;
 import group.chon.ide.news.domain.service.system.HardwareService;
 
-public class ChonosContext {
+public class ChonosModule {
 
     private ChonosConnectionService connection;
 
@@ -20,7 +20,7 @@ public class ChonosContext {
 
     private HardwareService bot;
 
-    public ChonosContext(CommandPromptRunner commandPromptRunner) {
+    public ChonosModule(CommandPromptRunner commandPromptRunner) {
         this.loadContext(commandPromptRunner);
     }
 

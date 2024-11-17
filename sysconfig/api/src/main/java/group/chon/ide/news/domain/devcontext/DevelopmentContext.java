@@ -1,6 +1,6 @@
 package group.chon.ide.news.domain.devcontext;
 
-import group.chon.ide.news.domain.service.chonos.ChonosContext;
+import group.chon.ide.news.domain.service.chonos.ChonosModule;
 import group.chon.ide.news.domain.service.file.project.ProjectService;
 import group.chon.ide.news.domain.service.file.projectfile.ProjectFileService;
 import group.chon.ide.news.domain.service.mindapi.MindAPIService;
@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DevelopmentContext {
 
-    private final ChonosContext chonos;
+    private final ChonosModule chonos;
 
     private final MindAPIService mindApi;
 
@@ -17,7 +17,7 @@ public class DevelopmentContext {
 
     private final ProjectFileService files;
 
-    public ChonosContext chonos() {
+    public ChonosModule chonos() {
         return this.chonos;
     }
 

@@ -7,7 +7,7 @@ import group.chon.ide.news.domain.resourceaccess.CommandPromptRunner;
 import group.chon.ide.news.domain.resourceaccess.file.FileRepository;
 import group.chon.ide.news.domain.resourceaccess.file.LocalFileRepository;
 import group.chon.ide.news.domain.resourceaccess.ssh.JschSshHandler;
-import group.chon.ide.news.domain.service.chonos.ChonosContext;
+import group.chon.ide.news.domain.service.chonos.ChonosModule;
 import group.chon.ide.news.domain.service.file.path.ProjectPathHandlerManager;
 import group.chon.ide.news.domain.service.file.project.StandardProjectService;
 import group.chon.ide.news.domain.service.file.projectfile.AgentFileService;
@@ -37,7 +37,6 @@ public class DevelopmentContextFactory {
         devContext.files().save(project, new Firmware("bob", ".bonito"));
         devContext.files().save(project, new Firmware("kate", ".bonita"));
 
-
         String projectPath = ProjectPathHandlerManager.getInstance().getProjectPathHandler().mountProjectPath(project);
 
         devContext.chonos().embeddedMas().importMas(projectPath);
@@ -51,6 +50,7 @@ public class DevelopmentContextFactory {
         devContext.chonos().connection().forgetAllNetworks();
 
         devContext.chonos().connection().apMode("gabriel", "24821236");
+
     }
 
     public DevelopmentContext make() {
@@ -64,7 +64,7 @@ public class DevelopmentContextFactory {
         } else {
             commandPromptRunner = new LocalCommandPromptRunner();
         }
-        ChonosContext chonosContext = new ChonosContext(commandPromptRunner);
+        ChonosModule chonosContext = new ChonosModule(commandPromptRunner);
 
         // Project files Context
         FileRepository fileRepository = new LocalFileRepository();
