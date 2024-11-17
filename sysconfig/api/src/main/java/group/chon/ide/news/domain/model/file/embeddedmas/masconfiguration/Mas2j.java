@@ -4,7 +4,6 @@ import group.chon.ide.news.domain.model.file.embeddedmas.agent.Agent;
 import group.chon.ide.news.domain.model.file.embeddedmas.agent.AgentArchClass;
 import lombok.RequiredArgsConstructor;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.List;
 
@@ -123,7 +122,16 @@ public class Mas2j implements MasConfiguration {
     }
 
     @Override
-    public byte[] getContent() {
-        return this.getCompleteStructure().getBytes(StandardCharsets.UTF_8);
+    public void setName(String name) {
+
+    }
+
+    @Override
+    public String getContent() {
+        return this.getCompleteStructure();
+    }
+
+    @Override
+    public void setContent(String content) {
     }
 }

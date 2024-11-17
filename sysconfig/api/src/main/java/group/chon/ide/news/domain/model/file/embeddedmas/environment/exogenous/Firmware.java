@@ -2,16 +2,14 @@ package group.chon.ide.news.domain.model.file.embeddedmas.environment.exogenous;
 
 
 import group.chon.ide.news.domain.model.file.ProjectFile;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 
-import java.nio.charset.StandardCharsets;
-
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class Firmware implements ProjectFile {
 
-    private final String name;
+    private String name;
 
-    private final String sourceCode;
+    private String sourceCode;
 
     @Override
     public String getName() {
@@ -19,7 +17,17 @@ public class Firmware implements ProjectFile {
     }
 
     @Override
-    public byte[] getContent() {
-        return this.sourceCode.getBytes(StandardCharsets.UTF_8);
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getContent() {
+        return this.sourceCode;
+    }
+
+    @Override
+    public void setContent(String content) {
+        this.sourceCode = content;
     }
 }

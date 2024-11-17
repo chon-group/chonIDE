@@ -9,12 +9,12 @@ import lombok.Data;
 @Data
 public class EmbeddedMAS {
 
-    private AgentLayer agent;
+    private final AgentLayer agent;
 
-    private Environment environment;
+    private final Environment environment;
 
-    private Organization organization;
+    private final Organization organization;
 
-    private MasConfiguration masConfiguration;
+    private final MasConfiguration masConfiguration;
 
 }

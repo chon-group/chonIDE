@@ -5,7 +5,7 @@ import group.chon.ide.news.domain.model.file.ProjectFile;
 
 public interface ProjectFileService {
 
-    ProjectFile get(Project project, String name);
+    void load(Project project, ProjectFile projectFile);
 
     void save(Project project, ProjectFile projectFile);
 

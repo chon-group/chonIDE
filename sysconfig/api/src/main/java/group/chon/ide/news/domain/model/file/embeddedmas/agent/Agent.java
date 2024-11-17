@@ -1,18 +1,16 @@
 package group.chon.ide.news.domain.model.file.embeddedmas.agent;
 
 import group.chon.ide.news.domain.model.file.ProjectFile;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
-
-import java.nio.charset.StandardCharsets;
 
 @Data
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class Agent implements ProjectFile {
 
-    private final String name;
+    private String name;
 
-    private final String sourceCode;
+    private String sourceCode;
 
     private AgentArchClass archClass;
 
@@ -22,7 +20,17 @@ public class Agent implements ProjectFile {
     }
 
     @Override
-    public byte[] getContent() {
-        return this.sourceCode.getBytes(StandardCharsets.UTF_8);
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getContent() {
+        return this.sourceCode;
+    }
+
+    @Override
+    public void setContent(String content) {
+        this.sourceCode = content;
     }
 }

@@ -2,46 +2,49 @@ package group.chon.ide.news.domain.service.file.projectfile;
 
 import group.chon.ide.news.domain.model.file.Project;
 import group.chon.ide.news.domain.model.file.ProjectFile;
+import group.chon.ide.news.domain.model.file.embeddedmas.EmbeddedMAS;
 import group.chon.ide.news.domain.model.file.embeddedmas.agent.Agent;
 import group.chon.ide.news.domain.model.file.embeddedmas.agent.AgentArchClass;
+import group.chon.ide.news.domain.model.file.embeddedmas.masconfiguration.MasConfiguration;
 
 public class AgentFileService implements ProjectFileService {
 
-    private final StandardProjectFileService standardProjectFileService;
+    private final StandardProjectFileService standardFileService;
 
-    public AgentFileService() {
-        this.standardProjectFileService = new StandardProjectFileService();
+    public AgentFileService(StandardProjectFileService projectFileService) {
+        this.standardFileService = projectFileService;
     }
 
     @Override
-    public ProjectFile get(Project project, String name) {
-        Agent agentInMasConfiguration = project.getEmbeddedMAS().getMasConfiguration().getAgent(name);
+    public void load(Project project, ProjectFile projectFile) {
+        this.standardFileService.load(project, projectFile);
+
+        MasConfiguration masConfiguration = project.getEmbeddedMAS().getMasConfiguration();
+        Agent agentInMasConfiguration = masConfiguration.getAgent(projectFile.getName());
         AgentArchClass archClass = agentInMasConfiguration.getArchClass();
-
-        Agent agentInProject = (Agent) this.standardProjectFileService.get(project, name);
-        agentInProject.setArchClass(archClass);
-
-        return agentInProject;
+        ((Agent) projectFile).setArchClass(archClass);
     }
 
     @Override
     public void save(Project project, ProjectFile projectFile) {
-        project.getEmbeddedMAS().getMasConfiguration().saveAgent((Agent) projectFile);
-        this.standardProjectFileService.save(project, project.getEmbeddedMAS().getMasConfiguration());
-        this.standardProjectFileService.save(project, projectFile);
+        MasConfiguration masConfiguration = project.getEmbeddedMAS().getMasConfiguration();
+        masConfiguration.saveAgent((Agent) projectFile);
+        this.standardFileService.save(project, masConfiguration);
+        this.standardFileService.save(project, projectFile);
     }
 
     @Override
     public void delete(Project project, ProjectFile projectFile) {
-        project.getEmbeddedMAS().getMasConfiguration().removeAgent((Agent) projectFile);
-        this.standardProjectFileService.save(project, project.getEmbeddedMAS().getMasConfiguration());
-        this.standardProjectFileService.delete(project, projectFile);
+        EmbeddedMAS embeddedMAS = project.getEmbeddedMAS();
+        embeddedMAS.getMasConfiguration().removeAgent((Agent) projectFile);
+        this.standardFileService.save(project, embeddedMAS.getMasConfiguration());
+        this.standardFileService.delete(project, projectFile);
     }
 
 
     @Override
     public void rename(Project project, ProjectFile projectFile, String newName) {
-        this.standardProjectFileService.rename(project, projectFile, newName);
+        this.standardFileService.rename(project, projectFile, newName);
     }
 
 }

@@ -1,11 +1,14 @@
 package group.chon.ide.news.domain.model.chonos;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class Board {
 
-    private String board;
+    private final String board;
 
-    private String fqbn;
+    private final String fqbn;
 
-    private String port;
+    private final String port;
 
 }

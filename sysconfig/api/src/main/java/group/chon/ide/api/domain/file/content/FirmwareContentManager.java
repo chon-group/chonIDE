@@ -27,7 +27,7 @@ public class FirmwareContentManager {
 
     public static String buildSketch(String code, Executor executor) {
         File sketchFile = new File(SKETCH_BUILD_FILE);
-        FileUtils.createFile(sketchFile, new ByteArrayInputStream(code.getBytes(StandardCharsets.UTF_8)));
+        FileUtils.createFile(sketchFile, new ByteArrayInputStream(code));
         if (executor instanceof SSHExecutor) {
             ((SSHExecutor) executor).setResourceInRemote(sketchFile);
             sketchFile.delete();

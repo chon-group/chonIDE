@@ -4,6 +4,10 @@ public interface ProjectFile {
 
     String getName();
 
-    byte[] getContent();
+    String getContent();
+
+    void setContent(String content);
+
+    void setName(String name);
 
 }

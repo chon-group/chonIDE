@@ -1,6 +1,8 @@
-package group.chon.ide.news.domain.repository;
+package group.chon.ide.news.domain.resourceaccess.file;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -8,16 +10,25 @@ import java.nio.file.StandardCopyOption;
 
 public class LocalFileRepository implements FileRepository {
     @Override
-    public byte[] read(String filePath) {
+    public String read(String filePath) {
         try {
-            return Files.readAllBytes(Paths.get(filePath));
+            return String.join("\n", Files.readAllLines(Paths.get(filePath)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void save(String filePath, byte[] content) {
+    public InputStream readInputStream(String filePath) {
+        try (InputStream inputStream = Files.newInputStream(Paths.get(filePath))) {
+            return inputStream;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void save(String filePath, String content) {
         Path path = Paths.get(filePath);
 
         if (!Files.exists(path)) {
@@ -33,7 +44,7 @@ public class LocalFileRepository implements FileRepository {
         }
 
         try {
-            Files.write(path, content);
+            Files.write(path, content.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -59,5 +70,10 @@ public class LocalFileRepository implements FileRepository {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean exists(String filePath) {
+        return Files.exists(Paths.get(filePath));
     }
 }

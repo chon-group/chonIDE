@@ -1,14 +1,12 @@
-package group.chon.ide.news.domain.service.chonos;
+package group.chon.ide.news.domain.service.chonos.firmware;
 
-import com.google.gson.reflect.TypeToken;
-import group.chon.ide.news.GsonManager;
-import group.chon.ide.news.domain.command.CommandExecutor;
+import group.chon.ide.news.domain.resourceaccess.CommandPromptRunner;
 import group.chon.ide.news.domain.model.chonos.Board;
-import group.chon.ide.news.domain.model.chonos.Neighbor;
+import group.chon.ide.news.domain.model.chonos.Library;
 
 import java.util.List;
 
-public class FirmwareService {
+public class ChonosFirmwareService {
 
     private static final String FIRMWARE_MANAGER_COMMAND = "sudo chonosFirmwareManager ";
 
@@ -24,16 +22,34 @@ public class FirmwareService {
 
     private static final String ARDUINO_REMOVE_LIBRARY = FIRMWARE_MANAGER_COMMAND + "--removeLibrary %s";
 
-    private CommandExecutor executor;
+    private final CommandPromptRunner commandPromptRunner;
 
-    public List<Board> findAllBoards() {
-        return GsonManager.get().fromJson(this.executor.execute(ARDUINO_LIST_BOARDS), new TypeToken<List<Neighbor>>() {
-        }.getType());
+    public ChonosFirmwareService(CommandPromptRunner commandPromptRunner) {
+        this.commandPromptRunner = commandPromptRunner;
     }
 
-    public List<String> findAllLibraries() {
-        return GsonManager.get().fromJson(this.executor.execute(FIRMWARE_MANAGER_COMMAND), new TypeToken<List<String>>() {
-        }.getType());
+    public List<Board> getBoards() {
+        return null;
+    }
+
+    public List<Library> getImportedLibraries() {
+        return null;
+    }
+
+    public void removeLibrary(String name) {
+
+    }
+
+    public void importLibrary(String libraryFilePath) {
+
+    }
+
+    public void compileSketch(String name, Board board) {
+
+    }
+
+    public void deploy(Board board) {
+
     }
 
 }
