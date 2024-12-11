@@ -17,12 +17,33 @@ export default {
   data() {
     return {
       lineQuantity: 1,
-      impreciseMindinspectorHightWarned: false
+      impreciseMindinspectorHightWarned: false,
+      currentSelectedLines: {
+        beginLine: 0,
+        endLine: 0
+      }
     }
   },
   watch: {
     sourceCode() {
       this.loadSourceCode();
+    },
+    selectedLines: {
+      deep: true,
+      handler(selectedLines) {
+        setTimeout(() => {
+          this.currentSelectedLines = selectedLines
+          if (selectedLines.beginLine === 0) {
+            return
+          }
+
+          this.$el.scrollTo(0, selectedLines.beginLine * 18)
+          setTimeout(() => {
+            this.currentSelectedLines.beginLine = 0
+            this.currentSelectedLines.endLine = 0
+          }, 800)
+        }, 50)
+      }
     }
   },
   mounted() {
@@ -101,11 +122,10 @@ export default {
           v-for="index in lineQuantity"
           :key="index"
           ref="coderLine"
-          :class="['coder__line', index >= selectedLines.beginLine && index <= selectedLines.endLine ?
-                     'selected' : '']"
+          class="coder__line"
       >
-        <div v-if="index >= selectedLines.beginLine && index <= selectedLines.endLine"
-             class="coder__line__selected"></div>
+        <div v-if="index >= currentSelectedLines.beginLine && index <= currentSelectedLines.endLine"
+             class="coder__line__selected" ref="selectedLine"></div>
         {{ index }}
       </div>
     </div>
@@ -119,6 +139,7 @@ export default {
   font-family: 'JetBrains Mono', monospace;
   border-left: 1px solid var(--pallete-color-black-1);
   flex-basis: 0;
+  scroll-behavior: smooth;
   @apply flex overflow-y-auto flex-grow select-none relative;
 }
 
@@ -149,7 +170,7 @@ export default {
 
 .coder__line__selected {
   height: 18px;
-  animation: selecting 0.5s;
+  animation: selecting 0.8s;
   left: 0;
   @apply w-full absolute;
 }

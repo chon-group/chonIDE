@@ -16,26 +16,29 @@ import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
 
-@WebServlet("/api/sma/agents")
-public class MindInspectorApiController extends ApiController {
+@WebServlet("/api/mind")
+public class MindApiController extends ApiController {
 
     /**
      * URL de acesso a API do mindinspector.
      */
-    private static final String MINDINSPECTOR_API_URL = "http://localhost:3275/mindinspector/agents";
+    private static final String MIND_API_URL = "http://localhost:3272/agents";
 
 
     @Override
     protected ResponseEntity get(AuthenticatedUser authenticatedUser, Map<String, Object> parameters) {
-        int cycle = Optional.ofNullable(parameters.get("cycle")).map(o -> Integer.parseInt(String.valueOf(o))).orElse(0);
+        int cycle = Optional.ofNullable(parameters.get("cycle")).map(o -> Integer.parseInt(String.valueOf(o)))
+                            .orElse(0);
         String agent = Optional.ofNullable(parameters.get("agent")).map(String::valueOf).orElse(null);
 
         URL url;
         try {
             if (agent != null && cycle != 0) {
-                url = new URL(MINDINSPECTOR_API_URL + "?cycle=" + cycle + "&agent=" + agent);
+                url = new URL(MIND_API_URL + String.format("/%s/?cycle=%s", agent, cycle));
+            } else if (agent != null) {
+                url = new URL(MIND_API_URL + String.format("/%s", agent));
             } else {
-                url = new URL(MINDINSPECTOR_API_URL);
+                url = new URL(MIND_API_URL);
             }
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);

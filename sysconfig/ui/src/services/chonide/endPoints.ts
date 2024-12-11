@@ -26,5 +26,5 @@ export class EndPoints {
     public static NETWORKS_STATUS = API_URL + "/networks/status";
     public static NETWORKS_AP = API_URL + "/networks/ap";
     public static NETWORKS_CLIENT = API_URL + "/networks/client";
-    public static MINDINSPECTOR = API_URL + "/sma/agents"
+    public static MINDINSPECTOR = API_URL + "/mind"
 }

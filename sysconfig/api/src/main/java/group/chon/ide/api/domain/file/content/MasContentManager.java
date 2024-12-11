@@ -53,8 +53,7 @@ public class MasContentManager {
 
         File masStructureFile = new File(masDirectory, mas.getName() + MasStructure.MAS_STRUCTURE_FILE_EXTENSION);
         FileUtils.createFile(masStructureFile);
-        FileUtils.writeFileContent(masStructureFile,
-                new MasStructure(mas.getName(), mas.getAgents()).getCompleteStructure());
+        FileUtils.writeFileContent(masStructureFile, new MasStructure(mas.getName(), mas.getAgents()).getCompleteStructure());
 
         File agentDirectory = new File(masDirectory, AGENT_DIRECTORY_NAME);
         FileUtils.createFolder(agentDirectory);
@@ -79,9 +78,7 @@ public class MasContentManager {
     }
 
     private static Agent createDefaultAgent() {
-        return new Agent("agent1", AgentArchClass.JASON.getName(),
-                "/* Initial beliefs and rules */\n" + "\n" + "/* Initial goals */\n" + "\n" + "!start.\n" + "\n"
-                        + "/* Plans */\n" + "\n" + "+!start <- .print(\"Hello world!\").");
+        return new Agent("agent1", AgentArchClass.JASON.getName(), "/* Initial beliefs and rules */\n" + "\n" + "/* Initial goals */\n" + "\n" + "!start.\n" + "\n" + "/* Plans */\n" + "\n" + "+!start <- .print(\"Hello world!\").");
     }
 
     private static class MasStructure {
@@ -89,6 +86,8 @@ public class MasContentManager {
         public static final String MAS_STRUCTURE_FILE_EXTENSION = ".mas2j";
 
         private static final String AGENT_ARCH_CLASS_FIELD = "agentArchClass";
+
+        private static final String MINDINSPECTOR = "[mindinspector=\"web(cycle,html,history)\"]";
 
         private static final String NEW_LINE = "\n";
 
@@ -128,11 +127,12 @@ public class MasContentManager {
         private StringBuffer getCommonStructure() {
             StringBuffer structure = new StringBuffer();
             structure.append(MAS_FIELD).append(SPACE).append(masName).append(SPACE).append(OPEN_BRACE).append(NEW_LINE);
-            structure.append(TAB).append(INFRASTRUCTURE_FIELD).append(COLON).append(SPACE).append(
-                    DEFAULT_INFRASTRUCTURE).append(NEW_LINE);
+            structure.append(TAB).append(INFRASTRUCTURE_FIELD).append(COLON).append(SPACE)
+                     .append(DEFAULT_INFRASTRUCTURE).append(NEW_LINE);
             structure.append(TAB).append(AGENTS_FIELD).append(COLON).append(NEW_LINE);
             for (Agent agent : agents) {
                 structure.append(TAB).append(TAB).append(agent.getName());
+                structure.append(SPACE).append(MINDINSPECTOR);
                 if (!agent.getArchClass().equals(AgentArchClass.JASON.getName())) {
                     structure.append(SPACE).append(AGENT_ARCH_CLASS_FIELD).append(SPACE).append(agent.getArchClass());
                 }

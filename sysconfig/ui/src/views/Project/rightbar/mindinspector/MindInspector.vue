@@ -1,6 +1,6 @@
 <script>
 import axios from "axios";
-import Agent from "@/views/Project/rightbar/mindinspector/Agent.vue";
+import Agent from "@/views/Project/rightbar/mindinspector/agent/Agent.vue";
 import {EndPoints} from "@/services/chonide/endPoints";
 import {Api} from "@/services/chonide/api";
 
@@ -14,7 +14,8 @@ export default {
     return {
       interval: 0,
       agents: null,
-      isUnavailable: false
+      isUnavailable: false,
+      focusedAgent: null
     }
   },
   beforeUnmount() {
@@ -22,14 +23,31 @@ export default {
   },
   mounted() {
     this.interval = setInterval(() => {
-      Api.get(EndPoints.MINDINSPECTOR).then((response) => {
-        if (response.status === 200) {
-          this.agents = response.data.data;
-        }
-      }).catch((error) => {
-        this.isUnavailable = error.response.status === 503;
-        this.agents = null;
-      });
+      if (this.focusedAgent == null) {
+        Api.get(EndPoints.MINDINSPECTOR).then((response) => {
+          if (response.status === 200) {
+            this.agents = response.data.data;
+            this.isUnavailable = false
+          }
+          this.isUnavailable = false
+        }).catch((error) => {
+          this.isUnavailable = error.response.status === 503;
+          this.agents = null;
+        });
+      } else {
+        Api.get(EndPoints.MINDINSPECTOR, {
+          params: {
+            agent: this.focusedAgent.name
+          }
+        }).then((response) => {
+          if (response.status === 200) {
+            this.focusedAgent = response.data.data;
+            this.isUnavailable = false
+          }
+        }).catch((error) => {
+          this.isUnavailable = error.response.status === 503;
+        });
+      }
     }, 1000);
   }
 }
@@ -43,12 +61,24 @@ export default {
     <div v-if="isUnavailable" class="flex justify-center items-center h-full w-full">
       <span class="text-aside">MindInspector is unavailable</span>
     </div>
-    <div v-else-if="agents != null" class="mindinspector__agents">
+    <div v-else-if="agents != null && focusedAgent == null" class="mindinspector__agents">
       <Agent
           v-for="(agent, index) in agents"
 
           :key="index"
           :agentData="agent"
+
+          @focusAgent="focusedAgent = agent"
+
+          @highlightAgentFile="$emit('highlightAgentFile', $event)"
+      />
+    </div>
+    <div v-else-if="focusedAgent != null" class="h-0 grow">
+      <Agent
+          :agentData="focusedAgent"
+          @focusAgent="focusedAgent = null"
+
+          :focus="true"
 
           @highlightAgentFile="$emit('highlightAgentFile', $event)"
       />
@@ -62,7 +92,7 @@ export default {
 <style scoped>
 
 .mindinspector {
-  @apply flex flex-col h-full w-full;
+  @apply flex flex-col h-0 grow w-full;
 }
 
 .mindinspector__agents {

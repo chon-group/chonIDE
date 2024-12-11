@@ -136,12 +136,9 @@ export default {
       if (!agentWasFind) {
         return;
       }
+
       this.selectedLines.beginLine = agentFile.beginLine;
       this.selectedLines.endLine = agentFile.endLine;
-      setTimeout(() => {
-        this.selectedLines.beginLine = 0;
-        this.selectedLines.endLine = 0;
-      }, 500);
     },
     addAgent(agent) {
       this.project.agents.push(agent);
