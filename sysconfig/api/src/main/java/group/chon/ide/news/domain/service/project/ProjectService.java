@@ -5,45 +5,44 @@ import group.chon.ide.news.domain.model.Project;
 import java.util.List;
 
 /**
- * Serviço de um projeto ChonIDE.
+ * Service for managing ChonIDE projects.
  */
 public interface ProjectService {
 
     /**
-     * Retorna todos os projetos do sistema.
+     * Retrieves all projects in the system.
      *
-     * @return Projetos do sistema.
+     * @return A list of all projects.
      */
     List<Project> getAll();
 
     /**
-     * Retorna um projeto completo através do seu nome.
+     * Retrieves a project by its name.
      *
-     * @param name Nome do projeto.
-     * @return Projeto.
+     * @param name The name of the project.
+     * @return The corresponding project.
      */
     Project getByName(String name);
 
     /**
-     * Cria um projeto.
+     * Creates a new project.
      *
-     * @param project Projeto a ser criado.
+     * @param project The project to be created.
      */
     void create(Project project);
 
     /**
-     * Renomeia um projeto.
+     * Renames an existing project.
      *
-     * @param project Projeto.
-     * @param newName Novo nome do projeto.
+     * @param project The project to be renamed.
+     * @param newName The new name for the project.
      */
     void rename(Project project, String newName);
 
     /**
-     * Deleta o projeto através do seu nome.
+     * Deletes a project by its name.
      *
-     * @param name Nome do projeto.
+     * @param name The name of the project to be deleted.
      */
     void delete(String name);
-
 }

@@ -1,21 +1,21 @@
-package group.chon.ide.news.domain.model.embeddedmas.environment.exogenous;
+package group.chon.ide.news.domain.model.embeddedmas.environment.endogenous;
 
 import group.chon.ide.news.domain.model.ProjectFile;
 import lombok.AllArgsConstructor;
 
 /**
- * Represents a firmware with a name and source code.
+ * Represents a simulated environment with a name and source code.
  */
 @AllArgsConstructor
-public class Firmware implements ProjectFile {
+public class SimulatedEnviroment implements ProjectFile {
 
     /**
-     * The firmware's name.
+     * The simulated environment's name.
      */
     private String name;
 
     /**
-     * The firmware's source code.
+     * The source code defining the simulated environment.
      */
     private String sourceCode;
 
