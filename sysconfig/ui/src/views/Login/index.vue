@@ -4,7 +4,7 @@
       <h1 class="text-3xl">chonIDE</h1>
     </div>
 
-    <div class="login__access" v-if="this.attributes != null">
+    <div v-if="this.attributes != null" class="login__access">
       <div class="login__access__local-user">
         <div class="p-6">
           <span class="text-lg block" style="height: var(--action-height)">Enter on local user</span>
@@ -12,14 +12,15 @@
         <div class="flex flex-col gap-2 overflow-y-auto h-full">
           <User
               v-for="(user, index) in attributes.users"
-              host="localhost"
-              :name="user"
               :key="index"
+              :name="user"
+              host="localhost"
               @click="this.user = {displayName: user, name: user, host: 'localhost'}"/>
         </div>
       </div>
 
-      <Neighbors @select="this.user = $event"/>
+      <Neighbors @connectManually="user =
+      {displayName: 'New Bot', name: null, password: '', host: null}" @select="this.user = $event"/>
     </div>
 
     <Loading v-else-if="this.attributes == null"/>
@@ -31,8 +32,8 @@
             :host="this.user.host"
             :name="this.user.name"
 
-            @message="$emit('message', $event)"
             @back="() => this.user = null"
+            @message="$emit('message', $event)"
         />
       </template>
     </Popup>

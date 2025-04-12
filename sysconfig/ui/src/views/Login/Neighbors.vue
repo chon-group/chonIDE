@@ -18,6 +18,9 @@ export default {
     this.loadNeighbors();
   },
   methods: {
+    connectManually() {
+      this.$emit("connectManually")
+    },
     forgetNeighbors() {
       this.loadingNeighbors = true;
       Api.delete(EndPoints.NEIGHBORS).finally(() => {
@@ -40,8 +43,9 @@ export default {
 <template>
   <div class="neighbors">
     <div class="neighbors__header">
-      <span class="text-lg">Enter on neighbors</span>
+      <span class="text-lg">Enter on neighbor</span>
       <div class="flex gap-2 items-center">
+        <Button text="Manually" @click="connectManually" color="var(--pallete-color-black-3)"/>
         <Button text="Forget all" @click="forgetNeighbors" color="var(--pallete-color-black-3)"/>
         <Button text="Search" @click="loadNeighbors" color="var(--pallete-color-black-3)"/>
       </div>
@@ -55,7 +59,7 @@ export default {
           @click="$emit('select', {displayName: neighbor.name, host: neighbor.ip})"/>
     </div>
 
-    <Loading v-if="loadingNeighbors"/>
+    <Loading v-if="loadingNeighbors" class="my-auto"/>
 
     <span v-if="!loadingNeighbors && neighbors.length === 0" class="text-base text-aside my-auto">
       No neighbors around...
