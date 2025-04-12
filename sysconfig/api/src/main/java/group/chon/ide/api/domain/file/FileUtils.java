@@ -1,9 +1,10 @@
 package group.chon.ide.api.domain.file;
 
-import net.lingala.zip4j.ZipFile;
 import group.chon.ide.api.domain.file.exception.*;
+import net.lingala.zip4j.ZipFile;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -119,10 +120,8 @@ public class FileUtils {
     }
 
     public static void write(Path path, String content) {
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(path.toString()));
+        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
             writer.write(content);
-            writer.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

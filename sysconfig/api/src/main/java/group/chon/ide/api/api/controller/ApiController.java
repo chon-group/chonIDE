@@ -114,7 +114,7 @@ public abstract class ApiController extends HttpServlet {
             ResponseUtil.writeBinary(resp, masReturnedFile.getInputStream());
         } else {
             resp.setCharacterEncoding(HttpEncoding.UTF_8.getType());
-            resp.setHeader("Content-Type", HttpContent.JSON.getType() + "; charset=" + HttpEncoding.ISO_8859_1.getType());
+            resp.setHeader("Content-Type", HttpContent.JSON.getType() + "; charset=" + HttpEncoding.UTF_8.getType());
             ResponseUtil.writeText(resp, JsonManager.get().toJson(responseEntity));
         }
         try {

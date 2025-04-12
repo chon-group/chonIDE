@@ -10,6 +10,7 @@ import group.chon.ide.api.domain.file.model.ProjectsMapping;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.nio.file.Files.*;
 
@@ -138,13 +140,15 @@ public class ProjectsContentManager {
         if (projectName == null) {
             throw new ProjectDoesNotExistException();
         }
+
         Path projectFolder = PROJECTS_DIRECTORY_PATH.resolve(projectName);
         if (!exists(projectFolder)) {
             throw new ProjectDoesNotExistException();
         }
+
         Path projectFile = projectFolder.resolve(PROJECT_FILE);
-        try {
-            return JsonManager.get().fromJson(lines(projectFile).collect(Collectors.joining()), Project.class);
+        try (Stream<String> lines = Files.lines(projectFile, StandardCharsets.UTF_8)) {
+            return JsonManager.get().fromJson(lines.collect(Collectors.joining()), Project.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
