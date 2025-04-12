@@ -14,7 +14,8 @@ public class RuntimeExecutor implements Executor {
     @Override
     public String execute(String command, boolean mantainLineBreak) {
         try {
-            Process process = Runtime.getRuntime().exec(command);
+            String[] cmd = {"/bin/bash", "-c", command};
+            Process process = Runtime.getRuntime().exec(cmd);
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), CHARSET))) {
                 String output = reader.lines().collect(Collectors.joining());
                 if (!mantainLineBreak) {
