@@ -6,6 +6,7 @@ import {AppEvent, MessageType} from "@/utils/enums";
 import {Api} from "@/services/chonide/api";
 import {EndPoints} from "@/services/chonide/endPoints";
 import {Routes} from "@/router/routes";
+import projectNamesColor from "@/assets/css/name-colors.json";
 
 export default {
   name: 'UserForm',
@@ -14,6 +15,11 @@ export default {
     displayName: String,
     name: String,
     host: String
+  },
+  computed: {
+    photoColor() {
+      return projectNamesColor[this.name.charAt(0).toUpperCase()]
+    }
   },
   data() {
     return {
@@ -72,10 +78,7 @@ export default {
     <div class="flex flex-col items-center gap-2 w-full">
       <Input v-if="name == null" placeholder="Username" center v-model="user.name"/>
       <Input type="password" placeholder="Password" center v-model="user.password"/>
-    </div>
-    <div class="flex flex-col w-full gap-2">
       <Button text="Login" main-color width-full @click="submit" :is-loading="loggingIn"/>
-      <Button text="Back" color="var(--pallete-color-black-3)" @click="$emit('back')" width-full/>
     </div>
   </div>
 </template>
@@ -83,14 +86,12 @@ export default {
 <style scoped>
 
 .user-form {
-  border: var(--border-trace);
   background-color: var(--pallete-color-black-2);
-  min-width: 300px;
-  @apply flex flex-col items-center gap-6 p-6 rounded-md;
+  @apply flex flex-col items-center gap-6 rounded-md w-full;
 }
 
 .user-form__photo {
-  background-color: var(--pallete-color-black-4);
+  background-color: v-bind(photoColor);
   min-height: 100px;
   aspect-ratio: 1/1;
   @apply flex items-center justify-center rounded-full text-2xl;

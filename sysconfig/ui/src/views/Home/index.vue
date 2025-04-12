@@ -167,7 +167,7 @@ import {Headers} from "@/services/request";
 import GeneralUtil from "@/utils/generalUtil";
 import {AppEvent, Key, MessageType} from "@/utils/enums";
 import Toggle from "@/components/general/Toggle.vue";
-import projectNamesColor from "@/assets/css/project-names-color.json";
+import projectNamesColor from "@/assets/css/name-colors.json";
 import Header from "@/components/Header.vue";
 import Button from "@/components/general/Button.vue";
 import Popup from "@/components/general/Popup.vue";

@@ -22,7 +22,7 @@ export default {
 .header {
   background-color: var(--pallete-color-black-2);
   border-bottom: 1px solid var(--pallete-color-black-4);
-  @apply shrink-0 flex justify-between items-center w-full h-fit sticky top-0 p-1.5;
+  @apply shrink-0 flex justify-between items-center w-full h-fit sticky top-0 p-1.5 z-10;
 }
 
 .header__logo {

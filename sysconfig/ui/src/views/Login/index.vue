@@ -1,22 +1,22 @@
 <template>
   <div class="login">
-    <div class="login__logo" v-if="user == null">
+    <div class="login__logo">
       <h1 class="text-3xl">chonIDE</h1>
-      <p class="text-base text-aside text-center">
-        IDE to development of<br>Embedded Multi-Agent Systems
-      </p>
     </div>
 
-    <div class="flex flex-col gap-6 items-center" v-if="user == null && this.attributes != null">
-      <span class="text-base">Enter on user</span>
-
-      <div class="flex flex-col gap-2">
-        <User
-            v-for="(user, index) in attributes.users"
-            host="localhost"
-            :name="user"
-            :key="index"
-            @click="this.user = {displayName: user, name: user, host: 'localhost'}"/>
+    <div class="login__access" v-if="this.attributes != null">
+      <div class="login__access__local-user">
+        <div class="p-6">
+          <span class="text-lg block" style="height: var(--action-height)">Enter on local user</span>
+        </div>
+        <div class="flex flex-col gap-2 overflow-y-auto h-full">
+          <User
+              v-for="(user, index) in attributes.users"
+              host="localhost"
+              :name="user"
+              :key="index"
+              @click="this.user = {displayName: user, name: user, host: 'localhost'}"/>
+        </div>
       </div>
 
       <Neighbors @select="this.user = $event"/>
@@ -24,16 +24,18 @@
 
     <Loading v-else-if="this.attributes == null"/>
 
-    <div v-else-if="user != null" class="flex items-center justify-center h-full w-full">
-      <UserForm
-          :display-name="this.user.displayName"
-          :host="this.user.host"
-          :name="this.user.name"
+    <Popup v-if="user != null" :can-close="true" :show="true" width="350px" @closed="user = null">
+      <template v-slot:content>
+        <UserForm
+            :display-name="this.user.displayName"
+            :host="this.user.host"
+            :name="this.user.name"
 
-          @message="$emit('message', $event)"
-          @back="() => this.user = null"
-      />
-    </div>
+            @message="$emit('message', $event)"
+            @back="() => this.user = null"
+        />
+      </template>
+    </Popup>
   </div>
 </template>
 
@@ -45,11 +47,12 @@ import {EndPoints} from "@/services/chonide/endPoints";
 import User from "@/views/Login/User.vue";
 import UserForm from "@/views/Login/UserForm.vue";
 import Neighbors from "@/views/Login/Neighbors.vue";
+import Popup from "@/components/general/Popup.vue";
 
 
 export default {
   name: "Login",
-  components: {Neighbors, UserForm, User, Loading},
+  components: {Popup, Neighbors, UserForm, User, Loading},
   data() {
     return {
       attributes: null,
@@ -81,13 +84,14 @@ export default {
   @apply flex flex-col items-center gap-2 select-none whitespace-nowrap;
 }
 
-.login__new-link {
-  color: var(--pallete-text-main);
-  border: var(--border-trace);
-  @apply text-center rounded-sm w-full py-2.5;
+.login__access {
+  background-color: var(--pallete-color-black-2);
+  @apply flex h-0 grow rounded-md overflow-hidden shadow-xl
 }
 
-.login__new-link:hover {
+.login__access__local-user {
+  min-width: 500px;
   background-color: var(--pallete-color-black-3);
+  @apply flex flex-col pb-0
 }
 </style>
