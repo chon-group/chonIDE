@@ -87,12 +87,12 @@ export default {
 
 .login__access {
   background-color: var(--pallete-color-black-2);
-  @apply flex h-0 grow rounded-md overflow-hidden shadow-xl
+  @apply flex h-0 grow rounded-md overflow-hidden shadow-2xl
 }
 
 .login__access__local-user {
   min-width: 500px;
   background-color: var(--pallete-color-black-3);
-  @apply flex flex-col pb-0
+  @apply flex flex-col pb-0 rounded-md shadow-2xl
 }
 </style>
