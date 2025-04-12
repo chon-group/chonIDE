@@ -20,7 +20,7 @@
       </div>
 
       <Neighbors @connectManually="user =
-      {displayName: 'New Bot', name: null, password: '', host: null}" @select="this.user = $event"/>
+      {displayName: 'Unknown Bot', name: null, password: '', host: null}" @select="this.user = $event"/>
     </div>
 
     <Loading v-else-if="this.attributes == null"/>
