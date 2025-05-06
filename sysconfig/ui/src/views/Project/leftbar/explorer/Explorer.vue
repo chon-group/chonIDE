@@ -1,4 +1,6 @@
 <script>
+/* eslint-disable */
+
 import ExplorerFolder from "@/views/Project/leftbar/explorer/ExplorerFolder.vue";
 import ExplorerFile from "@/views/Project/leftbar/explorer/ExplorerFile.vue";
 import {AppEvent, FileType, MessageType} from "@/utils/enums";
@@ -8,12 +10,14 @@ import {Api} from "@/services/chonide/api";
 import {EndPoints} from "@/services/chonide/endPoints";
 import {Headers} from "@/services/request";
 import validateProject from "@/views/Project/util";
+import Dragger from "@/components/general/Dragger.vue";
 
 const AGENT_DEFAULT_FILE_NAME = "newAgent", FIRMWARE_DEFAULT_FILE_NAME = "newSketch";
 const DEFAULT_AGENT_TYPE_NAME = "Jason";
 
 export default {
   name: "Explorer",
+  components: { Dragger },
   computed: {
     FileType() {
       return FileType
@@ -237,6 +241,7 @@ export default {
         </ExplorerFolder>
       </template>
     </ExplorerFolder>
+    <Dragger bottom />
   </div>
 </template>
 
@@ -244,6 +249,7 @@ export default {
 
 .explorer {
   min-width: 300px;
+  height: 100px;
   @apply overflow-y-auto p-1.5 w-full flex-grow;
 }
 

@@ -1,16 +1,17 @@
 <script>
 import Dragger from "@/components/general/Dragger.vue";
 import Explorer from "@/views/Project/leftbar/explorer/Explorer.vue";
+import GitPanel from "@/views/Project/leftbar/git/GitPanel.vue";
 
 export default {
   name: "LeftBar",
-  components: {Explorer, Dragger},
+  components: { Explorer, Dragger, GitPanel },
   props: {
     configuration: {},
     project: {},
     currentFile: {}
   }
-}
+};
 </script>
 
 <template>
@@ -22,7 +23,6 @@ export default {
         :configuration="configuration"
         :current-file="currentFile"
         :project="project"
-
         @addAgent="$emit('addAgent', $event)"
         @addFirmware="$emit('addFirmware', $event)"
         @removeAgent="$emit('removeAgent', $event)"
@@ -31,7 +31,11 @@ export default {
         @setFileType="$emit('setFileType', $event)"
         @message="$emit('message', $event)"
     />
-    <Dragger right/>
+    <GitPanel
+      v-if="project && project.name"
+      :project="project"
+    />
+    <Dragger right />
   </div>
 </template>
 

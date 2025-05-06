@@ -27,4 +27,25 @@ export class EndPoints {
     public static NETWORKS_AP = API_URL + "/networks/ap";
     public static NETWORKS_CLIENT = API_URL + "/networks/client";
     public static MINDINSPECTOR = API_URL + "/sma/agents"
+
+    public static GIT = API_URL + "/git";
+    public static GIT_STATUS = API_URL + "/git/status";
+    public static GIT_LOG = API_URL + "/git/log";
+    public static GIT_LIST_BRANCHES = API_URL + "/git/listBranches";
+    public static GIT_LIST_REMOTES = API_URL + "/git/listRemotes";
+    public static GIT_LIST_TAGS = API_URL + "/git/listTags";
+    public static GIT_INIT = API_URL + "/git/init";
+    public static GIT_ADD = API_URL + "/git/add";
+    public static GIT_COMMIT = API_URL + "/git/commit";
+    public static GIT_PUSH = API_URL + "/git/push";
+    public static GIT_CREATE_BRANCH = API_URL + "/git/createBranch";
+    public static GIT_MERGE = API_URL + "/git/merge";
+    public static GIT_PULL = API_URL + "/git/pull";
+    public static GIT_CLONE = API_URL + "/git/clone";
+    public static GIT_STASH = API_URL + "/git/stash";
+    public static GIT_REBASE = API_URL + "/git/rebase";
+    public static GIT_ADD_REMOTE = API_URL + "/git/addRemote";
+    public static GIT_CREATE_TAG = API_URL + "/git/createTag";
+    public static GIT_CHECKOUT = API_URL + "/git/checkout";
+    public static GIT_APPLY_STASH = API_URL + "/git/applyStash";
 }
