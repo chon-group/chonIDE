@@ -5,8 +5,8 @@ _Embedded MAS development requires knowledge in different areas, such as agent-o
 
 ## How to install?
 
-+ ### [Microsoft Windows](https://github.com/chon-group/chonIDE/blob/main/doc/01-installation/windows.md)
-+ ### [Debian 11 or Ubuntu 22.04 installation instructions](https://github.com/chon-group/chonIDE/blob/main/doc/01-installation/debian-and-Ubuntu.md) 
++ ### [Microsoft Windows](https://github.com/chon-group/chonIDE/wiki/Installation-on-Windows)
++ ### [Debian 11 or Ubuntu 22.04 installation instructions](https://github.com/chon-group/chonIDE/wiki/Installation-on-Linux) 
 
 ## Publications
 + PAAMS 2023 (Full paper) - [An IDE to Support the Development of Embedded Multi-Agent Systems](https://www.researchgate.net/publication/372282731_An_IDE_to_Support_the_Development_of_Embedded_Multi-Agent_Systems)
